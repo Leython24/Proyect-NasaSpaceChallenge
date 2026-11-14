@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #060b14;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Leaflet dark theme & custom marker overrides */
+.leaflet-container {
+  background: #060b14 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+.leaflet-control-attribution {
+  background: rgba(9, 17, 30, 0.75) !important;
+  color: #8fa3bf !important;
+  font-size: 10px !important;
+  border-top-left-radius: 8px;
+}
+.leaflet-control-attribution a {
+  color: #5eead4 !important;
+}
+
+/* Custom Scrollbar for scientific panels */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(11, 19, 34, 0.4);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(94, 234, 212, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(94, 234, 212, 0.5);
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.85); opacity: 0.9; }
+  70% { transform: scale(1.75); opacity: 0; }
+  100% { transform: scale(1.75); opacity: 0; }
+}
+
+.marker-pulse {
+  animation: pulseRing 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+.glass-panel {
+  background: rgba(13, 24, 41, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(94, 234, 212, 0.14);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+}
+
+.glass-card-subtle {
+  background: rgba(16, 29, 50, 0.65);
+  border: 1px solid rgba(143, 163, 191, 0.14);
+}
+
+:focus-visible {
+  outline: 2px solid #99f6e4 !important;
+  outline-offset: 3px;
+}
+button:disabled { cursor: default; opacity: .45; }
+.orbita-stage { height: 100%; }
+.orbita-sphere { position: relative; width: 100%; aspect-ratio: 1; }
+.orbita-sphere canvas { display: block; width: 100%; height: 100%; }
+.orbita-sphere-loading { position: absolute; inset: 3%; border-radius: 50%; background: radial-gradient(at 38% 38%, #243752, #121f30 43%, transparent 70%); }
+.orbita-grab { cursor: grab; touch-action: none; }
+.orbita-grab:active { cursor: grabbing; }
+.orbita-system, .orbita-surface, .orbita-candidate-globe {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 55% 56%, #0a1627a0, transparent 65%), #060b14 url('/assets/orbita-stars.svg');
+}
+.orbita-system::after, .orbita-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 48% 56%, transparent 34%, #03070c88 100%);
+}
+.orbita-system::after { z-index: 0; }
+.orbita-surface::after { background: linear-gradient(100deg, #080f1ee8 0, #080f1e9e 18%, #080f1e00 43%), linear-gradient(to top, #060b149c, #060b1400 22%); }
+.orbita-system:has(.orbita-world:focus-visible)::after { opacity: 0.5; }
+.orbita-system .orbita-lineup {
+  position: absolute;
+  z-index: 1;
+  left: 49%;
+  top: 52%;
+  width: min(58%, 880px);
+  transform: translate(-50%, -38%) scale(var(--system-scale, 1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6%;
+}
+.orbita-orbit {
+  position: absolute;
+  border: 1px solid #243c6077;
+  border-radius: 50%;
+  width: 67%;
+  height: 36%;
+  left: 20%;
+  top: 38%;
+  transform: rotate(-12deg);
+}
+.orbita-world { display: block; text-align: left; min-width: 0; transition: filter .2s; }
+.orbita-world:hover { filter: brightness(1.13); }
+.orbita-world-marte { width: 27%; transform: translateY(31%); }
+.orbita-world-luna { width: 47%; }
+.orbita-world-tierra { width: 26%; transform: translateY(47%); }
+.orbita-world-label, .orbita-world-note { display: block; padding-left: 8%; }
+.orbita-world-label { margin-top: .3rem; font-size: .77rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.orbita-world-note { font-size: .7rem; color: #8fa3bf; }
+.orbita-surface > .orbita-sphere {
+  position: absolute;
+  top: 50%;
+  left: 44%;
+  width: max(100%, 800px);
+  transform: translate(-50%, -50%);
+}
+.orbita-pin { position: absolute; z-index: 4; display: flex; align-items: center; gap: 6px; transform: translate(-12px, -50%); white-space: nowrap; }
+.orbita-pin-active { z-index: 5; }
+.orbita-pin-dot { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; color: #5eead4; border: 1px solid #5eead4aa; background: #09111ee6; }
+.orbita-pin-label { display: none; padding: 4px 8px; border: 1px solid #5eead4aa; color: #99f6e4; background: #09111ef0; border-radius: 12px; font-size: 11px; font-weight: 700; }
+.orbita-pin:hover .orbita-pin-label, .orbita-pin:focus-visible .orbita-pin-label, .orbita-pin-active .orbita-pin-label { display: inline; }
+.orbita-pin-active .orbita-pin-dot { color: #060b14; background: #5eead4; border-color: white; box-shadow: 0 0 18px #5eead4; }
+.orbita-layer-controls { position: absolute; z-index: 8; bottom: 1.55rem; right: 411px; display: grid; justify-items: end; gap: .5rem; }
+.orbita-layer-buttons, .orbita-layer-summary > * {
+  background: #09111ee8;
+  border: 1px solid #243c60;
+  padding: .25rem;
+  border-radius: .75rem;
+  color: #cbd5e1;
+  font-size: .68rem;
+}
+.orbita-layer-buttons { display: flex; gap: .25rem; }
+.orbita-layer-buttons button { padding: .25rem .55rem; border-radius: .5rem; white-space: nowrap; }
+.orbita-layer-buttons button[aria-pressed=true] { background: #5eead4; color: #060b14; font-weight: 700; }
+.orbita-layer-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: end; gap: .35rem; }
+.orbita-layer-summary > * { padding: .36rem .6rem; }
+.orbita-layer-summary button { display: flex; align-items: center; gap: .3rem; }
+.orbita-layer-summary button[aria-pressed=true] { color: #99f6e4; border-color: #5eead4; }
+.orbita-photo { position: absolute; width: min(310px, 80%); right: 411px; bottom: 7.2rem; z-index: 9; border-radius: 1rem; padding: .6rem; }
+.orbita-candidate-rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, calc((100% - 1.875rem) / 4)); gap: .625rem; overflow: auto hidden; padding: .15rem .15rem .6rem; }
+.orbita-candidate-globe { height: 18rem; border: 1px solid #1d3254; border-radius: 1rem; }
+.orbita-candidate-globe > .orbita-sphere { position: absolute; top: 50%; left: 50%; width: max(52%, 400px); transform: translate(-50%, -50%); }
+.orbita-map-credit { position: absolute; right: .6rem; bottom: .4rem; border-radius: .35rem; padding: .2rem .35rem; background: #09111ee0; color: #cbd5e1; font-size: .64rem; }
+.orbita-terrain { width: 100%; height: 14rem; }
+@media (min-width: 1024px) and (max-width: 1370px) {
+  .orbita-hero { max-width: min(39%, 380px); }
+  .orbita-system .orbita-lineup { left: 44%; width: 53%; }
+  .orbita-layer-controls { right: 405px; }
+}
+@media (max-width: 1023px) {
+  .orbita-stage { height: clamp(560px, 72dvh, 760px); }
+  .orbita-system .orbita-lineup { width: 90%; left: 50%; top: 54%; }
+  .orbita-surface > .orbita-sphere { left: 50%; top: 56%; width: max(105%, 560px); }
+  .orbita-layer-controls, .orbita-photo { right: 1rem; }
+}
+@media (max-width: 560px) {
+  .orbita-stage { height: 590px; }
+  .orbita-system .orbita-lineup { top: 55%; }
+  .orbita-hero { right: 1rem; }
+  .orbita-hero p { max-width: 300px; }
+  .orbita-layer-summary > span { display: none; }
+  .orbita-camera-controls { bottom: 5.2rem; }
+  .orbita-candidate-rail { grid-auto-columns: 77%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+.orbita-hero h1 { text-wrap: balance; }
+.orbita-stage:has(.orbita-system) .orbita-hero { max-width: min(440px, calc(100% - 3rem)); }
+.orbita-stage:has(.orbita-system) .orbita-hero h1 { text-wrap: initial; }
+.orbita-system .orbita-world-tierra { transform: translate(-22%, 38%); }
+.orbita-layer-controls { top: auto !important; bottom: 1.55rem; }
+.orbita-surface { isolation: isolate; }
+.orbita-surface::after { z-index: 1; }
+.leaflet-tooltip { background: #09111eee; border-color: #365773; color: #f8fafc; box-shadow: 0 2px 10px #060b1477; }
+.leaflet-tooltip-right::before { border-right-color: #365773; }
+@media (min-width: 1024px) and (max-width: 1370px) {
+  .orbita-system .orbita-lineup { left: 41%; width: 51%; }
+}
