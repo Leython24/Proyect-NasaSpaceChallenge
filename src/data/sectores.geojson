@@ -1,0 +1,833 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-01",
+        "nombre": "Sechura sector 01",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.6389963371101,
+              -5.648191237391368
+            ],
+            [
+              -80.62093611946116,
+              -5.648179737179049
+            ],
+            [
+              -80.62094786015255,
+              -5.63008726272649
+            ],
+            [
+              -80.63900751845532,
+              -5.63009872587176
+            ],
+            [
+              -80.6389963371101,
+              -5.648191237391368
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-02",
+        "nombre": "Sechura sector 02",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.62093611946116,
+              -5.648179737179049
+            ],
+            [
+              -80.60287594008929,
+              -5.64816767571039
+            ],
+            [
+              -80.60288824012103,
+              -5.630075240133898
+            ],
+            [
+              -80.62094786015255,
+              -5.63008726272649
+            ],
+            [
+              -80.62093611946116,
+              -5.648179737179049
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-03",
+        "nombre": "Sechura sector 03",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.60287594008929,
+              -5.64816767571039
+            ],
+            [
+              -80.58481580081808,
+              -5.648155052991369
+            ],
+            [
+              -80.58482866018403,
+              -5.630062658099943
+            ],
+            [
+              -80.60288824012103,
+              -5.630075240133898
+            ],
+            [
+              -80.60287594008929,
+              -5.64816767571039
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-04",
+        "nombre": "Sechura sector 04",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.63898511931139,
+              -5.666283737650452
+            ],
+            [
+              -80.62092434049266,
+              -5.6662722003688835
+            ],
+            [
+              -80.62093611946116,
+              -5.648179737179049
+            ],
+            [
+              -80.6389963371101,
+              -5.648191237391368
+            ],
+            [
+              -80.63898511931139,
+              -5.666283737650452
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-05",
+        "nombre": "Sechura sector 05",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.62092434049266,
+              -5.6662722003688835
+            ],
+            [
+              -80.6028635999569,
+              -5.666260100021851
+            ],
+            [
+              -80.60287594008929,
+              -5.64816767571039
+            ],
+            [
+              -80.62093611946116,
+              -5.648179737179049
+            ],
+            [
+              -80.62092434049266,
+              -5.6662722003688835
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-06",
+        "nombre": "Sechura sector 06",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.6028635999569,
+              -5.666260100021851
+            ],
+            [
+              -80.58480289952793,
+              -5.666247436615346
+            ],
+            [
+              -80.58481580081808,
+              -5.648155052991369
+            ],
+            [
+              -80.60287594008929,
+              -5.64816767571039
+            ],
+            [
+              -80.6028635999569,
+              -5.666260100021851
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-07",
+        "nombre": "Sechura sector 07",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.63897386505359,
+              -5.684376226613422
+            ],
+            [
+              -80.62091252324122,
+              -5.684364652260394
+            ],
+            [
+              -80.62092434049266,
+              -5.6662722003688835
+            ],
+            [
+              -80.63898511931139,
+              -5.666283737650452
+            ],
+            [
+              -80.63897386505359,
+              -5.684376226613422
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-08",
+        "nombre": "Sechura sector 08",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.62091252324122,
+              -5.684364652260394
+            ],
+            [
+              -80.6028512197177,
+              -5.6843525130326675
+            ],
+            [
+              -80.6028635999569,
+              -5.666260100021851
+            ],
+            [
+              -80.62092434049266,
+              -5.6662722003688835
+            ],
+            [
+              -80.62091252324122,
+              -5.684364652260394
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SE-09",
+        "nombre": "Sechura sector 09",
+        "departamento": "Piura",
+        "mision": "marte",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32717,
+        "tesela_nasadem": "NASADEM_HGT_s06w081",
+        "fuente_punto_referencial": "https://mapasamerica.dices.net/peru/mapa.php?id=95178&nombre=Duna-Julian-Chico",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.6028512197177,
+              -5.6843525130326675
+            ],
+            [
+              -80.58478995630716,
+              -5.684339808936259
+            ],
+            [
+              -80.58480289952793,
+              -5.666247436615346
+            ],
+            [
+              -80.6028635999569,
+              -5.666260100021851
+            ],
+            [
+              -80.6028512197177,
+              -5.6843525130326675
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-01",
+        "nombre": "Andagua sector 01",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.35804437077778,
+              -15.411302967551986
+            ],
+            [
+              -72.33942498371272,
+              -15.411080695903836
+            ],
+            [
+              -72.33965476134618,
+              -15.393018486796803
+            ],
+            [
+              -72.35827254494502,
+              -15.39324048543781
+            ],
+            [
+              -72.35804437077778,
+              -15.411302967551986
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-02",
+        "nombre": "Andagua sector 02",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.33942498371272,
+              -15.411080695903836
+            ],
+            [
+              -72.32080589931233,
+              -15.410856867555
+            ],
+            [
+              -72.32103728028888,
+              -15.39279493336657
+            ],
+            [
+              -72.33965476134618,
+              -15.393018486796803
+            ],
+            [
+              -72.33942498371272,
+              -15.411080695903836
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-03",
+        "nombre": "Andagua sector 03",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.32080589931233,
+              -15.410856867555
+            ],
+            [
+              -72.30218711968729,
+              -15.41063148262031
+            ],
+            [
+              -72.30242010388295,
+              -15.392569825261802
+            ],
+            [
+              -72.32103728028888,
+              -15.39279493336657
+            ],
+            [
+              -72.32080589931233,
+              -15.410856867555
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-04",
+        "nombre": "Andagua sector 04",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.35781589605675,
+              -15.429365417053281
+            ],
+            [
+              -72.3391949034146,
+              -15.42914287235263
+            ],
+            [
+              -72.33942498371272,
+              -15.411080695903836
+            ],
+            [
+              -72.35804437077778,
+              -15.411302967551986
+            ],
+            [
+              -72.35781589605675,
+              -15.429365417053281
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-05",
+        "nombre": "Andagua sector 05",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.3391949034146,
+              -15.42914287235263
+            ],
+            [
+              -72.32057421356039,
+              -15.428918769039509
+            ],
+            [
+              -72.32080589931233,
+              -15.410856867555
+            ],
+            [
+              -72.33942498371272,
+              -15.411080695903836
+            ],
+            [
+              -72.3391949034146,
+              -15.42914287235263
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-06",
+        "nombre": "Andagua sector 06",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.32057421356039,
+              -15.428918769039509
+            ],
+            [
+              -72.30195382860569,
+              -15.428693107228924
+            ],
+            [
+              -72.30218711968729,
+              -15.41063148262031
+            ],
+            [
+              -72.32080589931233,
+              -15.410856867555
+            ],
+            [
+              -72.32057421356039,
+              -15.428918769039509
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-07",
+        "nombre": "Andagua sector 07",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.35758712065952,
+              -15.447427833906147
+            ],
+            [
+              -72.3389645203285,
+              -15.44720501610758
+            ],
+            [
+              -72.3391949034146,
+              -15.42914287235263
+            ],
+            [
+              -72.35781589605675,
+              -15.429365417053281
+            ],
+            [
+              -72.35758712065952,
+              -15.447427833906147
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-08",
+        "nombre": "Andagua sector 08",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.3389645203285,
+              -15.44720501610758
+            ],
+            [
+              -72.3203422229089,
+              -15.446980637784451
+            ],
+            [
+              -72.32057421356039,
+              -15.428918769039509
+            ],
+            [
+              -72.3391949034146,
+              -15.42914287235263
+            ],
+            [
+              -72.3389645203285,
+              -15.44720501610758
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AN-09",
+        "nombre": "Andagua sector 09",
+        "departamento": "Arequipa",
+        "mision": "luna",
+        "estado": "exploratorio_sin_medicion",
+        "lado_m": 2000,
+        "area_diseno_km2": 4,
+        "epsg_analisis": 32718,
+        "tesela_nasadem": "NASADEM_HGT_s16w073",
+        "fuente_punto_referencial": "https://volcano.si.edu/volcano.cfm?vn=354004",
+        "pendiente_mediana_deg": null,
+        "area_suave_pct": null,
+        "desnivel_m": null,
+        "cobertura_pct": null
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -72.3203422229089,
+              -15.446980637784451
+            ],
+            [
+              -72.30172023051315,
+              -15.446754699051914
+            ],
+            [
+              -72.30195382860569,
+              -15.428693107228924
+            ],
+            [
+              -72.32057421356039,
+              -15.428918769039509
+            ],
+            [
+              -72.3203422229089,
+              -15.446980637784451
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
