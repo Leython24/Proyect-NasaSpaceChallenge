@@ -1,0 +1,20 @@
+{
+  "name": "geoanalogos-peru",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {"dev": "vite", "build": "vite build", "preview": "vite preview", "test": "node --test"},
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.4.0",
+    "@supabase/supabase-js": "^2.84.0",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.555.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-leaflet": "^5.0.0",
+    "three": "^0.181.0"
+  },
+  "devDependencies": {"@vitejs/plugin-react": "^5.1.1", "vite": "^7.2.2"},
+  "engines": {"node": "^20.19.0 || >=22.12.0"}
+}
