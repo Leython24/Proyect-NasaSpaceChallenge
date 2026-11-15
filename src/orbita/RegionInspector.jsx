@@ -16,9 +16,9 @@ export function RegionInspector({
   rankedCandidates,
   handleNavigateBody,
   handleOpenComparison,
+  onComparePeru,
+  handleOpenTerrain,
   handleSelectRegion,
-  setSelectedAnalogIndex,
-  setViewMode,
 }) {
   return (
     <aside className="w-full lg:w-[375px] lg:absolute lg:top-6 lg:right-6 lg:bottom-6 z-20 p-4 lg:p-0 flex-shrink-0 pointer-events-none">
@@ -213,6 +213,26 @@ export function RegionInspector({
                 </button>
               )}
               <div className="mt-4 pt-3 border-t border-space-700/80">
+                {selectedRegion.body === "tierra" && (
+                  <button
+                    type="button"
+                    className="mb-3 w-full rounded-xl border border-mint-400/40 p-2.5 text-sm text-mint-300"
+                    onClick={() => handleOpenTerrain(selectedRegion)}
+                  >
+                    Analizar este terreno en GeoPendiente
+                  </button>
+                )}
+                {onComparePeru && (
+                  <button
+                    type="button"
+                    onClick={onComparePeru}
+                    className="mb-3 w-full rounded-xl bg-mint-400 p-2.5 text-sm font-semibold text-space-950"
+                  >
+                    Ver sectores en Perú
+                  </button>
+                )}
+                {rankedCandidates.length > 0 && (
+                  <>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-semibold tracking-[0.14em] text-slatex-400 uppercase">
                     {activeBodyId === "tierra"
@@ -221,7 +241,7 @@ export function RegionInspector({
                   </span>
                   {activeCandidateObj && (
                     <span className="text-[10px] font-bold text-mint-400">
-                      Índice {formatScore(activeCandidateObj.scores.overall)}
+                      Puntaje de prueba {formatScore(activeCandidateObj.scores.overall)}
                     </span>
                   )}
                 </div>
@@ -230,10 +250,7 @@ export function RegionInspector({
                   {rankedCandidates.slice(0, 4).map((cand, idx) => (
                     <button
                       key={cand.region.id}
-                      onClick={() => {
-                        setSelectedAnalogIndex(idx);
-                        setViewMode("compare");
-                      }}
+                      onClick={() => handleOpenComparison(idx)}
                       className="px-2.5 py-1 rounded-lg bg-space-800 hover:bg-mint-400/20 border border-space-600/80 hover:border-mint-400/50 text-[11px] font-medium text-white transition-all flex items-center gap-1.5"
                     >
                       <span className="text-[10px] font-bold text-mint-400">
@@ -248,8 +265,7 @@ export function RegionInspector({
                 </div>
 
                 <button
-                  onClick={handleOpenComparison}
-                  disabled={rankedCandidates.length === 0}
+                  onClick={() => handleOpenComparison()}
                   className="mt-3 w-full py-3 px-4 rounded-xl bg-mint-400 hover:bg-mint-300 text-space-950 font-semibold text-sm flex items-center justify-between transition-all shadow-[0_8px_25px_rgba(94,234,212,0.28)]"
                 >
                   <span>
@@ -260,6 +276,8 @@ export function RegionInspector({
                   <span>→</span>
                 </button>
 
+                  </>
+                )}
                 <div className="mt-2 text-[10px] text-slatex-500 text-center truncate">
                   {selectedRegion.instrument || "NASA PDS"} ·{" "}
                   {selectedRegion.spatialResolution || "Orbital"}

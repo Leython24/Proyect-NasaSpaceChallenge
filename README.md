@@ -22,6 +22,13 @@ Vite indica la dirección de desarrollo. Para probar el resultado de producción
 - **Capas.** Mosaicos ópticos y altimetría en color de Luna y Marte. Blue Marble, relieve sombreado y una captura VIIRS del 15 de junio de 2024 en Tierra. La opción Orbital NASA muestra la imagen de la región seleccionada. Las capas globales se sirven con la aplicación.
 - **Relieve regional.** Jezero y Shackleton ofrecen mallas de elevación navegables derivadas de CTX y LOLA. La cuadrícula de visualización tiene 96 × 96 muestras y exageración vertical ×4. Se omiten las celdas sin cobertura. La malla es una vista de la zona cubierta por cada producto.
 - **Comparación.** Tabla ordenable por índice general, geología, topografía, temperatura o ambiente. Los candidatos se pueden abrir en un globo 3D o en un mapa Leaflet. En Jezero y Shackleton, el filtro «Sectores del Perú» muestra los nueve polígonos de cada zona con sus métricas, ensayo, límites y fuentes.
+- **Conoce tu terreno.** Abre GeoPendiente desde el menú, una coordenada terrestre o una comparación del Perú. El sector abre con sus coordenadas y su referencia. Pulsa «Calcular elevación y pendiente» para consultar el muestreo local y habilitar las descargas.
+
+## GeoPendiente
+
+El analizador de `public/laboratorio-geopendiente.html` incluye ubicación, opciones de GPS, curvas, relieve 2D/3D, biblioteca local y exportación CSV, PNEZD y JSON. Las consultas de elevación requieren conexión a Open Topo Data u Open-Meteo. Si la herramienta se usa desde otra computadora, importa un respaldo JSON para recuperar los lugares guardados.
+
+«Abrir también el laboratorio técnico» permite cargar cuadrículas CSV regulares `x,y,z` en metros locales relativos al centro o `lat,lon,z` en coordenadas geográficas. Para calcular diferencias se requiere la misma extensión y separación de puntos. Las curvas estimadas tratan de ilustrar la forma del terreno y se identifican por separado de las derivadas de una cuadrícula con cotas.
 
 ## Implementación
 
@@ -33,7 +40,9 @@ Los módulos de exploración y comparación están en `src/orbita/`. Los polígo
 
 El índice del catálogo mundial es exploratorio. Se aplica similitud coseno al perfil geológico (35 %), distancia con tolerancia de 45° y una coincidencia descriptiva de relieve para topografía (25 %), distancia con tolerancia de 210 °C entre puntos medios de rangos térmicos (20 %) y distancia normalizada entre índices descriptivos de aridez y hielo para ambiente (20 %). Los pesos y tolerancias son hipótesis del prototipo. Las cifras de contexto del catálogo requieren verificación por producto y área antes de usarlas como mediciones. Un criterio sin datos compatibles se muestra como «—» y el índice general requiere los cuatro criterios.
 
-Para los sectores peruanos, QGIS o Python calculan las métricas antes de publicarlas. Comparen ventanas físicas equivalentes con escala común y documenten cobertura, resolución, umbral de pendiente suave, proyección y datum para cada cuerpo. Las métricas son pendiente mediana en grados, porcentaje de superficie con pendiente suave y desnivel P95 − P5 en metros. La columna Diferencia aplica resta absoluta, en puntos porcentuales para el área suave. Los valores aún sin medir se mantienen nulos y la web muestra «Pendiente de cálculo». Las condiciones de gravedad, atmósfera, iluminación y radiación forman parte de los límites del ensayo.
+El catálogo local incluye las 18 ventanas de Perú y las referencias JEZ-01 y SHA-01 del dossier. Usa ventanas de 2 × 2 km, malla de 100 m y pendiente suave menor a 8°. `src/data/terrainMeasurements.json` conserva medidas, cobertura, unidades de referencia y centros. El marcador de Shackleton indica el centro del cráter y SHA-01 describe el borde. El muestreo de GeoPendiente estudia una zona local con otra escala.
+
+Para los sectores peruanos, QGIS o Python calculan las métricas antes de publicarlas. Las métricas son pendiente mediana en grados, porcentaje de superficie con pendiente suave y desnivel P95 − P5 en metros. La columna Diferencia aplica resta absoluta, en puntos porcentuales para el área suave. La cobertura se refiere a las celdas donde fue posible calcular la pendiente. Las condiciones de gravedad, atmósfera, iluminación y radiación forman parte de los límites del ensayo.
 
 ## Conectar Supabase
 
@@ -48,7 +57,8 @@ La app usa los registros publicados para actualizar el catálogo local por ident
 
 - Mosaicos planetarios y altimetría en color del LRO WAC, LOLA, Viking MDIM 2.1 y MOLA. Capas globales ensambladas y convertidas a WebP a partir de teselas del nivel 2. [NASA Solar System Treks](https://trek.nasa.gov/)
 - Capas de la Tierra y vistas regionales derivadas de Blue Marble, Blue Marble Shaded Relief y VIIRS, distribuidas como mosaicos del nivel 2. [NASA Earthdata GIBS](https://www.earthdata.nasa.gov/data/projects/gibs)
-- Elevación de ventanas terrestres. Teselas s06w081 y s16w073. [NASA Earthdata · NASADEM_HGT v001](https://data.nasa.gov/dataset/nasadem-merged-dem-global-1-arc-second-v001)
+- Elevación de ventanas terrestres. [Copernicus DEM GLO-90](https://doi.org/10.5270/ESA-c5d3d65) y [ESA WorldCover](https://esa-worldcover.org/en/data-access) para excluir celdas con al menos 50 % de agua permanente.
+- Elevación de la ventana JEZ-01. [NASA MRO / USGS · Mars 2020 TRN CTX DTM](https://astrogeology.usgs.gov/search/map/Mars/Mars2020/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0)
 - Relieve de Jezero y su producto controlado. [USGS · Modelo de elevación CTX de Jezero](https://stac.astrogeology.usgs.gov/api/collections/mro_ctx_controlled_usgs_dtms/items/P02_001820_1984_XI_18N282W__P06_003442_1987_XI_18N282W)
 - Relieve del polo sur lunar, producto ajustado de 5 m/píxel para Site04. [NASA PGDA / LRO · LOLA Site04](https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/)
 - Fotos de referencia de [Jezero](https://www.jpl.nasa.gov/images/pia24331-perseverances-landing-spot-in-jezero-crater/) (NASA/JPL-Caltech/Universidad de Arizona), [Shackleton](https://www.nasa.gov/solar-system/nasas-shadowcam-images-lunar-south-pole-region/) (NASA/KARI/ASU) y [Curiosity en Gale](https://commons.wikimedia.org/wiki/File:Curiosity_Self-Portrait_at_%27Big_Sky%27_Drilling_Site.jpg) (NASA/JPL-Caltech/MSSS).

@@ -1,0 +1,1932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>GeoPendiente | Elevación y pendiente por coordenadas</title>
+<style>
+  :root{--ink:#162940;--muted:#637488;--line:#dce5ea;--bg:#f3f7f8;--green:#057d70;--green2:#006a5f;--mint:#e1f5ef;--aqua:#effaf7;--amber:#fff4dc;--shadow:0 12px 32px rgba(20,48,68,.07)}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}a{color:var(--green2)}button,input,select{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.6}
+  .page{max-width:1300px;margin:auto;padding:30px 24px 54px}.top{display:flex;gap:22px;align-items:flex-start;justify-content:space-between;margin-bottom:26px}.brand{display:flex;align-items:center;gap:11px}.brandmark{width:46px;height:46px;border-radius:14px;background:#d5f3e9;display:grid;place-items:center;color:#096f64;font-size:25px;box-shadow:0 3px 14px rgba(8,110,94,.12)}.eyebrow{font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#168679}.brand strong{display:block;font-size:19px;letter-spacing:-.035em}.brand small{color:var(--muted);font-size:12px}.hero-title{font-size:clamp(28px,3.6vw,43px);letter-spacing:-.055em;line-height:1.12;margin:21px 0 9px;font-weight:800}.hero-title span{color:var(--green)}.intro{max-width:680px;color:var(--muted);margin:0}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid #baddd2;background:#e5f8f1;border-radius:30px;padding:7px 11px;font-size:12px;font-weight:700;color:#0b7465;white-space:nowrap}.pill::before{content:"";width:7px;height:7px;background:#1aa789;border-radius:50%}.layout{display:grid;grid-template-columns:350px minmax(0,1fr);gap:20px;align-items:start}.card{background:white;border:1px solid #e5edef;border-radius:20px;box-shadow:var(--shadow)}.control-card{padding:25px;position:sticky;top:18px}.section-top{display:flex;gap:12px;align-items:center;margin-bottom:23px}.num{width:32px;height:32px;background:var(--mint);color:var(--green2);font-weight:800;border-radius:10px;display:grid;place-items:center;font-size:13px}.section-top h2{font-size:17px;margin:0;letter-spacing:-.028em}.section-top p{margin:0;font-size:12px;color:var(--muted)}.field{margin-bottom:17px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:7px}.field .hint{font-size:11px;font-weight:400;color:var(--muted);margin-left:4px}.input{width:100%;border:1px solid #d6e2e7;background:#fbfdfd;border-radius:11px;color:var(--ink);padding:12px 13px;outline:none;transition:.15s;min-height:48px}.input:focus{border-color:#13a68d;box-shadow:0 0 0 3px #cff3e9}.split{display:grid;grid-template-columns:1fr 1fr;gap:11px}.small-note{background:#f1f9f7;border-radius:12px;padding:12px 13px;color:#476962;font-size:12px;line-height:1.5;margin:4px 0 19px}.btn{border:0;border-radius:11px;padding:12px 15px;min-height:46px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:9px}.btn-primary{width:100%;color:#fff;background:linear-gradient(130deg,#088d7d,#086e66);box-shadow:0 9px 18px #076f6424}.btn-primary:hover:not(:disabled){background:linear-gradient(130deg,#087e71,#065b54)}.btn-secondary{border:1px solid #d7e6e9;background:#fff;color:#426172}.button-group{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.notice{display:none;padding:12px 13px;border-radius:10px;font-size:12px;margin:14px 0 0;line-height:1.5}.notice.show{display:block}.notice.error{background:#fff0ee;color:#a33732;border:1px solid #f4d0ca}.notice.success{background:#e9f8f1;color:#147358;border:1px solid #c6eada}.notice.info{background:#eff6fc;color:#406b8b;border:1px solid #d6e8f6}.sidebar-bottom{border-top:1px solid var(--line);margin-top:22px;padding-top:17px;font-size:11px;line-height:1.6;color:#718091}.main{display:grid;gap:20px}.results-card{padding:24px}.panel-header{display:flex;gap:15px;align-items:center;justify-content:space-between;margin-bottom:20px}.panel-header h2{font-size:19px;margin:0;letter-spacing:-.03em}.panel-header p{margin:3px 0 0;color:var(--muted);font-size:12px}.source{background:#f1f8f8;color:#52766d;border-radius:30px;padding:6px 10px;font-size:11px;font-weight:700;white-space:nowrap}.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}.metric{border:1px solid #e3ecee;background:#fbfdfd;border-radius:14px;padding:16px 15px;min-height:115px}.metric.feature{background:linear-gradient(130deg,#edfaf4,#d7f4ea);border-color:#bce7d8}.metric-label{font-size:11px;color:#63798b;display:block;font-weight:700;line-height:1.35;min-height:29px}.metric-value{font-size:clamp(18px,2.15vw,26px);line-height:1.2;font-weight:800;letter-spacing:-.04em;margin:7px 0 5px;font-variant-numeric:tabular-nums}.metric-sub{font-size:10.5px;color:#79909d}.result-note{margin-top:16px;padding:12px 14px;background:#fffaed;color:#806539;font-size:12px;border-left:3px solid #e8b968;border-radius:4px 9px 9px 4px}.two-col{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}.map-card,.detail-card{padding:24px;min-width:0}.legend{display:flex;align-items:center;gap:7px;margin:12px 0 0;font-size:10px;color:var(--muted)}.legend .strip{height:9px;flex:1;border-radius:8px;background:linear-gradient(90deg,#287b92,#48ad9d,#a8d2a8,#e9d58a,#d98658)}.topomap{width:100%;aspect-ratio:1/1;background:#f6faf8;border:1px solid #e5eeed;border-radius:14px;display:block;cursor:crosshair}.map-wrap{position:relative}.map-tip{display:none;position:absolute;pointer-events:none;padding:6px 9px;border-radius:8px;background:#17354a;color:white;font-size:11px;white-space:nowrap;transform:translate(10px,-115%);z-index:3;box-shadow:0 6px 20px #132c3a30}.tag{display:inline-flex;padding:5px 9px;background:#eef7f4;color:#27766c;border-radius:6px;font-size:11px;font-weight:700}.datum{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:13px 0;border-bottom:1px solid #eaf0f2;align-items:baseline}.datum:last-child{border:0}.datum span{color:#718294;font-size:12px}.datum strong{color:#284457;font-size:13px;text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.detail-hint{background:#f4f8fa;padding:13px 14px;border-radius:11px;font-size:12px;color:#668092;margin-top:15px}.data-card{padding:24px}.table-scroll{max-height:330px;overflow:auto;border:1px solid #e0eaed;border-radius:12px}.table-scroll table{width:100%;border-collapse:collapse;font-size:12px;min-width:590px}.table-scroll th{position:sticky;top:0;background:#edf7f5;color:#3c766d;text-align:right;font-size:11px;padding:11px 13px;white-space:nowrap}.table-scroll td{text-align:right;padding:9px 13px;border-bottom:1px solid #ebf0f2;color:#52677c;font-variant-numeric:tabular-nums}.table-scroll th:first-child,.table-scroll td:first-child{text-align:left}.table-scroll tr.center-row td{background:#e6f8ed;font-weight:800;color:#0b7264}.empty{background:linear-gradient(145deg,#f5faf9,#f7fafb);border:1px dashed #cedfdc;border-radius:15px;padding:42px 20px;text-align:center;color:#7b929c}.empty .empty-icon{font-size:34px;margin-bottom:6px;opacity:.65}.empty strong{display:block;color:#566e78;font-size:16px;margin-bottom:5px}.empty p{margin:0 auto;max-width:270px;font-size:12px}.footer{margin:31px 0 0;font-size:11px;color:#81919a;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.hidden{display:none!important} .loader{display:inline-block;width:17px;height:17px;border-radius:50%;border:2px solid #ffffff50;border-top-color:white;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.status-flag{background:#fff5df;border:1px solid #efdcb2;color:#8e7037;border-radius:9px;padding:7px 10px;font-size:11px;margin-top:9px}
+  @media(max-width:1000px){.layout{grid-template-columns:310px minmax(0,1fr)}.two-col{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.control-card{position:static}}@media(max-width:720px){.page{padding:18px 13px 40px}.top{flex-direction:column;gap:15px}.hero-title{margin-top:12px}.layout{grid-template-columns:1fr}.results-card,.data-card,.detail-card,.map-card,.control-card{padding:19px}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.panel-header{flex-wrap:wrap}.topomap{max-height:480px}}@media(max-width:370px){.metric-grid{grid-template-columns:1fr}.split{grid-template-columns:1fr}.button-group{grid-template-columns:1fr}}
+
+/* Visualización CAD de superficie y características topográficas */
+.surface-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+.surface-row>.map-card{grid-column:1/-1}
+.cad-toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:0 0 13px}
+.view-switch{display:inline-flex;gap:3px;padding:4px;border:1px solid #d9e8e9;background:#eef5f5;border-radius:11px}
+.view-btn{border:0;background:transparent;color:#627986;border-radius:8px;font-size:12px;font-weight:800;padding:8px 13px}
+.view-btn.active{background:#096f68;color:white;box-shadow:0 3px 8px #153d3b20}
+.cad-check{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#526e79;font-weight:700;white-space:nowrap;cursor:pointer}
+.cad-check input{accent-color:#0d8b7a;width:15px;height:15px}
+.topomap{aspect-ratio:1000/650;background:#0c1824;border-color:#263a4c;cursor:grab;touch-action:none}
+.topomap.grabbing{cursor:grabbing}
+.map-wrap{overflow:hidden;border-radius:14px;background:#0c1824}
+.cad-hint{position:absolute;bottom:11px;left:11px;color:#d8e5ec;background:#101f2cda;border:1px solid #ffffff25;font-size:11px;border-radius:7px;padding:6px 9px;pointer-events:none}
+.cad-badge{position:absolute;top:12px;left:12px;background:#102638e3;border:1px solid #ffffff33;border-radius:7px;padding:6px 9px;color:#aaf0db;font-size:10px;font-weight:800;letter-spacing:.07em;pointer-events:none}
+.cad-options{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;margin-top:13px}
+.cad-options label{font-size:11px;color:#637b88;font-weight:700;display:flex;gap:8px;align-items:center}
+.cad-options input{width:125px;accent-color:#0a8475}
+.cad-options output{font-variant-numeric:tabular-nums;color:#136b60;min-width:31px}
+.btn-mini{min-height:33px;padding:7px 10px;font-size:11px;border-radius:8px;background:#f2f8f8;border:1px solid #d6e5e8;color:#356c74;font-weight:800}
+.btn-location{width:100%;background:#eef9f5;color:#086f64;border:1px solid #b9e6d8;margin-bottom:10px}
+.btn-location:hover:not(:disabled){background:#daf4eb}
+.gps-note{font-size:11px;color:#46756e;padding:8px 9px;margin:-3px 0 10px;border-left:3px solid #10a38c;background:#f0fbf7;border-radius:6px}
+.terrain-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fact{border:1px solid #e2ebed;background:linear-gradient(145deg,#fcfefe,#f3faf8);border-radius:12px;padding:13px 12px;min-height:96px}
+.fact-label{font-size:11px;color:#6b8791;font-weight:700;display:block}
+.fact-value{display:block;font-size:18px;line-height:1.25;letter-spacing:-.02em;font-weight:800;color:#214c57;margin:8px 0 4px;overflow-wrap:anywhere}
+.fact-sub{display:block;color:#87969c;font-size:10px;line-height:1.35}
+.fact.full{grid-column:1/-1;min-height:auto}
+.fact.full .fact-value{font-size:16px}
+.features-note{background:#fff9e9;border-left:3px solid #d8ae65;border-radius:6px;padding:11px;margin:15px 0 0;font-size:11px;color:#7e693e}
+.map-action{margin-top:12px;display:inline-flex;gap:6px;align-items:center;font-size:12px;font-weight:700}
+.cad-coords{font-variant-numeric:tabular-nums;font-size:11px;color:#728995;margin-top:5px}
+@media(max-width:750px){.surface-row{grid-template-columns:1fr}.surface-row>.map-card{grid-column:auto}.cad-toolbar{gap:7px}.cad-hint{font-size:9px}.topomap{min-height:230px}.cad-options{gap:7px}.terrain-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Módulo adicional: interpretación orográfica y clasificación geotécnica con datos de laboratorio. */
+.norm-card{padding:25px;min-width:0}
+.norm-heading{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.norm-kicker{font-size:10px;letter-spacing:.09em;text-transform:uppercase;font-weight:800;color:#0d8d7b}
+.norm-lead{font-size:12px;color:#627a87;line-height:1.6;margin:0 0 17px}
+.norm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.norm-tile{background:#f8fcfc;border:1px solid #dce8e9;border-radius:13px;padding:15px 13px;min-height:145px}
+.norm-tile.main-norm{background:linear-gradient(140deg,#e8faf2,#d8f3e9);border-color:#b8e5d6}
+.norm-tile .norm-code{font-size:10px;color:#547785;font-weight:800;letter-spacing:.04em}
+.norm-tile strong{display:block;font-size:16px;color:#174856;line-height:1.3;margin:9px 0 6px;overflow-wrap:anywhere}
+.norm-tile small{display:block;color:#647e89;font-size:11px;line-height:1.45}
+.norm-sep{border:0;border-top:1px solid #e5edef;margin:19px 0}
+.norm-road{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:18px;align-items:start}
+.norm-label{display:block;font-size:12px;font-weight:800;color:#2a5260;margin-bottom:6px}
+.norm-help{font-size:11px;color:#738993;line-height:1.5;margin:6px 0 0}
+.norm-readout{padding:12px 14px;border:1px solid #deebed;background:#f5fafb;border-radius:11px;font-size:12px;color:#456371;min-height:75px}
+.norm-readout strong{color:#125c5a}
+.norm-interpret{background:#f0f8f6;border-left:3px solid #22a18c;padding:14px 16px;border-radius:6px 11px 11px 6px;font-size:12px;color:#456b69;line-height:1.65;margin-top:15px}
+.norm-details{border:1px solid #dce8eb;border-radius:13px;overflow:hidden;margin-top:16px;background:#fff}
+.norm-details summary{padding:14px 16px;background:#f6fafb;cursor:pointer;font-size:13px;font-weight:800;color:#244d59;list-style-position:inside}
+.norm-details summary:hover{background:#eef7f5}
+.norm-details-body{padding:17px}
+.norm-input-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.norm-input-grid .field{margin-bottom:0}
+.norm-input-grid .field label{font-size:11px;min-height:31px;line-height:1.3}
+.norm-input-grid .input{min-height:40px;padding:9px 10px;font-size:13px}
+.norm-input-grid .norm-span2{grid-column:span 2}
+.norm-group-title{grid-column:1/-1;font-size:12px;font-weight:800;color:#356e71;margin:4px 0 -4px}
+.norm-caution{background:#fff8e9;border:1px solid #f0dfbd;border-radius:11px;padding:12px 14px;color:#79643e;font-size:11px;line-height:1.6;margin-top:14px}
+.norm-references{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+.norm-references a{border:1px solid #d9e8e6;border-radius:7px;background:#f5faf9;padding:7px 10px;font-size:11px;text-decoration:none;font-weight:700}
+.norm-export{margin-top:15px}
+.norm-mtc-table{width:100%;border-collapse:collapse;font-size:11px;margin:13px 0 0}
+.norm-mtc-table th,.norm-mtc-table td{padding:8px 9px;text-align:left;border-bottom:1px solid #e7eff0}
+.norm-mtc-table th{background:#f0f7f6;color:#3b756e;font-size:10px}
+.norm-mtc-table td{color:#536d7b}
+@media(max-width:1100px){.norm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.norm-input-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){.norm-card{padding:19px}.norm-road{grid-template-columns:1fr}.norm-input-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){.norm-grid,.norm-input-grid{grid-template-columns:1fr}.norm-input-grid .norm-span2{grid-column:span 1}}
+
+
+/* Apariencia NASA: tonos de Marte y Luna, sin alterar la distribución de la interfaz. */
+body[data-planet="mars"]{
+ --ink:#342d34;--muted:#786e74;--line:#e8d8d0;--bg:#f9f2ec;
+ --green:#b9573d;--green2:#90402f;--mint:#fbe5d7;--aqua:#fff5ed;
+ --shadow:0 12px 32px rgba(89,52,48,.08);
+ --planet-dark:#352936;--planet-soft:#fff5ec;--planet-border:#ead5ca;
+ --planet-ink:#6e3d37;--planet-highlight:#f6d4c0;
+}
+body[data-planet="moon"]{
+ --ink:#253140;--muted:#667281;--line:#d8dfe7;--bg:#f0f3f6;
+ --green:#536981;--green2:#364b64;--mint:#e3e9f0;--aqua:#f4f7fa;
+ --shadow:0 12px 32px rgba(36,50,66,.09);
+ --planet-dark:#252e3b;--planet-soft:#f4f7fa;--planet-border:#d5dce5;
+ --planet-ink:#3a4b60;--planet-highlight:#dce4ed;
+}
+.header-tools{display:flex;align-items:flex-end;flex-direction:column;gap:9px}
+.theme-switch{display:inline-flex;gap:4px;padding:4px;border-radius:12px;background:var(--planet-soft);border:1px solid var(--planet-border)}
+.theme-btn{border:0;background:transparent;color:var(--muted);border-radius:9px;padding:7px 13px;font-weight:800;font-size:12px;white-space:nowrap}
+.theme-btn.active{background:var(--planet-dark);color:#fff;box-shadow:0 3px 8px #00000016}
+.theme-caption{font-size:10px;color:var(--muted);font-weight:600}
+.brandmark,.num{background:var(--mint);color:var(--green2)}
+.eyebrow,.norm-kicker{color:var(--green)}
+.pill{border-color:var(--planet-border);background:var(--planet-soft);color:var(--green2)}
+.pill::before{background:var(--green)}
+.card{border-color:var(--planet-border)}
+.input{border-color:var(--planet-border);background:#fffdfa}
+body[data-planet="moon"] .input{background:#fafbfd}
+.input:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--planet-highlight)}
+.small-note,.detail-hint,.source,.tag,.norm-readout,.norm-details summary{background:var(--planet-soft);color:var(--planet-ink)}
+.btn-primary,.btn-primary:hover:not(:disabled){background:linear-gradient(130deg,var(--green),var(--green2));box-shadow:0 9px 18px #40231c22}
+.btn-secondary,.btn-mini{border-color:var(--planet-border);color:var(--planet-ink);background:#fff}
+.btn-location,.btn-location:hover:not(:disabled){background:var(--planet-soft);border-color:var(--planet-border);color:var(--green2)}
+.gps-note{background:var(--planet-soft);border-left-color:var(--green);color:var(--planet-ink)}
+.notice.success{background:var(--planet-soft);border-color:var(--planet-border);color:var(--planet-ink)}
+.metric,.fact,.norm-tile{border-color:var(--planet-border);background:#fffdfa}
+body[data-planet="moon"] .metric,body[data-planet="moon"] .fact,body[data-planet="moon"] .norm-tile{background:#fafbfd}
+.metric.feature,.norm-tile.main-norm{background:linear-gradient(135deg,var(--planet-soft),var(--planet-highlight));border-color:var(--planet-border)}
+.fact-value,.norm-tile strong,.norm-readout strong,.datum strong{color:var(--planet-ink)}
+.legend .strip{background:linear-gradient(90deg,#4c3036,#8e5149,#b86d51,#dfa675,#f5d3a8)}
+body[data-planet="moon"] .legend .strip{background:linear-gradient(90deg,#343f4e,#697584,#a3abb4,#c9ced4,#e9e7e1)}
+.view-switch{background:var(--planet-soft);border-color:var(--planet-border)}
+.view-btn.active{background:var(--planet-dark);color:#fff}
+.cad-check input,.cad-options input{accent-color:var(--green)}
+.cad-badge{color:#f5d8c0}
+body[data-planet="moon"] .cad-badge{color:#e1e8f0}
+.norm-tile .norm-code,.norm-label{color:var(--planet-ink)}
+.norm-interpret{background:var(--planet-soft);border-left-color:var(--green);color:var(--planet-ink)}
+.norm-details,.norm-readout{border-color:var(--planet-border)}
+.norm-details summary:hover{background:var(--planet-highlight)}
+.norm-mtc-table th{background:var(--planet-soft);color:var(--planet-ink)}
+.norm-references a{background:var(--planet-soft);border-color:var(--planet-border)}
+.table-scroll th{background:var(--planet-soft);color:var(--planet-ink)}
+.table-scroll tr.center-row td{background:var(--planet-highlight);color:var(--planet-ink)}
+@media(max-width:720px){.header-tools{align-items:flex-start}}
+
+
+/* Biblioteca persistente de sitios: añadida sin modificar el visor y los controles previos. */
+.library-card{padding:25px;min-width:0}
+.lib-head-note{font-size:12px;color:var(--muted);line-height:1.55;margin:0 0 15px}
+.lib-toolbar{display:flex;flex-wrap:wrap;align-items:end;gap:10px;padding:14px;border:1px solid var(--planet-border);border-radius:14px;background:var(--planet-soft);margin-bottom:16px}
+.lib-toolbar .field{flex:1 1 220px;margin:0}.lib-toolbar .field label{font-size:12px}
+.lib-toolbar .btn{min-height:42px;font-size:12px;white-space:nowrap}.lib-file-btn{position:relative;overflow:hidden;cursor:pointer}.lib-file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.lib-status{font-size:12px;color:var(--planet-ink);padding:9px 12px;border:1px solid var(--planet-border);border-radius:10px;margin:8px 0 15px;background:var(--planet-soft)}
+.lib-workspace{display:grid;grid-template-columns:minmax(0,.88fr) minmax(0,1.3fr);gap:14px;align-items:start}
+.lib-panel{border:1px solid var(--planet-border);border-radius:15px;padding:15px;background:#fffdfa;min-width:0}
+body[data-planet="moon"] .lib-panel{background:#fafbfd}
+.lib-panel h3{font-size:15px;letter-spacing:-.02em;margin:0 0 4px}.lib-panel p{font-size:11px;color:var(--muted);margin:0 0 12px}
+.lib-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.lib-row>.input{flex:1 1 160px}.lib-row .btn{min-height:38px;font-size:12px}
+.lib-list{margin:10px 0;max-height:315px;overflow:auto;border:1px solid var(--planet-border);border-radius:11px}
+.lib-item{padding:11px 12px;border-bottom:1px solid var(--planet-border);display:flex;gap:8px;justify-content:space-between;align-items:center}
+.lib-item:last-child{border-bottom:0}.lib-item strong{font-size:12px;display:block}.lib-item small{font-size:10px;color:var(--muted);display:block;margin-top:2px}
+.lib-actions{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.lib-mini{border:1px solid var(--planet-border);border-radius:7px;padding:5px 8px;font-size:10px;font-weight:800;background:var(--planet-soft);color:var(--planet-ink);cursor:pointer}.lib-mini:hover{filter:brightness(.95)}
+.lib-pill{font-size:10px;border-radius:20px;background:var(--planet-soft);padding:3px 8px;color:var(--planet-ink);display:inline-block;margin:2px 0}
+.lib-compare-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:9px}.lib-compare-controls label{font-size:11px;font-weight:800;color:var(--planet-ink);display:block;margin-bottom:5px}.lib-compare-controls .input{min-height:42px;font-size:12px;padding:8px}
+.lib-presets{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}.lib-presets .lib-mini{padding:7px 9px}
+.lib-metrics{width:100%;border-collapse:collapse;font-size:11px}.lib-metrics th,.lib-metrics td{padding:9px 7px;border-bottom:1px solid var(--planet-border);text-align:left}.lib-metrics th{color:var(--planet-ink);background:var(--planet-soft);font-size:10px}.lib-metrics td:not(:first-child){font-variant-numeric:tabular-nums}.lib-metrics td:nth-child(4){font-weight:700}
+.lib-warning{border-left:3px solid var(--green);padding:10px 12px;border-radius:6px;background:var(--planet-soft);color:var(--planet-ink);font-size:11px;line-height:1.55;margin:12px 0}
+.lib-surface-controls{display:flex;align-items:center;gap:8px;margin:12px 0 8px;flex-wrap:wrap}.lib-surface-controls label{font-size:11px;color:var(--muted);font-weight:700}.lib-surface-controls select{max-width:150px;min-height:36px;padding:6px 9px;font-size:11px}
+.lib-canvases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.lib-canvas-card{border:1px solid var(--planet-border);border-radius:11px;overflow:hidden;background:#222d39}.lib-canvas-card canvas{display:block;width:100%;aspect-ratio:1.35}.lib-canvas-card footer{background:var(--planet-soft);padding:8px 10px;font-size:10px;color:var(--planet-ink);min-height:43px}
+.lib-editor{border:1px solid var(--planet-border);border-radius:15px;background:var(--planet-soft);padding:16px;margin:0 0 15px}.lib-editor h3{font-size:16px;margin:0 0 6px}.lib-editor-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.lib-editor-grid .field{margin:0}.lib-editor-grid .field label{font-size:11px}.lib-editor-grid .input{padding:9px;min-height:40px;font-size:12px}.lib-editor-grid .lib-span2{grid-column:span 2}.lib-editor-grid .lib-span4{grid-column:span 4}.lib-editor textarea{min-height:70px;resize:vertical}
+.lib-editor-actions{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}.lib-editor-actions .btn{min-height:40px;font-size:12px}
+.lib-dem-import{margin-top:15px;border:1px dashed var(--planet-border);border-radius:12px;padding:12px}.lib-dem-import h4{font-size:12px;margin:0 0 6px}.lib-dem-import .field{margin:7px 0}.lib-dem-import .input{min-height:38px;padding:7px 9px;font-size:12px}.lib-dem-import .btn{min-height:38px;font-size:11px}
+.lib-compare-footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.lib-compare-footer .btn{min-height:39px;font-size:11px}.lib-saved-pairs{margin-top:10px;display:flex;gap:7px;flex-wrap:wrap}
+.lib-empty{font-size:12px;color:var(--muted);padding:18px;text-align:center}
+@media(max-width:1050px){.lib-workspace{grid-template-columns:1fr}.lib-editor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lib-editor-grid .lib-span4{grid-column:span 2}}
+@media(max-width:590px){.library-card{padding:17px}.lib-compare-controls,.lib-canvases{grid-template-columns:1fr}.lib-editor-grid{grid-template-columns:1fr}.lib-editor-grid .lib-span2,.lib-editor-grid .lib-span4{grid-column:span 1}.lib-item{align-items:flex-start;flex-direction:column}.lib-actions{justify-content:flex-start}}
+
+
+/* Comparación automática con referencias del dossier: extensión del catálogo existente. */
+.lib-match-panel{background:linear-gradient(130deg,var(--planet-soft),#fffdfa);border:1px solid var(--planet-border);border-radius:14px;padding:13px;margin:10px 0 15px;min-width:0}
+body[data-planet="moon"] .lib-match-panel{background:linear-gradient(130deg,var(--planet-soft),#fafbfd)}
+.lib-match-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}
+.lib-match-heading h4{font-size:14px;margin:0 0 4px;color:var(--planet-ink)}
+.lib-match-heading p{font-size:11px;margin:0 0 9px;line-height:1.45}
+.lib-match-filter{font-size:10px;color:var(--planet-ink);font-weight:800;display:flex;align-items:center;gap:6px}
+.lib-match-filter .input{font-size:11px;max-width:165px;min-height:34px;padding:5px 8px}
+.lib-match-help{font-size:11px;color:var(--planet-ink);line-height:1.5;margin:0 0 9px!important}
+.lib-match-list{display:grid;gap:7px}
+.lib-match-item{border:1px solid var(--planet-border);background:#fff;border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lib-match-item strong{font-size:12px;color:var(--ink);display:block;margin-bottom:3px}
+.lib-match-item small{font-size:10px;color:var(--muted);display:block;line-height:1.5}
+.lib-match-item .lib-mini{flex-shrink:0;min-height:32px}
+.lib-match-score{font-size:11px;font-weight:800;color:var(--planet-ink);background:var(--planet-soft);padding:3px 7px;border-radius:7px;display:inline-block;margin-bottom:4px}
+.lib-match-foot{font-size:10px!important;line-height:1.5;color:var(--muted)!important;margin:10px 0 0!important}
+.lib-list .lib-item:has(.lib-mini[data-action="match"]){border-left:3px solid var(--green)}
+@media(max-width:540px){.lib-match-heading{display:block}.lib-match-filter{margin:7px 0}.lib-match-item{align-items:flex-start}.lib-match-item .lib-mini{font-size:10px}}
+
+/* Flujo NASA de un clic: selección, guardado y comparación inmediata. */
+.quick-picker{background:var(--planet-soft);border:1px solid var(--planet-border);padding:14px;border-radius:14px;margin:0 0 18px}
+.quick-picker label{display:block;font-size:13px;font-weight:850;color:var(--planet-ink);margin-bottom:8px}
+.quick-picker .input{background:#fff;min-height:48px;font-weight:700}
+.quick-picker p{font-size:11px;line-height:1.5;color:var(--muted);margin:8px 0}
+.quick-state{font-size:11px;font-weight:700;color:var(--planet-ink);padding:7px 9px;border-radius:8px;background:#fff9}
+.auto-mars{padding:23px;border-color:var(--planet-border)}
+.auto-mars-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.auto-mars-head h2{font-size:19px;letter-spacing:-.035em;margin:5px 0 3px}
+.auto-mars-head p{font-size:11px;color:var(--muted);margin:0}
+.auto-kicker{font-size:10px;letter-spacing:.08em;color:var(--green2);font-weight:900}
+.auto-mars-score{white-space:nowrap;background:var(--planet-soft);color:var(--planet-ink);border:1px solid var(--planet-border);border-radius:12px;padding:9px 12px;font-size:14px;font-weight:900}
+.auto-mars-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.auto-mars-stat{border:1px solid var(--planet-border);border-radius:12px;padding:12px;background:var(--planet-soft);min-width:0}
+.auto-mars-stat label{font-size:11px;font-weight:800;color:var(--planet-ink);display:block}
+.auto-mars-stat strong{font-size:16px;display:block;margin:5px 0 2px;font-variant-numeric:tabular-nums}
+.auto-mars-stat small{font-size:10px;color:var(--muted)}
+.auto-mars-note{font-size:11px;line-height:1.6;color:var(--muted);margin:12px 0 9px}
+.auto-mars-link{font-size:12px;color:var(--green2);font-weight:800}
+@media(max-width:700px){.auto-mars-grid{grid-template-columns:1fr}.auto-mars-head{align-items:flex-start}.auto-mars-score{font-size:12px}}
+
+/* Comparación visual final: mismo sitio elegido, dos superficies y métricas científicas. */
+.end-compare{margin-top:20px;padding:25px;min-width:0}
+.end-eyebrow{font-size:10px;font-weight:900;letter-spacing:.12em;color:var(--green);text-transform:uppercase}
+.end-compare h2{font-size:23px;letter-spacing:-.035em;margin:5px 0 6px}
+.end-intro{font-size:12px;line-height:1.6;color:var(--muted);max-width:780px;margin:0 0 17px}
+.end-controls{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr) minmax(0,1.3fr) minmax(0,.8fr);gap:10px;background:var(--planet-soft);border:1px solid var(--planet-border);border-radius:14px;padding:13px;margin-bottom:13px}
+.end-controls label{font-size:11px;font-weight:800;color:var(--planet-ink);display:block;margin:0 0 6px}
+.end-controls select{width:100%;min-width:0;min-height:41px;padding:7px 9px;font-size:12px}
+.end-status{font-size:12px;line-height:1.55;background:var(--planet-soft);color:var(--planet-ink);border-left:3px solid var(--green);border-radius:7px;padding:10px 13px;margin-bottom:12px}
+.end-views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.end-figure{min-width:0;margin:0;border:1px solid var(--planet-border);border-radius:13px;overflow:hidden;background:#1b2735}
+.end-figure-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;background:var(--planet-soft);color:var(--planet-ink);font-size:12px;font-weight:800}
+.end-figure-head span:last-child{font-size:10px;font-weight:700;opacity:.7}
+.end-figure canvas{display:block;width:100%;height:auto;aspect-ratio:560/400}
+.end-figure figcaption{padding:10px 12px;background:var(--planet-soft);color:var(--planet-ink);font-size:11px;line-height:1.5;min-height:58px}.end-figure-note{padding:10px 12px;background:#fff;border-top:1px solid rgba(0,0,0,.07);color:#51697a;font-size:11px;line-height:1.58;min-height:88px}.end-figure-note b{color:#284658}
+.end-indicators{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.end-indicator{padding:12px;border:1px solid var(--planet-border);border-radius:12px;background:#fffdfa;min-width:0}
+body[data-planet="moon"] .end-indicator{background:#fafbfd}
+.end-indicator h4{font-size:12px;margin:0 0 10px;color:var(--planet-ink)}
+.end-meter-row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;color:var(--muted);margin:6px 0 3px}
+.end-meter-row strong{color:var(--planet-ink);font-size:11px}
+.end-track{height:8px;border-radius:9px;background:#e8e4e1;overflow:hidden}
+.end-track .end-fill{height:100%;border-radius:9px;display:block;min-width:0}
+.end-fill-earth{background:#4d9b94}.end-fill-mars{background:#b75a45}.end-fill-moon{background:#7d8b9c}
+.end-profile-box{border:1px solid var(--planet-border);border-radius:13px;overflow:hidden;background:#1b2735}
+.end-profile-head{padding:12px 14px;background:var(--planet-soft);color:var(--planet-ink);font-weight:800;font-size:12px}
+.end-profile-box canvas{display:block;width:100%;height:auto;aspect-ratio:980/250}
+.end-profile-caption{padding:10px 14px;font-size:11px;color:var(--planet-ink);background:var(--planet-soft);line-height:1.5}
+.end-actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:14px}
+.end-actions .btn{font-size:12px;min-height:40px}.end-actions a{font-size:12px;color:var(--green2);font-weight:700;text-decoration:underline}
+.end-sources{font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px}
+@media(max-width:1050px){.end-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.end-compare{padding:17px}.end-compare h2{font-size:20px}.end-controls,.end-views,.end-indicators{grid-template-columns:1fr}.end-profile-box canvas{aspect-ratio:980/320}}
+</style>
+<style>
+.ga-embedded .page{max-width:1450px;padding:14px 18px 30px}
+.ga-embedded .top{margin-bottom:14px}
+.ga-embedded .hero-title{font-size:clamp(22px,2.6vw,32px);margin:8px 0 4px}
+.ga-embedded .intro{font-size:12px}
+.ga-embedded .brand strong{font-size:16px}
+.ga-embedded .brandmark{height:37px;width:37px}
+.ga-embedded .header-tools{gap:5px}
+.ga-embedded section{scroll-margin-top:18px}
+@media(max-width:730px){.ga-embedded .page{padding:10px 10px 25px}}
+</style>
+</head>
+<body data-planet="mars">
+<div class="page">
+<header class="top"><div><div class="brand"><span class="brandmark" aria-hidden="true">⌁</span><div><span class="eyebrow">Herramienta topográfica</span><strong>GeoPendiente</strong><small>Analizador de terreno · WGS84 / UTM</small></div></div><h1 class="hero-title">Pendiente y <span>elevación</span><br>de un terreno</h1><p class="intro">Obtén una estimación sustentada en modelos digitales de elevación, usando la zona UTM, latitud y longitud. Consulta hasta 49 puntos reales y expórtalos para Civil 3D.</p></div><div class="header-tools"><div class="pill">Datos DEM en línea</div><div class="theme-switch" role="group" aria-label="Colores del terreno"><button type="button" id="themeMars" class="theme-btn active" aria-pressed="true">◉ Marte</button><button type="button" id="themeMoon" class="theme-btn" aria-pressed="false">◌ Luna</button></div><span class="theme-caption">Paleta visual · datos terrestres</span></div></header>
+<div class="layout">
+<aside class="card control-card">
+ <div class="section-top"><span class="num">01</span><div><h2>Ubicación del terreno</h2><p>Introduce coordenadas geográficas WGS84</p></div></div>
+ <div class="quick-picker"><label for="quickPlace">📍 Elige un lugar y compáralo con Marte</label><select id="quickPlace" class="input"><option value="">Selecciona un lugar del proyecto o uno guardado…</option></select><p>Un clic carga el lugar, guarda tu análisis y lo compara con las referencias reales del dossier. También puedes escribir coordenadas o usar GPS.</p><div class="quick-state" id="quickState" aria-live="polite">Esperando selección · 30 lugares terrestres del dossier disponibles.</div></div>
+ <form id="geoForm" novalidate>
+  <div class="field"><label for="lat">Latitud <span class="hint">(grados decimales)</span></label><input required id="lat" class="input" type="text" inputmode="decimal" autocomplete="off" placeholder="Ej.: -7.1638"><small style="display:block;color:#8998a6;margin-top:5px">Perú: generalmente latitud negativa (sur).</small></div>
+  <div class="field"><label for="lon">Longitud <span class="hint">(grados decimales)</span></label><input required id="lon" class="input" type="text" inputmode="decimal" autocomplete="off" placeholder="Ej.: -78.5003"><small style="display:block;color:#8998a6;margin-top:5px">Perú: longitud negativa (oeste).</small></div>
+  <div class="field"><label for="zone">Zona UTM</label><select id="zone" class="input"><option value="auto">Automática según coordenadas</option><option value="17">Zona 17 (Perú occidental)</option><option value="18">Zona 18 (Perú central)</option><option value="19">Zona 19 (Perú oriental)</option></select></div>
+  <div class="field"><label for="model">Modelo digital de elevación</label><select id="model" class="input"><option value="auto">SRTM 30 m (respaldo Copernicus 90 m)</option><option value="cop90">Copernicus GLO-90 · 90 m</option></select></div>
+  <div class="small-note">El visor usa una cuadrícula de <b>7 × 7 puntos</b>. La separación de muestreo es 30 m con SRTM o 90 m con Copernicus. La visualización entre puntos se interpola. Requiere Internet.</div>
+  <button type="button" id="locate" class="btn btn-location">◎ Geolocalizar mi ubicación (GPS)</button>
+  <div id="gpsNote" class="gps-note hidden" aria-live="polite"></div>
+  <button class="btn btn-primary" type="submit" id="calculate"><span id="submitIcon">⌁</span><span id="submitText">Calcular elevación y pendiente</span></button>
+  <div class="button-group"><button type="button" class="btn btn-secondary" id="sample">Cargar ejemplo</button><button type="button" class="btn btn-secondary" id="reset">Limpiar</button></div>
+  <div id="status" class="notice" role="status" aria-live="polite"></div>
+ </form>
+ <div class="sidebar-bottom"><strong>Atención:</strong> la latitud, la longitud y la zona UTM identifican la posición, pero no aportan por sí solas la altitud ni la pendiente. Esta aplicación consulta datos externos de relieve: son <b>estimaciones</b>, no cotas levantadas en campo.</div>
+</aside>
+<main class="main">
+ <section class="card results-card"><div class="panel-header"><div><h2>Resultados del análisis</h2><p>Estimaciones alrededor del punto central</p></div><span class="source" id="sourceBadge">Sin consulta</span></div>
+  <div id="metricEmpty" class="empty"><div class="empty-icon">⌁</div><strong>Tu análisis aparecerá aquí</strong><p>Ingresa las coordenadas y pulsa «Calcular» para consultar elevaciones del terreno.</p></div>
+  <div id="metrics" class="hidden"><div class="metric-grid">
+   <div class="metric feature"><span class="metric-label">Elevación central</span><div class="metric-value" id="mElevation">—</div><div class="metric-sub">m · altitud DEM estimada</div></div>
+   <div class="metric feature"><span class="metric-label">Pendiente local</span><div class="metric-value" id="mSlope">—</div><div class="metric-sub">% · método de Horn (3 × 3)</div></div>
+   <div class="metric"><span class="metric-label">Ángulo de pendiente</span><div class="metric-value" id="mAngle">—</div><div class="metric-sub">grados (°)</div></div>
+   <div class="metric"><span class="metric-label">Pendiente promedio del entorno</span><div class="metric-value" id="mAvgSlope">—</div><div class="metric-sub">% · 25 ventanas internas</div></div>
+   <div class="metric"><span class="metric-label">Desnivel de la cuadrícula</span><div class="metric-value" id="mRelief">—</div><div class="metric-sub">máxima − mínima elevación</div></div>
+   <div class="metric"><span class="metric-label">Dirección de descenso</span><div class="metric-value" id="mAspect">—</div><div class="metric-sub">azimut en ° desde el norte</div></div>
+  </div><p class="result-note">Estas pendientes describen el relieve a escala del modelo digital. No deben utilizarse directamente para rasantes, diseño vial, replanteos, estructuras ni cálculos finales de obra sin levantamiento topográfico de mayor resolución.</p></div>
+ </section>
+ <section class="card auto-mars hidden" id="autoMarsPanel" aria-live="polite">
+  <div class="auto-mars-head"><div><span class="auto-kicker">COMPARACIÓN AUTOMÁTICA · TIERRA ↔ MARTE</span><h2 id="autoMarsTitle">Tu zona y su parecido en Marte</h2><p id="autoMarsSub">Se utilizarán los datos calculados y las referencias del dossier.</p></div><span id="autoMarsScore" class="auto-mars-score">—</span></div>
+  <div class="auto-mars-grid" id="autoMarsMetrics"></div>
+  <p class="auto-mars-note" id="autoMarsNote"></p>
+  <a href="#siteLibrary" class="auto-mars-link">Ver superficies, cuadrículas y comparación completa ↓</a>
+ </section>
+ <div class="two-col surface-row">
+  <section class="card map-card"><div class="panel-header"><div><h2>Superficie del terreno</h2><p>Modelo sombreado · grilla ajustada al relieve · curvas de nivel estimadas</p></div><span class="tag">CAD · WGS84</span></div>
+   <div id="mapEmpty" class="empty" style="padding:70px 12px"><div class="empty-icon">▦</div><strong>Visor de superficie topográfica</strong><p>Ingresa las coordenadas para explorar el terreno en planta y en vista tridimensional.</p></div>
+   <div id="mapShow" class="hidden">
+    <div class="cad-toolbar"><div class="view-switch"><button type="button" id="view3d" class="view-btn active" aria-pressed="true">▱ Vista 3D</button><button type="button" id="view2d" class="view-btn" aria-pressed="false">▦ Planta 2D</button></div><label class="cad-check"><input type="checkbox" id="showGrid" checked> Grilla drapeada</label><label class="cad-check"><input type="checkbox" id="showContours" checked> Curvas de nivel</label><label class="cad-check"><input type="checkbox" id="showPoints"> Puntos DEM</label></div>
+    <div class="map-wrap"><canvas id="terrainCanvas" class="topomap" width="1000" height="650" aria-label="Visor topográfico: superficie de elevaciones con grilla, curvas de nivel y rotación 3D"></canvas><div class="cad-badge" id="cadModeBadge">SUPERFICIE 3D · DEM</div><div class="cad-hint" id="cadHint">Arrastra para girar e inclinar · rueda para acercar</div><div id="mapTip" class="map-tip"></div></div>
+    <div class="legend"><span id="legendMin">Mín.</span><div class="strip"></div><span id="legendMax">Máx.</span></div>
+    <div class="cad-options"><label for="verticalScale">Escala vertical <input type="range" id="verticalScale" min="1" max="6" step="0.5" value="2"><output id="verticalValue">2,0×</output></label><div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn-mini" id="resetView">↺ Restablecer</button><button type="button" class="btn-mini" id="saveImage">↓ Guardar vista PNG</button></div></div>
+    <div style="display:flex;justify-content:space-between;gap:10px;color:#7d909a;font-size:11px;margin-top:12px;flex-wrap:wrap"><span id="extentText">—</span><span>● Ubicación central · curvas y relieve interpolados</span></div>
+   </div>
+  </section>
+  <section class="card detail-card"><div class="panel-header"><div><h2>Datos geográficos</h2><p>Información del punto y el muestreo</p></div><span class="tag">EPSG / UTM</span></div>
+   <div id="detailEmpty" class="empty" style="padding:85px 10px"><div class="empty-icon">◎</div><strong>Sin coordenadas procesadas</strong><p>Aquí encontrarás las coordenadas métricas de Civil 3D.</p></div>
+   <div id="detailShow" class="hidden"><div class="datum"><span>Latitud WGS84</span><strong id="dLat">—</strong></div><div class="datum"><span>Longitud WGS84</span><strong id="dLon">—</strong></div><div class="datum"><span>Zona UTM</span><strong id="dZone">—</strong></div><div class="datum"><span>Este UTM (X)</span><strong id="dEast">—</strong></div><div class="datum"><span>Norte UTM (Y)</span><strong id="dNorth">—</strong></div><div class="datum"><span>Cotas mínima / máxima</span><strong id="dMinMax">—</strong></div><div class="datum"><span>Separación entre puntos</span><strong id="dSpacing">—</strong></div><div class="datum"><span>Fuente de elevación</span><strong id="dSource">—</strong></div><a class="map-action" id="externalMap" href="https://www.openstreetmap.org/" target="_blank" rel="noopener">◎ Ver ubicación central en OpenStreetMap</a><div class="detail-hint" id="detailFoot">UTM calculada sobre el elipsoide WGS84. Las cotas provienen del DEM y tienen una referencia vertical distinta de las coordenadas UTM.</div></div>
+  </section>
+  <section class="card detail-card"><div class="panel-header"><div><h2>Características del terreno</h2><p>Análisis derivado de la cuadrícula DEM</p></div><span class="tag">Relieve</span></div>
+   <div id="featuresEmpty" class="empty" style="padding:85px 10px"><div class="empty-icon">≋</div><strong>Sin superficie analizada</strong><p>El tipo de relieve y sus indicadores aparecerán aquí.</p></div>
+   <div id="featuresShow" class="hidden"><div class="terrain-facts">
+    <div class="fact full"><span class="fact-label">Clasificación descriptiva del relieve</span><strong class="fact-value" id="fTerrain">—</strong><span class="fact-sub">Categoría orientativa basada en la pendiente media; no equivale a una clasificación normativa</span></div>
+    <div class="fact"><span class="fact-label">Cota media</span><strong class="fact-value" id="fMean">—</strong><span class="fact-sub">Promedio de los 49 puntos</span></div>
+    <div class="fact"><span class="fact-label">Variación altimétrica</span><strong class="fact-value" id="fStd">—</strong><span class="fact-sub">Desviación estándar de cotas</span></div>
+    <div class="fact"><span class="fact-label">Área proyectada</span><strong class="fact-value" id="fArea">—</strong><span class="fact-sub">Superficie horizontal cubierta</span></div>
+    <div class="fact"><span class="fact-label">Rugosidad local</span><strong class="fact-value" id="fRough">—</strong><span class="fact-sub">RMS de diferencias con 8 vecinos</span></div>
+    <div class="fact"><span class="fact-label">Rango de pendientes</span><strong class="fact-value" id="fSlopes">—</strong><span class="fact-sub">25 ventanas de cálculo interiores</span></div>
+    <div class="fact"><span class="fact-label">Descenso predominante</span><strong class="fact-value" id="fDirection">—</strong><span class="fact-sub">Dirección aproximada cerca del centro</span></div>
+   </div><p class="features-note">La interpretación es geomorfológica y orientativa. No determina el tipo de suelo, la estabilidad de taludes, los estratos geológicos ni la aptitud constructiva.</p></div>
+  </section>
+ </div>
+
+  <!-- Módulo exclusivo de caminos y topografía; no modifica el visor ni los cálculos DEM. -->
+  <section class="card norm-card" id="normModule">
+   <div class="panel-header"><div><span class="norm-kicker">Conoce tu terreno · Perú</span><h2>¿Cómo es esta zona?</h2><p>Descubre el relieve, las pendientes y las posibles rutas · Referencia MTC DG-2018</p></div><span class="tag">Estimación topográfica</span></div>
+   <p class="norm-lead">A partir de las elevaciones del modelo digital se calcula un <b>azimut topográfico de referencia automático</b> y las pendientes del entorno. El eje se orienta en la dirección que minimiza la variación longitudinal de cotas dentro de la cuadrícula. <b>No representa el eje de una carretera existente ni un trazado de diseño.</b></p>
+   <div class="norm-grid">
+    <article class="norm-tile main-norm"><span class="norm-code">MTC · DG-2018 · Orografía</span><strong id="nOro">Sin superficie analizada</strong><small id="nOroDetail">Consulta el DEM para estimar el relieve predominante.</small></article>
+    <article class="norm-tile"><span class="norm-code">Azimut calculado automáticamente</span><strong id="nAxisAuto">—</strong><small id="nAxisDetail">Eje topográfico de referencia, no rumbo de una carretera.</small></article>
+    <article class="norm-tile"><span class="norm-code">Pendiente longitudinal media</span><strong id="nAlong">—</strong><small id="nAlongDetail">Componente paralela al eje de referencia.</small></article>
+    <article class="norm-tile"><span class="norm-code">Pendiente transversal media</span><strong id="nCross">—</strong><small id="nCrossDetail">Componente perpendicular al eje de referencia.</small></article>
+   </div>
+   <div class="norm-readout" id="nRoadGrades" style="margin-top:16px">Calcula el terreno para obtener el azimut automático y las pendientes orientadas.</div>
+   <details class="norm-details"><summary>Ver clasificación orográfica del MTC (DG-2018)</summary>
+    <div class="norm-details-body"><table class="norm-mtc-table"><thead><tr><th>Tipo</th><th>Orografía</th><th>Pendiente transversal</th><th>Pendiente longitudinal característica</th></tr></thead><tbody><tr><td>1</td><td>Plano</td><td>≤ 10 %</td><td>&lt; 3 %</td></tr><tr><td>2</td><td>Ondulado</td><td>11–50 %</td><td>3–6 %</td></tr><tr><td>3</td><td>Accidentado</td><td>51–100 %</td><td>6–8 %</td></tr><tr><td>4</td><td>Escarpado</td><td>&gt; 100 %</td><td>&gt; 8 % (referencial)</td></tr></tbody></table><p class="norm-help">El MTC caracteriza la orografía del <b>corredor vial</b> y su pendiente transversal predominante respecto del eje. Esta cuadrícula local y su eje calculado son solo una aproximación inicial, no una clasificación oficial del proyecto vial.</p></div>
+   </details>
+   <div class="norm-interpret" id="nInterpret">Aquí aparecerán el tipo de relieve, el azimut de referencia, las pendientes y consideraciones de trazado, cortes, rellenos y drenaje.</div>
+   <div class="norm-caution"><b>Alcance técnico:</b> el azimut calculado minimiza la pendiente longitudinal estimada dentro de la cuadrícula DEM. No determina el rumbo de una carretera, el alineamiento definitivo, las rasantes, la estabilidad de taludes ni el movimiento de tierras. Para el diseño se requieren reconocimiento de campo, levantamiento topográfico detallado y estudios complementarios.</div>
+   <div class="norm-references"><a href="https://portal.mtc.gob.pe/transportes/caminos/normas_carreteras/documentos/manuales/Manual.de.Carreteras.DG-2018.pdf" target="_blank" rel="noopener">Consultar MTC · DG-2018</a></div>
+   <button type="button" id="nDownloadReport" class="btn btn-secondary norm-export" disabled>↓ Descargar resumen del terreno (.txt)</button>
+  </section>
+
+ <section class="card data-card"><div class="panel-header"><div><h2>Puntos para AutoCAD Civil 3D</h2><p>Exportación PNEZD: Punto, Norte, Este, Elevación y Descripción</p></div><span class="source" id="pointCount">0 puntos</span></div>
+  <div id="dataEmpty" class="empty" style="padding:42px 12px"><div class="empty-icon">▤</div><strong>La tabla de puntos está vacía</strong><p>Al realizar una consulta se generarán coordenadas UTM y cotas para todos los puntos.</p></div>
+  <div id="dataShow" class="hidden"><div class="table-scroll"><table><thead><tr><th>Punto</th><th>Norte (m)</th><th>Este (m)</th><th>Elev. DEM (m)</th><th>Descripción</th></tr></thead><tbody id="tableBody"></tbody></table></div><div class="button-group" style="max-width:500px;margin-top:17px"><button type="button" id="downloadPnezd" class="btn btn-primary">↓ Descargar PNEZD (.csv)</button><button type="button" id="downloadFull" class="btn btn-secondary">↓ Datos geográficos (.csv)</button></div><p style="color:#86949e;font-size:11px;margin:12px 0 0">Para Civil 3D: importar como formato <b>PNEZD (delimitado por comas)</b>, sin encabezados. Las cotas son DEM y deben verificarse antes de su uso técnico.</p></div>
+ </section>
+
+<section class="card library-card" id="siteLibrary">
+ <div class="panel-header"><div><h2>Biblioteca de zonas y comparador planetario</h2><p>Guardar lugares de Tierra, Marte y Luna · volver a comparar sin perder tus fichas</p></div><span class="tag" id="libCount">Catálogo científico</span></div>
+ <p class="lib-head-note">Incluye fichas de <b>Órbita / GeoAnálogos Perú (15/11/2026)</b>. Al guardar una zona nueva se buscan automáticamente referencias parecidas para compararlas. Las fichas del dossier contienen <b>resúmenes científicos</b>, no cuadrículas completas de elevación. Para dibujar curvas de nivel de Marte o Luna importa una cuadrícula DEM real de la zona correspondiente (7×7, 20×20 u otra malla cuadrada).</p>
+ <div class="lib-toolbar">
+  <div class="field"><label for="libCurrentName">Nombre para guardar el análisis terrestre actual</label><input id="libCurrentName" class="input" placeholder="Ej.: Cajamarca · Sector de estudio 01"></div>
+  <button class="btn btn-primary" type="button" id="libSaveCurrent" disabled>✓ Guardar / actualizar terreno</button>
+  <button class="btn btn-secondary" type="button" id="libNew">＋ Añadir otro lugar</button>
+  <button class="btn btn-secondary" type="button" id="libBackup">↓ Exportar respaldo JSON</button>
+  <label class="btn btn-secondary lib-file-btn">↑ Importar respaldo JSON<input type="file" id="libRestore" accept=".json,application/json" aria-label="Importar respaldo JSON"></label>
+ </div>
+ <div id="libStatus" class="lib-status" role="status" aria-live="polite">Guardado automático activado: al calcular un lugar, se guardará y comparará con Marte. Usa Exportar respaldo JSON para conservarlo al cambiar de equipo.</div>
+ <div class="lib-editor hidden" id="libEditor">
+  <h3 id="libEditorTitle">Añadir lugar de estudio</h3>
+  <p class="lib-head-note">Introduce solo mediciones documentadas; deja vacíos los datos que aún no tienes. Coordenadas en grados decimales; en Marte y Luna se usan latitudes planetocéntricas.</p>
+  <form id="libSiteForm" novalidate>
+   <div class="lib-editor-grid">
+    <div class="field lib-span2"><label for="libName">Nombre del lugar *</label><input class="input" id="libName" required maxlength="100" placeholder="Ej.: Zona lunar de prueba"></div>
+    <div class="field"><label for="libBody">Cuerpo celeste *</label><select class="input" id="libBody"><option value="earth">Tierra</option><option value="mars">Marte</option><option value="moon">Luna</option></select></div>
+    <div class="field"><label for="libDatum">Datum vertical</label><select class="input" id="libDatum"><option value="EGM2008 (elevación ortométrica)">EGM2008 (Tierra)</option><option value="Areoide MOLA">Areoide MOLA (Marte)</option><option value="Radio lunar de referencia 1 737 400 m">Radio lunar 1 737 400 m</option><option value="No especificado">No especificado</option></select></div>
+    <div class="field"><label for="libLat">Latitud (°) *</label><input class="input" id="libLat" type="text" inputmode="decimal" required placeholder="-15.4200"></div>
+    <div class="field"><label for="libLon">Longitud (°) *</label><input class="input" id="libLon" type="text" inputmode="decimal" required placeholder="-72.3300"></div>
+    <div class="field"><label for="libWindow">Ventana de análisis (km)</label><input class="input" id="libWindow" type="number" min="0.01" max="10000" step="any" placeholder="2"></div>
+    <div class="field"><label for="libRes">Resolución de análisis (m)</label><input class="input" id="libRes" type="number" min="0.01" max="100000" step="any" placeholder="100"></div>
+    <div class="field"><label for="libSlope">Pendiente mediana (°)</label><input class="input" id="libSlope" type="number" min="0" max="90" step="any" placeholder="Sin dato"></div>
+    <div class="field"><label for="libSmooth">Área con pendiente &lt;8° (%)</label><input class="input" id="libSmooth" type="number" min="0" max="100" step="any" placeholder="Sin dato"></div>
+    <div class="field"><label for="libRelief">Desnivel P95−P5 (m)</label><input class="input" id="libRelief" type="number" min="0" step="any" placeholder="Sin dato"></div>
+    <div class="field"><label for="libCoverage">Cobertura válida (%)</label><input class="input" id="libCoverage" type="number" min="0" max="100" step="any" placeholder="Sin dato"></div>
+    <div class="field"><label for="libMin">Elevación mínima (m)</label><input class="input" id="libMin" type="number" step="any" placeholder="Sin dato"></div>
+    <div class="field"><label for="libMax">Elevación máxima (m)</label><input class="input" id="libMax" type="number" step="any" placeholder="Sin dato"></div>
+    <div class="field lib-span2"><label for="libSource">Fuente / producto / fecha</label><input class="input" id="libSource" maxlength="180" placeholder="Ej.: MRO CTX TRN · DEM 2026"></div>
+    <div class="field lib-span4"><label for="libNotes">Descripción y observaciones de campo</label><textarea class="input" id="libNotes" maxlength="1200" placeholder="Relieve, obstáculos, uso en caminos, procedencia, escala y limitaciones..."></textarea></div>
+   </div>
+   <div class="lib-editor-actions"><button class="btn btn-primary" type="submit" id="libEditorSave">Guardar ficha</button><button class="btn btn-secondary" type="button" id="libCancel">Cancelar</button></div>
+  </form>
+ </div>
+ <div class="lib-workspace">
+  <div class="lib-panel">
+   <h3>Mis lugares y catálogo científico</h3><p>Los lugares que agregues quedan guardados. Usa «Buscar parecidos» para compararlos con las referencias.</p>
+   <div class="lib-row"><input id="libSearch" class="input" type="search" placeholder="Buscar: Sechura, Jezero, Shackleton..."><select id="libFilter" class="input" aria-label="Filtrar por planeta"><option value="all">Todos</option><option value="earth">Tierra</option><option value="mars">Marte</option><option value="moon">Luna</option><option value="saved">Mis lugares</option></select></div>
+   <div class="lib-list" id="libList" aria-live="polite"></div>
+   <div class="lib-dem-import">
+    <h4>Importar cuadrícula DEM para curvas y superficie</h4>
+    <p>Primero guarda una ficha propia (o copia una del catálogo). El CSV admite una matriz cuadrada de <b>7×7 o 20×20</b> (hasta 50×50) cotas en metros, o registros <b>fila,columna,elevacion_m</b>. Fila 0 al norte; columna 0 al oeste. No se generan elevaciones ficticias.</p>
+    <div class="field"><label for="libDemTarget">Ficha guardada de destino</label><select class="input" id="libDemTarget"></select></div>
+    <div class="lib-row"><div class="field" style="flex:1 1 110px"><label for="libDemSpacing">Separación entre celdas (m)</label><input class="input" type="number" id="libDemSpacing" min="0.1" max="100000" step="any" value="100"></div><div class="field" style="flex:1 1 150px"><label for="libDemFile">Archivo CSV</label><input class="input" type="file" id="libDemFile" accept=".csv,.txt,text/csv,text/plain"></div></div>
+    <div class="field"><label for="libDemProvenance">Producto y procedencia del DEM</label><input class="input" id="libDemProvenance" placeholder="Ej.: LOLA Site04, malla 100 m"></div>
+    <button type="button" class="btn btn-secondary" id="libImportDem">↑ Guardar DEM y habilitar curvas</button>
+   </div>
+  </div>
+  <div class="lib-panel">
+   <h3>Compara tus zonas con Marte, Luna y Tierra</h3><p>Guarda una zona y encuentra referencias parecidas; también puedes elegir dos lugares manualmente.</p>
+   <div class="lib-compare-controls"><div><label for="libCompareA">Zona A</label><select class="input" id="libCompareA"></select></div><div><label for="libCompareB">Zona B</label><select class="input" id="libCompareB"></select></div></div>
+   <div class="lib-presets"><button type="button" class="lib-mini" id="libPresetJez">Sechura SE-05 ↔ Jezero JEZ-01</button><button type="button" class="lib-mini" id="libPresetSha">Andagua AN-05 ↔ Luna SHA-01</button></div>
+   <section class="lib-match-panel" id="libMatchPanel" aria-labelledby="libMatchTitle">
+    <div class="lib-match-heading"><div><h4 id="libMatchTitle">¿Qué lugar de Marte se parece al mío?</h4><p>Comparación automática con las referencias del dossier; elige otra si deseas explorar.</p></div><label class="lib-match-filter" for="libMatchBody">Buscar en <select class="input" id="libMatchBody"><option value="other">Otros planetas</option><option value="mars" selected>Marte</option><option value="moon">Luna</option><option value="earth">Tierra</option><option value="all">Todas las referencias</option></select></label></div>
+    <p class="lib-match-help" id="libMatchSummary" role="status">Al seleccionar un lugar terrestre se guardará y se comparará con Marte automáticamente.</p>
+    <div class="lib-match-list" id="libMatchResults" aria-live="polite"></div>
+    <p class="lib-match-foot">La afinidad es una comparación orientativa de pendientes, áreas suaves y desnivel; no es una equivalencia geológica ni una validación de ingeniería. Se indica cuando faltan datos o cambian la escala y la resolución.</p>
+   </section>
+   <div id="libCompareInfo" class="lib-warning"></div>
+   <div class="table-scroll"><table class="lib-metrics"><thead><tr><th>Indicador</th><th id="libHeadA">Zona A</th><th id="libHeadB">Zona B</th><th>Diferencia B−A</th></tr></thead><tbody id="libMetricsBody"></tbody></table></div>
+   <div class="lib-surface-controls"><label for="libView">Vista del terreno</label><select id="libView" class="input"><option value="2d">Planta 2D + curvas</option><option value="3d">Superficie 3D + grilla</option></select><span class="lib-pill">Cuadrícula completa visible · curvas solo con DEM</span></div>
+   <div class="lib-canvases"><div class="lib-canvas-card"><canvas id="libCanvasA" width="560" height="400" aria-label="Superficie de la zona A"></canvas><footer id="libCanvasLabelA">—</footer></div><div class="lib-canvas-card"><canvas id="libCanvasB" width="560" height="400" aria-label="Superficie de la zona B"></canvas><footer id="libCanvasLabelB">—</footer></div></div>
+   <div class="lib-compare-footer"><button type="button" id="libSavePair" class="btn btn-primary">＋ Guardar esta comparación</button><button type="button" id="libExportCompare" class="btn btn-secondary">↓ Comparación CSV</button></div>
+   <div class="lib-saved-pairs" id="libSavedPairs"></div>
+  </div>
+ </div>
+ <div class="lib-warning">Almacenamiento local: funciona sin cuenta, pero es específico de este navegador y de cómo se abre el archivo. Usa <b>Exportar respaldo JSON</b> para conservar tus datos al actualizar la aplicación. Las alturas de Tierra, Marte y Luna usan datums diferentes; compara pendientes y desnivel con igual ventana y resolución, no cotas absolutas entre planetas.</div>
+</section>
+
+
+<!-- Comparación final integrada: responde a la zona seleccionada en el visor y a la biblioteca. -->
+<section class="card end-compare" id="compareCurvesEnd" aria-labelledby="endTitle">
+ <span class="end-eyebrow">Comparación planetaria · al final del análisis</span>
+ <h2 id="endTitle">Compara las curvas de tu terreno con Marte o la Luna</h2>
+ <p class="end-intro">El lugar que eliges arriba aparece aquí automáticamente. Cambia entre Marte y la Luna para comparar el relieve, las pendientes y el desnivel. Puedes alternar una <b>vista 2D</b> o una <b>vista 3D estilo Civil 3D</b>. Cuando una zona no tiene DEM real, la aplicación genera una superficie estimada y la marca como aproximada.</p>
+ <div class="end-controls">
+  <div><label for="endEarth">Mi terreno en la Tierra</label><select class="input" id="endEarth" aria-label="Terreno de la Tierra para comparar"></select></div>
+  <div><label for="endBody">Comparar con</label><select class="input" id="endBody"><option value="mars">🔴 Marte</option><option value="moon">🌙 Luna</option></select></div>
+  <div><label for="endReference">Zona de referencia planetaria</label><select class="input" id="endReference"></select></div>
+  <div><label for="endView">Vista tipo Civil 3D</label><select class="input" id="endView"><option value="2d">2D · planta con curvas y grilla</option><option value="3d">3D · superficie estilo Civil 3D</option></select></div>
+ </div>
+ <div class="end-status" id="endStatus" role="status" aria-live="polite">Selecciona una zona para visualizar la comparación.</div>
+ <div class="end-views">
+  <figure class="end-figure"><div class="end-figure-head"><span>🌎 Tu terreno</span><span>TIERRA</span></div><canvas id="endEarthCanvas" width="560" height="400" aria-label="Curvas y cuadrícula del terreno terrestre seleccionado"></canvas><figcaption id="endEarthCaption">—</figcaption><div class="end-figure-note" id="endEarthNote">—</div></figure>
+  <figure class="end-figure"><div class="end-figure-head"><span id="endPlanetLabel">🔴 Terreno de Marte</span><span id="endPlanetTag">MARTE</span></div><canvas id="endPlanetCanvas" width="560" height="400" aria-label="Curvas y cuadrícula del terreno planetario seleccionado"></canvas><figcaption id="endPlanetCaption">—</figcaption><div class="end-figure-note" id="endPlanetNote">—</div></figure>
+ </div>
+ <div class="end-indicators" id="endIndicators" aria-label="Comparación de pendientes, áreas suaves y desnivel"></div>
+ <div class="end-profile-box"><div class="end-profile-head">Perfil del terreno · corte central de oeste a este</div><canvas id="endProfile" width="980" height="250" aria-label="Perfiles altimétricos reales cuando hay DEM disponible"></canvas><div class="end-profile-caption" id="endProfileNote">El perfil se construye a partir de las elevaciones de las cuadrículas DEM.</div></div>
+ <div class="end-actions"><button type="button" class="btn btn-secondary" id="endExport">↓ Descargar esta comparación CSV</button><a href="#siteLibrary" id="endImportLink">Añadir una cuadrícula DEM a una referencia planetaria</a></div>
+ <p class="end-sources" id="endSources">La comparación usa los indicadores publicados del dossier y las alturas DEM disponibles. Las cotas absolutas de planetas distintos no se restan porque sus referencias verticales son diferentes.</p>
+</section>
+
+</main></div>
+<footer class="footer"><span>GeoPendiente · Herramienta educativa de Ingeniería Civil · No sustituye una medición topográfica.</span><span>Datos: <a href="https://www.opentopodata.org/" target="_blank" rel="noopener">Open Topo Data / SRTM</a> · <a href="https://open-meteo.com/en/docs/elevation-api" target="_blank" rel="noopener">Open-Meteo / Copernicus DEM</a></span></footer>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const gridSize=7;
+let current=null;
+const RAD=Math.PI/180;
+const a=6378137, f=1/298.257223563, e2=f*(2-f);
+const fmt=(x,d=1)=>Number(x).toLocaleString('es-PE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const parseCoord=s=>Number(String(s).trim().replace(',','.'));
+let libRequestSeq=0,libQuickSelectedId=null;
+function autoZone(lon){return Math.max(1,Math.min(60,Math.floor((lon+180)/6)+1));}
+function calcUTM(lat,lon,zone){
+ const latR=lat*RAD,lonR=lon*RAD,centralR=((zone-1)*6-180+3)*RAD,k0=.9996;
+ const ep2=e2/(1-e2),sin=Math.sin(latR),cos=Math.cos(latR),tan=Math.tan(latR);
+ const N=a/Math.sqrt(1-e2*sin*sin),T=tan*tan,C=ep2*cos*cos,A=cos*(lonR-centralR);
+ const M=a*((1-e2/4-3*e2**2/64-5*e2**3/256)*latR
+ -(3*e2/8+3*e2**2/32+45*e2**3/1024)*Math.sin(2*latR)
+ +(15*e2**2/256+45*e2**3/1024)*Math.sin(4*latR)
+ -(35*e2**3/3072)*Math.sin(6*latR));
+ const east=500000+k0*N*(A+(1-T+C)*A**3/6+(5-18*T+T*T+72*C-58*ep2)*A**5/120);
+ let north=k0*(M+N*tan*(A*A/2+(5-T+9*C+4*C*C)*A**4/24+(61-58*T+T*T+600*C-330*ep2)*A**6/720));
+ if(lat<0)north+=10000000;
+ return {east,north,zoneLabel:String(zone)+(lat<0?'S':'N'),epsg:(lat<0?32700:32600)+zone};
+}
+function shifted(lat,lon,dx,dy){
+ const phi=lat*RAD,den=1-e2*Math.sin(phi)**2;
+ const N=a/Math.sqrt(den),M=a*(1-e2)/Math.pow(den,1.5);
+ return {lat:lat+(dy/M)/RAD,lon:lon+(dx/(N*Math.cos(phi)))/RAD};
+}
+function buildPoints(lat,lon,zone,spacing){
+ const points=[];
+ for(let r=0;r<gridSize;r++)for(let c=0;c<gridSize;c++){
+  const dx=(c-3)*spacing,dy=(3-r)*spacing;
+  const loc=shifted(lat,lon,dx,dy),utm=calcUTM(loc.lat,loc.lon,zone);
+  points.push({number:101+r*gridSize+c,r,c,lat:loc.lat,lon:loc.lon,east:utm.east,north:utm.north,z:null});
+ }
+ return points;
+}
+async function fetchJson(url){
+ const controller=new AbortController();const t=setTimeout(()=>controller.abort(),16000);
+ try{const response=await fetch(url,{signal:controller.signal,cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);return await response.json();}
+ finally{clearTimeout(t);}
+}
+async function getSRTM(points){
+ const loc=points.map(p=>p.lat.toFixed(7)+','+p.lon.toFixed(7)).join('|');
+ const url='https://api.opentopodata.org/v1/srtm30m?'+new URLSearchParams({locations:loc,interpolation:'bilinear'});
+ const json=await fetchJson(url);
+ if(json.status!=='OK'||!Array.isArray(json.results)||json.results.length!==points.length)throw Error('La API SRTM no devolvió la cuadrícula completa.');
+ const result=json.results.map(x=>x.elevation);
+ if(result.some(z=>z===null||!Number.isFinite(Number(z))))throw Error('Sin cobertura SRTM para alguno de los puntos.');
+ return result.map(Number);
+}
+async function getCopernicus(points){
+ const latitudes=points.map(p=>p.lat.toFixed(7)).join(',');
+ const longitudes=points.map(p=>p.lon.toFixed(7)).join(',');
+ const url='https://api.open-meteo.com/v1/elevation?'+new URLSearchParams({latitude:latitudes,longitude:longitudes});
+ const json=await fetchJson(url);
+ if(!Array.isArray(json.elevation)||json.elevation.length!==points.length||json.elevation.some(x=>x===null||!Number.isFinite(Number(x))))throw Error('La API Copernicus no devolvió todas las elevaciones.');
+ return json.elevation.map(Number);
+}
+function grad(points,r,c,spacing){
+ const z=(rr,cc)=>points[rr*gridSize+cc].z;
+ const gx=((z(r-1,c+1)+2*z(r,c+1)+z(r+1,c+1))-(z(r-1,c-1)+2*z(r,c-1)+z(r+1,c-1)))/(8*spacing);
+ const gy=((z(r-1,c-1)+2*z(r-1,c)+z(r-1,c+1))-(z(r+1,c-1)+2*z(r+1,c)+z(r+1,c+1)))/(8*spacing);
+ const grade=100*Math.hypot(gx,gy),angle=Math.atan(grade/100)/RAD;
+ const aspect=(Math.atan2(-gx,-gy)/RAD+360)%360;
+ return {gx,gy,grade,angle,aspect};
+}
+function shortCompass(b){return ['N','NE','E','SE','S','SO','O','NO'][Math.round(b/45)%8];}
+function stats(points,spacing){
+ const middle=grad(points,3,3,spacing),grades=[];
+ for(let r=1;r<6;r++)for(let c=1;c<6;c++)grades.push(grad(points,r,c,spacing).grade);
+ const zs=points.map(p=>p.z),mean=zs.reduce((a,b)=>a+b,0)/zs.length;
+ const std=Math.sqrt(zs.reduce((a,b)=>a+(b-mean)**2,0)/zs.length);
+ const rough=Math.sqrt([16,17,18,23,25,30,31,32].reduce((v,i)=>v+(points[i].z-points[24].z)**2,0)/8);
+ return {...middle,avg:grades.reduce((p,v)=>p+v,0)/grades.length,min:Math.min(...zs),max:Math.max(...zs),mean,std,rough,gradeMin:Math.min(...grades),gradeMax:Math.max(...grades)};
+}
+function setStatus(message,type='info'){const el=$('status');el.textContent=message;el.className='notice show '+type;}
+function clearStatus(){$('status').className='notice';$('status').textContent='';}
+function busy(is){$('calculate').disabled=is;$('submitIcon').innerHTML=is?'<span class="loader"></span>':'⌁';$('submitText').textContent=is?'Consultando elevaciones...':'Calcular elevación y pendiente';}
+function showResults(){['metricEmpty','mapEmpty','detailEmpty','dataEmpty','featuresEmpty'].forEach(id=>$(id).classList.add('hidden'));['metrics','mapShow','detailShow','dataShow','featuresShow'].forEach(id=>$(id).classList.remove('hidden'));}
+function hideResults(){['metricEmpty','mapEmpty','detailEmpty','dataEmpty','featuresEmpty'].forEach(id=>$(id).classList.remove('hidden'));['metrics','mapShow','detailShow','dataShow','featuresShow'].forEach(id=>$(id).classList.add('hidden'));$('sourceBadge').textContent='Sin consulta';$('pointCount').textContent='0 puntos';$('mapTip').style.display='none';updateNormative();if(typeof libRefresh==='function')libRefresh();}
+function invalidateEarthResults(){
+ ++libRequestSeq;
+ current=null;
+ busy(false);
+ hideResults();
+}
+function updateUI(result){
+ const {lat,lon,zone,points,spacing,source,s}=result;
+ const utm=calcUTM(lat,lon,zone);
+ $('sourceBadge').textContent=source==='SRTM'?'SRTM · ~30 m':'Copernicus · 90 m';
+ $('mElevation').textContent=fmt(points[24].z,0)+' m';
+ $('mSlope').textContent=fmt(s.grade,1)+' %';
+ $('mAngle').textContent=fmt(s.angle,1)+'°';
+ $('mAvgSlope').textContent=fmt(s.avg,1)+' %';
+ $('mRelief').textContent=fmt(s.max-s.min,0)+' m';
+ $('mAspect').textContent=s.grade<0.01?'Plano':shortCompass(s.aspect)+' · '+fmt(s.aspect,0)+'°';
+ $('dLat').textContent=lat.toFixed(7)+'°';
+ $('dLon').textContent=lon.toFixed(7)+'°';
+ $('dZone').textContent=utm.zoneLabel+' · EPSG:'+utm.epsg;
+ $('dEast').textContent=fmt(utm.east,2)+' m';
+ $('dNorth').textContent=fmt(utm.north,2)+' m';
+ $('dMinMax').textContent=fmt(s.min,0)+' / '+fmt(s.max,0)+' m';
+ $('dSpacing').textContent=spacing+' m';
+ $('dSource').textContent=source==='SRTM'?'SRTM v3 (~30 m)':'Copernicus GLO-90 (90 m)';
+ $('pointCount').textContent=points.length+' puntos';
+ const typ=s.avg<5?'Relieve predominantemente suave':s.avg<15?'Relieve moderadamente ondulado':s.avg<30?'Relieve accidentado':'Relieve de pendientes pronunciadas';
+ $('fTerrain').textContent=typ;
+ $('fMean').textContent=fmt(s.mean,1)+' m';
+ $('fStd').textContent=fmt(s.std,1)+' m';
+ $('fRough').textContent=fmt(s.rough,1)+' m';
+ $('fArea').textContent=fmt(((gridSize-1)*spacing)**2/10000,2)+' ha';
+ $('fSlopes').textContent=fmt(s.gradeMin,1)+'–'+fmt(s.gradeMax,1)+' %';
+ $('fDirection').textContent=s.grade<0.01?'Indefinida':shortCompass(s.aspect)+' · '+fmt(s.aspect,0)+'°';
+ $('externalMap').href='https://www.openstreetmap.org/?mlat='+lat.toFixed(7)+'&mlon='+lon.toFixed(7)+'#map=15/'+lat.toFixed(7)+'/'+lon.toFixed(7);
+ $('legendMin').textContent=fmt(s.min,0)+' m';$('legendMax').textContent=fmt(s.max,0)+' m';
+ $('extentText').textContent='Cobertura: '+((gridSize-1)*spacing)+' × '+((gridSize-1)*spacing)+' m';
+ const frag=document.createDocumentFragment();
+ for(const p of points){const tr=document.createElement('tr');if(p.r===3&&p.c===3)tr.className='center-row';
+  const desc=p.r===3&&p.c===3?'CENTRO_DEM':(source==='SRTM'?'SRTM30_DEM':'COP90_DEM');
+  [p.number,fmt(p.north,2),fmt(p.east,2),fmt(p.z,0),desc].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td);});frag.appendChild(tr);
+ }
+ $('tableBody').replaceChildren(frag);
+ showResults();drawTerrain(result);updateNormative();if(typeof libRefresh==='function')libRefresh();
+}
+function mix(a,b,t){return a+(b-a)*t;}
+function colorElevation(t){
+  const anchors=document.body.dataset.planet==='moon'
+    ? [[52,63,78],[94,105,119],[145,153,162],[194,199,204],[233,231,225]]
+    : [[76,47,54],[131,65,57],[184,95,65],[221,153,103],[245,211,168]];
+ const p=Math.max(0,Math.min(.999999,t))*(anchors.length-1),i=Math.floor(p),q=p-i;
+ return [mix(anchors[i][0],anchors[i+1][0],q),mix(anchors[i][1],anchors[i+1][1],q),mix(anchors[i][2],anchors[i+1][2],q)];
+}
+function interpolateZ(points,u,v){
+ const c=Math.max(0,Math.min(5.999999,u*6)),r=Math.max(0,Math.min(5.999999,v*6));
+ const ci=Math.floor(c),ri=Math.floor(r),tx=c-ci,ty=r-ri;
+ const v00=points[ri*7+ci].z,v10=points[ri*7+ci+1].z,v01=points[(ri+1)*7+ci].z,v11=points[(ri+1)*7+ci+1].z;
+ return mix(mix(v00,v10,tx),mix(v01,v11,tx),ty);
+}
+// Visor tipo CAD: geometría suavizada exclusivamente para visualización.
+const view={mode:'3d',az:-0.77,tilt:55,vertical:2,zoom:1,grid:true,contours:true,points:false};
+const cadCache={result:null,z:null,contours:null,interval:null};
+let pendingFrame=0,dragging=false,lastPX=0,lastPY=0;
+const CW=1000,CH=650,RES=64;
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function cr(p0,p1,p2,p3,t){return p1+0.5*t*(p2-p0+t*(2*p0-5*p1+4*p2-p3+t*(3*(p1-p2)+p3-p0)));}
+function smoothZ(points,u,v){
+ const x=clamp(u,0,1)*6,y=clamp(v,0,1)*6,ix=Math.min(5,Math.floor(x)),iy=Math.min(5,Math.floor(y));
+ const tx=x-ix,ty=y-iy,values=[],sample=(r,c)=>points[clamp(r,0,6)*7+clamp(c,0,6)].z;
+ for(let j=-1;j<=2;j++)values.push(cr(sample(iy+j,ix-1),sample(iy+j,ix),sample(iy+j,ix+1),sample(iy+j,ix+2),tx));
+ const z=cr(...values,ty);
+ const n=[sample(iy,ix),sample(iy,ix+1),sample(iy+1,ix),sample(iy+1,ix+1)];
+ // Contener sobreoscilaciones para que la interpolación no cree cimas fuera del rango local.
+ return clamp(z,Math.min(...n),Math.max(...n));
+}
+function zAt(u,v){
+ u=clamp(u,0,1)*RES;v=clamp(v,0,1)*RES;
+ const i=Math.min(RES-1,Math.floor(u)),j=Math.min(RES-1,Math.floor(v));
+ const a=u-i,b=v-j,stride=RES+1,z=cadCache.z;
+ return mix(mix(z[j*stride+i],z[j*stride+i+1],a),mix(z[(j+1)*stride+i],z[(j+1)*stride+i+1],a),b);
+}
+function contourInterval(range){
+ const target=range/7;
+ return [0.5,1,2,5,10,20,25,50,100,200,250,500,1000,2000,5000].find(n=>n>=target)||10000;
+}
+function initCadCache(result){
+ if(cadCache.result===result)return;
+ cadCache.result=result;
+ const z=[];
+ for(let j=0;j<=RES;j++)for(let i=0;i<=RES;i++)z.push(smoothZ(result.points,i/RES,j/RES));
+ cadCache.z=z;
+ const interval=contourInterval(result.s.max-result.s.min),out=[];
+ let level=Math.ceil(result.s.min/interval)*interval,k=0;
+ while(level<=result.s.max+1e-7&&k<15){
+  const segments=[];
+  for(let j=0;j<RES;j++)for(let i=0;i<RES;i++){
+   const at=(x,y)=>z[y*(RES+1)+x];
+   const nodes=[{u:i/RES,v:j/RES,z:at(i,j)},{u:(i+1)/RES,v:j/RES,z:at(i+1,j)},{u:(i+1)/RES,v:(j+1)/RES,z:at(i+1,j+1)},{u:i/RES,v:(j+1)/RES,z:at(i,j+1)}];
+   const cuts=[];
+   for(let e=0;e<4;e++){
+    const A=nodes[e],B=nodes[(e+1)%4];
+    if((A.z<=level&&B.z>level)||(A.z>level&&B.z<=level)){
+     const t=(level-A.z)/(B.z-A.z);
+     cuts.push({u:mix(A.u,B.u,t),v:mix(A.v,B.v,t)});
+    }
+   }
+   for(let e=0;e+1<cuts.length;e+=2)segments.push([cuts[e],cuts[e+1]]);
+  }
+  out.push({level,segments,major:k%3===0});level+=interval;k++;
+ }
+ cadCache.interval=interval;cadCache.contours=out;
+}
+function requestRender(){
+ if(!current||pendingFrame)return;
+ pendingFrame=requestAnimationFrame(()=>{pendingFrame=0;drawTerrain(current);});
+}
+function surfaceColor(z,gx,gy,result){
+ const range=Math.max(0.01,result.s.max-result.s.min),t=(z-result.s.min)/range;
+ const rgb=colorElevation(clamp(t,0,1));
+ const nx=-gx,ny=-gy,nz=1,norm=Math.hypot(nx,ny,nz);
+ const shade=clamp(.60+.48*((nx*(-.45)+ny*.55+nz*.70)/norm),.39,1.16);
+ return 'rgb('+rgb.map(c=>Math.round(clamp(c*shade,0,255))).join(',')+')';
+}
+function sampleSlope(u,v,spacing){
+ const step=1/RES,world=spacing*6;
+ const a=zAt(clamp(u-step,0,1),v),b=zAt(clamp(u+step,0,1),v);
+ const c=zAt(u,clamp(v-step,0,1)),d=zAt(u,clamp(v+step,0,1));
+ return [(b-a)/(2*step*world),(c-d)/(2*step*world)];
+}
+function drawBackdrop(ctx,label){
+ ctx.clearRect(0,0,CW,CH);
+ const gr=ctx.createLinearGradient(0,0,CW,CH);gr.addColorStop(0,document.body.dataset.planet==='moon'?'#111b29':'#261b24');gr.addColorStop(1,document.body.dataset.planet==='moon'?'#2c3542':'#412b30');
+ ctx.fillStyle=gr;ctx.fillRect(0,0,CW,CH);
+ ctx.strokeStyle='#e4f4ff0b';ctx.lineWidth=1;
+ for(let x=0;x<CW;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,CH);ctx.stroke();}
+ for(let y=0;y<CH;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(CW,y);ctx.stroke();}
+ ctx.textAlign='left';ctx.fillStyle='#d8eaf1bd';ctx.font='700 13px system-ui';ctx.fillText(label,30,34);
+}
+function northIndicator(ctx,project){
+ const origin=project(.5,.5,0),north=project(.5,.42,0),dx=north.x-origin.x,dy=north.y-origin.y,len=Math.hypot(dx,dy)||1;
+ const nx=dx/len,ny=dy/len,ox=CW-65,oy=76;
+ ctx.save();ctx.strokeStyle='#d6f0f5';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(ox,oy+nx*0);ctx.lineTo(ox+nx*29,oy+ny*29);ctx.stroke();
+ ctx.fillStyle='#bff3dd';ctx.beginPath();ctx.moveTo(ox+nx*35,oy+ny*35);ctx.lineTo(ox+nx*22-ny*7,oy+ny*22+nx*7);ctx.lineTo(ox+nx*22+ny*7,oy+ny*22-nx*7);ctx.closePath();ctx.fill();
+ ctx.font='800 14px system-ui';ctx.fillStyle='#f7ffff';ctx.textAlign='center';ctx.fillText('N',ox+nx*52,oy+ny*52+5);ctx.restore();
+}
+function cadText(ctx,x,y,text,color='#cce6ed',font='11px system-ui'){
+ ctx.save();ctx.font=font;ctx.textAlign='center';const width=ctx.measureText(text).width+10;
+ ctx.fillStyle='#0b1826df';ctx.fillRect(x-width/2,y-11,width,16);
+ ctx.fillStyle=color;ctx.fillText(text,x,y+1);ctx.restore();
+}
+function draw3D(result,ctx){
+ const azi=view.az,tilt=view.tilt*RAD,sT=Math.sin(tilt),cT=Math.cos(tilt),mean=result.s.mean,extent=result.spacing*6;
+ const raw=(u,v,z)=>{
+  const X=u-.5,Y=.5-v,ZZ=((z-mean)/extent)*view.vertical;
+  return {x:X*Math.cos(azi)+Y*Math.sin(azi),y:-(-X*Math.sin(azi)+Y*Math.cos(azi))*sT-ZZ*cT,depth:-X*Math.sin(azi)+Y*Math.cos(azi)};
+ };
+ let left=Infinity,right=-Infinity,top=Infinity,bottom=-Infinity;
+ for(let j=0;j<=16;j++)for(let i=0;i<=16;i++){
+  const p=raw(i/16,j/16,zAt(i/16,j/16));
+  left=Math.min(left,p.x);right=Math.max(right,p.x);top=Math.min(top,p.y);bottom=Math.max(bottom,p.y);
+ }
+ const scale=Math.min((CW-150)/Math.max(.001,right-left),(CH-150)/Math.max(.001,bottom-top))*view.zoom;
+ const cx=CW/2-(right+left)/2*scale,cy=CH/2-(top+bottom)/2*scale+12;
+ const project=(u,v,z)=>{const p=raw(u,v,z);return{x:cx+p.x*scale,y:cy+p.y*scale,depth:p.depth};};
+ const cells=[],R=54;
+ for(let j=0;j<R;j++)for(let i=0;i<R;i++){
+  const u=i/R,v=j/R,U=(i+1)/R,V=(j+1)/R;
+  const z=(zAt(u,v)+zAt(U,v)+zAt(U,V)+zAt(u,V))*.25;
+  const [gx,gy]=sampleSlope((u+U)/2,(v+V)/2,result.spacing);
+  cells.push({u,v,U,V,z,gx,gy,depth:raw((u+U)/2,(v+V)/2,z).depth});
+ }
+ cells.sort((a,b)=>b.depth-a.depth);
+ // Dibujar facetas pequeñas opacas, en orden de profundidad.
+ for(const p of cells){
+  const a=project(p.u,p.v,zAt(p.u,p.v)),b=project(p.U,p.v,zAt(p.U,p.v));
+  const c=project(p.U,p.V,zAt(p.U,p.V)),d=project(p.u,p.V,zAt(p.u,p.V));
+  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.closePath();
+  ctx.fillStyle=surfaceColor(p.z,p.gx,p.gy,result);ctx.fill();
+ }
+ // Grilla de coordenadas deformada sobre el modelo, NO un plano horizontal ficticio.
+ if(view.grid){
+  // 7 líneas originales del DEM en cada dirección; 6 intermedias más finas.
+  for(let axis=0;axis<2;axis++)for(let k=0;k<=12;k++){
+   const pts=[];for(let t=0;t<=100;t++){
+    const u=axis===0?k/12:t/100,v=axis===0?t/100:k/12;pts.push(project(u,v,zAt(u,v)));
+   }
+   libGridPath(ctx,pts,k%2===0);
+  }
+ }
+ if(view.contours)for(const level of cadCache.contours){
+  ctx.strokeStyle=level.major?'#ffe4b8ee':'#f6e3cf99';ctx.lineWidth=level.major?2.25:1.05;
+  ctx.beginPath();for(const [a,b] of level.segments){const A=project(a.u,a.v,level.level),B=project(b.u,b.v,level.level);ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);}ctx.stroke();
+ }
+ if(view.points){
+  for(const p of result.points){const q=project(p.c/6,p.r/6,p.z);ctx.fillStyle='#ecf7ff';ctx.beginPath();ctx.arc(q.x,q.y,2.7,0,Math.PI*2);ctx.fill();}
+ }
+ // Marcador central GPS/coordenadas.
+ const core=project(.5,.5,result.points[24].z);
+ ctx.fillStyle='#0f2837';ctx.strokeStyle='#ffedb4';ctx.lineWidth=3;ctx.beginPath();ctx.arc(core.x,core.y,8,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.fillStyle='#ffedb4';ctx.beginPath();ctx.arc(core.x,core.y,3,0,Math.PI*2);ctx.fill();
+ cadText(ctx,core.x,core.y-16,fmt(result.points[24].z,0)+' m','#fff1bc','700 12px system-ui');
+ // Ejes y referencias UTM en los bordes de la cuadrícula.
+ const lowerLeft=project(0,1,zAt(0,1)),lowerRight=project(1,1,zAt(1,1)),upperLeft=project(0,0,zAt(0,0));
+ ctx.lineWidth=2.0;ctx.strokeStyle='#8dbbd1';ctx.beginPath();ctx.moveTo(lowerLeft.x,lowerLeft.y);ctx.lineTo(lowerRight.x,lowerRight.y);ctx.moveTo(lowerLeft.x,lowerLeft.y);ctx.lineTo(upperLeft.x,upperLeft.y);ctx.stroke();
+ const ec=project(.50,1,zAt(.50,1)),nc=project(0,.5,zAt(0,.5));
+ cadText(ctx,ec.x,ec.y+24,'E → '+fmt(result.points[45].east,0)+' m','#b7e8ef');
+ cadText(ctx,nc.x-16,nc.y,'N → '+fmt(result.points[21].north,0)+' m','#b7e8ef');
+ northIndicator(ctx,project);
+ return {project};
+}
+function draw2D(result,ctx){
+ const side=Math.min(CW-145,CH-106),left=(CW-side)/2,top=(CH-side)/2+5;
+ const image=ctx.createImageData(side,side),range=Math.max(.01,result.s.max-result.s.min);
+ for(let j=0;j<side;j++)for(let i=0;i<side;i++){
+  const u=i/(side-1),v=j/(side-1),z=zAt(u,v);
+  const k=Math.max(0,Math.min(.999999,(z-result.s.min)/range)),col=colorElevation(k);
+  const [gx,gy]=sampleSlope(u,v,result.spacing);
+  const norm=Math.hypot(-gx,-gy,1),shade=clamp(.64+.43*((gx*.48-gy*.5+.72)/norm),.35,1.15),idx=(j*side+i)*4;
+  image.data[idx]=col[0]*shade;image.data[idx+1]=col[1]*shade;image.data[idx+2]=col[2]*shade;image.data[idx+3]=255;
+ }
+ ctx.putImageData(image,left,top);
+ const proj=(u,v)=>({x:left+u*side,y:top+v*side});
+ if(view.grid){
+  for(let i=0;i<=12;i++){
+   const at=left+i*side/12,bt=top+i*side/12;
+   libGridPath(ctx,[{x:at,y:top},{x:at,y:top+side}],i%2===0);
+   libGridPath(ctx,[{x:left,y:bt},{x:left+side,y:bt}],i%2===0);
+  }
+ }
+ if(view.contours){
+  ctx.textAlign='center';
+  for(const contour of cadCache.contours){
+   ctx.beginPath();ctx.lineWidth=contour.major?1.9:1.0;ctx.strokeStyle=contour.major?'#292f3be8':'#39414c9a';
+   for(const [a,b] of contour.segments){const A=proj(a.u,a.v),B=proj(b.u,b.v);ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);}ctx.stroke();
+   if(contour.major&&contour.segments.length>15){
+    const target=contour.segments[Math.floor(contour.segments.length*.58)][0],P=proj(target.u,target.v);
+    cadText(ctx,P.x,P.y,fmt(contour.level,0)+' m','#fff5c6','700 10px system-ui');
+   }
+  }
+ }
+ if(view.points)for(const p of result.points){const A=proj(p.c/6,p.r/6);ctx.beginPath();ctx.arc(A.x,A.y,3.2,0,2*Math.PI);ctx.fillStyle='#ffffff';ctx.fill();ctx.strokeStyle='#20495b';ctx.lineWidth=1;ctx.stroke();}
+ const center=proj(.5,.5);ctx.beginPath();ctx.arc(center.x,center.y,9,0,2*Math.PI);ctx.fillStyle='#0a4d50';ctx.fill();ctx.lineWidth=2.7;ctx.strokeStyle='#ffe4a7';ctx.stroke();
+ cadText(ctx,center.x,center.y-14,fmt(result.points[24].z,0)+' m','#fff8da','700 12px system-ui');
+ ctx.fillStyle='#c3dae4';ctx.font='700 12px system-ui';ctx.textAlign='center';
+ ctx.fillText('N ↑',CW/2,top-20);ctx.fillText('S',CW/2,top+side+30);ctx.fillText('O',left-30,top+side/2);ctx.fillText('E',left+side+30,top+side/2);
+ ctx.font='11px system-ui';ctx.textAlign='right';
+ const utm=calcUTM(result.lat,result.lon,result.zone);
+ for(let k=0;k<=6;k+=2){
+  const xx=left+(k/6)*side;ctx.textAlign='center';ctx.fillStyle='#aac3cb';ctx.fillText(fmt(utm.east+(k-3)*result.spacing,0),xx,top+side+18);
+  const yy=top+(k/6)*side;ctx.textAlign='right';ctx.fillText(fmt(utm.north+(3-k)*result.spacing,0),left-12,yy+4);
+ }
+ return {project:(u,v,z)=>proj(u,v),bounds:{left,top,side}};
+}
+function drawTerrain(result){
+ const canvas=$('terrainCanvas'),ctx=canvas.getContext('2d');if(!ctx)return;
+ initCadCache(result);
+ drawBackdrop(ctx,'WGS 84 / UTM '+result.zone+(result.lat<0?'S':'N')+'  ·  '+'MUESTREO '+result.spacing+' m  ·  CURVAS '+fmt(cadCache.interval,1)+' m');
+ const geo=view.mode==='3d'?draw3D(result,ctx):draw2D(result,ctx);
+ canvas._terrainProject=geo.project;canvas._bounds=geo.bounds||null;
+ $('view3d').classList.toggle('active',view.mode==='3d');$('view2d').classList.toggle('active',view.mode==='2d');
+ $('view3d').setAttribute('aria-pressed',String(view.mode==='3d'));$('view2d').setAttribute('aria-pressed',String(view.mode==='2d'));
+ $('cadHint').textContent=view.mode==='3d'?'Arrastra para girar e inclinar · rueda para acercar':'Planta 2D · eje vertical norte · curvas interpoladas';
+ $('cadModeBadge').textContent=view.mode==='3d'?'SUPERFICIE 3D · DEM':'PLANTA TOPOGRÁFICA · DEM';
+ $('verticalScale').disabled=view.mode==='2d';
+}
+function exportFile(name,content){
+ const blob=new Blob([content],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob);
+ const link=document.createElement('a');link.href=url;link.download=name;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+function downloadPNEZD(){
+ if(!current)return;
+ const source=current.source==='SRTM'?'SRTM30_DEM':'COP90_DEM';
+ const lines=current.points.map(p=>[p.number,p.north.toFixed(2),p.east.toFixed(2),p.z.toFixed(1),p.number===125?'CENTRO_DEM':source].join(','));
+ exportFile('GeoPendiente_PNEZD_'+current.zone+(current.lat<0?'S':'N')+'.csv',lines.join('\r\n'));
+}
+function downloadFull(){
+ if(!current)return;
+ const rows=[['Punto','Latitud_WGS84','Longitud_WGS84','Norte_UTM_m','Este_UTM_m','Elevacion_DEM_m','Fuente','Separacion_m','Zona_UTM'].join(',')];
+ for(const p of current.points)rows.push([p.number,p.lat.toFixed(8),p.lon.toFixed(8),p.north.toFixed(2),p.east.toFixed(2),p.z.toFixed(1),current.source,current.spacing,current.zone+(current.lat<0?'S':'N')].join(','));
+ exportFile('GeoPendiente_datos_geograficos.csv','\ufeff'+rows.join('\r\n'));
+}
+$('geoForm').addEventListener('submit',async ev=>{
+ ev.preventDefault();clearStatus();
+ invalidateEarthResults();
+ const requestSeq=libRequestSeq;
+ const rawLat=$('lat').value.trim(),rawLon=$('lon').value.trim();
+ if(!rawLat||!rawLon){setStatus('Ingresa tanto la latitud como la longitud.','error');return;}
+ const lat=parseCoord(rawLat),lon=parseCoord(rawLon);
+ if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat< -80||lat>84||lon< -180||lon>180){setStatus('Coordenadas incorrectas. Para UTM, la latitud debe estar entre -80° y 84°, y la longitud entre -180° y 180°.','error');return;}
+ const natural=autoZone(lon),chosen=$('zone').value,zone=chosen==='auto'?natural:Number(chosen);
+ if(zone!==natural){setStatus('La ubicación pertenece a la zona UTM '+natural+(lat<0?'S':'N')+', no a la zona '+zone+(lat<0?'S':'N')+'. Selecciona «Automática» o verifica tus coordenadas.','error');return;}
+ const selectedModel=$('model').value;
+ let points,spacing,source,vals,hadFallback=false;
+ busy(true);
+ try{
+  if(selectedModel!=='cop90'&&lat>=-60&&lat<=60){
+   spacing=30;points=buildPoints(lat,lon,zone,spacing);
+   try{vals=await getSRTM(points);source='SRTM';}
+   catch(err){hadFallback=true;}
+  }else if(selectedModel!=='cop90'){hadFallback=true;}
+  if(requestSeq!==libRequestSeq)return;
+  if(!vals){spacing=90;points=buildPoints(lat,lon,zone,spacing);vals=await getCopernicus(points);source='Copernicus';}
+  if(requestSeq!==libRequestSeq)return;
+  points.forEach((p,i)=>{p.z=vals[i]});
+  const s=stats(points,spacing);
+  current={lat,lon,zone,points,spacing,source,s};
+  updateUI(current);
+  // Se guarda y compara de inmediato, sin exigir el botón 'Guardar'.
+  const autoSite=libSaveEarth({automatic:true,quickId:libQuickSelectedId});
+  if(autoSite&&autoSite.metricsSource!=='dossier')libImproveEarthComparison(autoSite.id,lat,lon,requestSeq);
+  setStatus(hadFallback?'Consulta completada con Copernicus GLO-90 (90 m), porque SRTM no estuvo disponible.':'Consulta completada: 49 puntos de elevación obtenidos de un modelo digital real.',hadFallback?'info':'success');
+ }catch(err){
+  if(requestSeq!==libRequestSeq)return;
+  const msg=err?.name==='AbortError'?'La consulta tardó demasiado. Comprueba tu Internet e inténtalo de nuevo.':'No fue posible consultar las elevaciones. Comprueba Internet, permisos de conexión del navegador o vuelve a intentarlo. Detalle: '+(err?.message||'Error desconocido');
+  setStatus(msg,'error');
+ }finally{if(requestSeq===libRequestSeq)busy(false);}
+});
+$('sample').addEventListener('click',()=>{invalidateEarthResults();libQuickSelectedId=null;$('quickPlace').value='';$('libCurrentName').value='';$('lat').value='-7.1638';$('lon').value='-78.5003';$('zone').value='auto';$('gpsNote').classList.add('hidden');setStatus('Ejemplo de coordenadas aproximadas de Cajamarca, Perú. Pulsa «Calcular» para traer las cotas verdaderamente disponibles en el DEM.','info');});
+$('reset').addEventListener('click',()=>{invalidateEarthResults();libQuickSelectedId=null;$('quickPlace').value='';$('libCurrentName').value='';HTMLFormElement.prototype.reset.call($('geoForm'));$('gpsNote').classList.add('hidden');$('gpsNote').textContent='';clearStatus();});
+$('downloadPnezd').addEventListener('click',downloadPNEZD);
+$('downloadFull').addEventListener('click',downloadFull);
+
+function viewMode(mode){view.mode=mode;requestRender();$('mapTip').style.display='none';}
+$('view3d').addEventListener('click',()=>viewMode('3d'));
+$('view2d').addEventListener('click',()=>viewMode('2d'));
+$('showGrid').addEventListener('change',ev=>{view.grid=ev.target.checked;requestRender();});
+$('showContours').addEventListener('change',ev=>{view.contours=ev.target.checked;requestRender();});
+$('showPoints').addEventListener('change',ev=>{view.points=ev.target.checked;requestRender();});
+$('verticalScale').addEventListener('input',ev=>{view.vertical=Number(ev.target.value);$('verticalValue').textContent=fmt(view.vertical,1)+'×';requestRender();});
+$('resetView').addEventListener('click',()=>{view.az=-.77;view.tilt=55;view.zoom=1;view.vertical=2;$('verticalScale').value='2';$('verticalValue').textContent='2,0×';requestRender();});
+$('saveImage').addEventListener('click',()=>{
+ if(!current)return;
+ $('terrainCanvas').toBlob(blob=>{
+  if(!blob){setStatus('No se pudo exportar la imagen de la superficie.','error');return;}
+  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='GeoPendiente_superficie_'+view.mode+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),15000);
+ },'image/png');
+});
+const cvs=$('terrainCanvas');
+function localXY(ev){const rect=cvs.getBoundingClientRect();return{x:(ev.clientX-rect.left)/rect.width*CW,y:(ev.clientY-rect.top)/rect.height*CH,rect};}
+cvs.addEventListener('pointerdown',ev=>{
+ if(!current||view.mode!=='3d')return;
+ dragging=true;lastPX=ev.clientX;lastPY=ev.clientY;cvs.classList.add('grabbing');cvs.setPointerCapture(ev.pointerId);
+});
+cvs.addEventListener('pointermove',ev=>{
+ if(!current)return;
+ if(dragging&&view.mode==='3d'){
+  view.az+=(ev.clientX-lastPX)*.008;view.tilt=clamp(view.tilt+(ev.clientY-lastPY)*.28,20,88);lastPX=ev.clientX;lastPY=ev.clientY;
+  requestRender();$('mapTip').style.display='none';return;
+ }
+ const {x,y,rect}=localXY(ev),project=cvs._terrainProject;
+ if(!project)return;
+ let nearest=null,d2=Infinity;
+ for(const p of current.points){const q=project(p.c/6,p.r/6,p.z),dist=(q.x-x)**2+(q.y-y)**2;if(dist<d2){d2=dist;nearest=p;}}
+ if(d2>1100){$('mapTip').style.display='none';return;}
+ const tip=$('mapTip');tip.textContent='P'+nearest.number+' · '+fmt(nearest.z,0)+' m · DEM';tip.style.display='block';
+ tip.style.left=clamp(ev.clientX-rect.left,12,rect.width-165)+'px';tip.style.top=(ev.clientY-rect.top)+'px';
+});
+function endDrag(){dragging=false;cvs.classList.remove('grabbing');}
+cvs.addEventListener('pointerup',endDrag);cvs.addEventListener('pointercancel',endDrag);
+cvs.addEventListener('mouseleave',()=>{$('mapTip').style.display='none';endDrag();});
+cvs.addEventListener('wheel',ev=>{if(!current||view.mode!=='3d')return;ev.preventDefault();view.zoom=clamp(view.zoom*Math.exp(-ev.deltaY*.0009),.6,2.3);requestRender();},{passive:false});
+['lat','lon'].forEach(id=>$(id).addEventListener('input',()=>{invalidateEarthResults();clearStatus();$('gpsNote').classList.add('hidden');if(libQuickSelectedId)$('libCurrentName').value='';libQuickSelectedId=null;$('quickPlace').value='';}));
+['zone','model'].forEach(id=>$(id).addEventListener('change',()=>{invalidateEarthResults();clearStatus();}));
+$('locate').addEventListener('click',()=>{
+ if(!navigator.geolocation){setStatus('Este navegador no permite geolocalización. Introduce coordenadas manualmente o abre la aplicación en un servidor HTTPS o localhost.','error');return;}
+ const btn=$('locate');btn.disabled=true;btn.textContent='◎ Buscando ubicación del dispositivo...';
+ navigator.geolocation.getCurrentPosition(position=>{
+  btn.disabled=false;btn.textContent='◎ Geolocalizar mi ubicación (GPS)';
+  const {latitude,longitude,accuracy}=position.coords;
+  if(latitude< -80||latitude>84){setStatus('Se obtuvo la ubicación, pero está fuera de la cobertura UTM estándar de esta calculadora.','error');return;}
+  libQuickSelectedId=null;$('quickPlace').value='';$('libCurrentName').value='';$('lat').value=latitude.toFixed(7);$('lon').value=longitude.toFixed(7);$('zone').value='auto';
+  $('gpsNote').textContent='Ubicación del dispositivo · precisión horizontal declarada ±'+fmt(accuracy,0)+' m. La cota procede del DEM, no del GPS.';
+  $('gpsNote').classList.remove('hidden');
+  $('geoForm').requestSubmit();
+ },err=>{
+  btn.disabled=false;btn.textContent='◎ Geolocalizar mi ubicación (GPS)';
+  const messages={1:'Permiso de ubicación rechazado. Actívalo en tu navegador o introduce las coordenadas manualmente.',2:'El dispositivo no pudo determinar su ubicación. Verifica el GPS y la conexión.',3:'La ubicación tardó demasiado. Puedes escribir las coordenadas manualmente.'};
+  setStatus((messages[err.code]||'Geolocalización no disponible.')+' Si abres un archivo HTML local y no funciona, usa HTTPS o localhost.','error');
+ },{enableHighAccuracy:true,timeout:18000,maximumAge:10000});
+});
+
+/* Módulo de caminos: azimut calculado a partir de gradientes del DEM. */
+const nFmt=(v,d=1)=>fmt(v,d);
+function nOroType(p){
+ if(p<=10)return {type:1,name:'Plano',movement:'movimiento de tierras generalmente menor'};
+ if(p<=50)return {type:2,name:'Ondulado',movement:'movimiento de tierras moderado'};
+ if(p<=100)return {type:3,name:'Accidentado',movement:'cortes y rellenos potencialmente importantes'};
+ return {type:4,name:'Escarpado',movement:'dificultad topográfica elevada para el trazado'};
+}
+function nAutoAxis(points,spacing){
+ const grads=[];
+ for(let r=1;r<6;r++)for(let c=1;c<6;c++)grads.push(grad(points,r,c,spacing));
+ const meanSlope=grads.reduce((v,g)=>v+g.grade,0)/grads.length;
+ const maxSlope=Math.max(...grads.map(g=>g.grade));
+ // En superficies casi planas, el rumbo derivado de diferencias de altura es inestable.
+ if(meanSlope<0.1&&maxSlope<0.3)return {defined:false,azimuth:null,along:meanSlope,cross:meanSlope,localAlong:0,localCross:0};
+ // Selección bidireccional del eje (0–180°) que minimiza la pendiente longitudinal RMS.
+ // Se utilizan 25 ventanas 3x3, sin crear cotas adicionales.
+ let bestAngle=0,bestError=Infinity;
+ for(let k=0;k<720;k++){
+  const angle=k*.25*RAD,sa=Math.sin(angle),ca=Math.cos(angle);
+  let error=0;
+  for(const g of grads){const component=g.gx*sa+g.gy*ca;error+=component*component;}
+  if(error<bestError){bestError=error;bestAngle=k*.25;}
+ }
+ const a=bestAngle*RAD,sa=Math.sin(a),ca=Math.cos(a);
+ const along=grads.reduce((v,g)=>v+100*Math.abs(g.gx*sa+g.gy*ca),0)/grads.length;
+ const cross=grads.reduce((v,g)=>v+100*Math.abs(g.gx*ca-g.gy*sa),0)/grads.length;
+ const center=grad(points,3,3,spacing);
+ return {defined:true,azimuth:bestAngle,along,cross,
+  localAlong:100*Math.abs(center.gx*sa+center.gy*ca),
+  localCross:100*Math.abs(center.gx*ca-center.gy*sa)};
+}
+function updateNormative(){
+ const report=$('nDownloadReport');report.disabled=!current;
+ if(!current){
+  $('nOro').textContent='Sin superficie analizada';
+  $('nOroDetail').textContent='Calcula las elevaciones para estimar la orografía.';
+  $('nAxisAuto').textContent='—';$('nAxisDetail').textContent='Se calculará con 25 ventanas del DEM.';
+  $('nAlong').textContent='—';$('nCross').textContent='—';
+  $('nAlongDetail').textContent='Componente paralela al eje de referencia.';
+  $('nCrossDetail').textContent='Componente perpendicular al eje de referencia.';
+  $('nRoadGrades').textContent='Calcula el terreno para obtener el azimut automático y las pendientes orientadas.';
+  $('nInterpret').textContent='Aquí aparecerán el tipo de relieve, el azimut de referencia, las pendientes y consideraciones de trazado, cortes, rellenos y drenaje.';
+  return;
+ }
+ const s=current.s,orientation=nAutoAxis(current.points,current.spacing);
+ current.road=orientation;
+ const type=nOroType(orientation.defined?orientation.cross:s.avg);
+ $('nOro').textContent='Tipo '+type.type+' · '+type.name;
+ $('nOroDetail').textContent='Aproximación por pendiente transversal media del DEM; no clasificación formal del corredor.';
+ $('nAxisAuto').textContent=orientation.defined?nFmt(orientation.azimuth,2)+'°':'No definido';
+ $('nAxisDetail').textContent=orientation.defined?'Eje de referencia; sentido inverso: '+nFmt((orientation.azimuth+180)%360,2)+'°.':'Relieve casi plano: no hay dirección preferente confiable.';
+ $('nAlong').textContent=nFmt(orientation.along,1)+' %';
+ $('nCross').textContent=nFmt(orientation.cross,1)+' %';
+ $('nAlongDetail').textContent='Promedio absoluto de 25 pendientes paralelas al eje.';
+ $('nCrossDetail').textContent='Promedio absoluto de 25 pendientes perpendiculares al eje.';
+ const descent=s.grade>=.1?'Azimut de descenso local: '+nFmt(s.aspect,1)+'° ('+shortCompass(s.aspect)+').':'Descenso local sin dirección definida.';
+ const axisText=orientation.defined?'Azimut topográfico de referencia: '+nFmt(orientation.azimuth,2)+'° (o '+nFmt((orientation.azimuth+180)%360,2)+'° en sentido contrario).':'Eje sin azimut confiable por relieve prácticamente plano.';
+ $('nRoadGrades').textContent=axisText+' '+descent+' Pendiente longitudinal media '+nFmt(orientation.along,1)+' %; transversal media '+nFmt(orientation.cross,1)+' %. Pendiente central: '+nFmt(s.grade,1)+' %. Estas magnitudes corresponden a un eje de referencia calculado, NO al eje de una carretera real.';
+ const uneven=s.avg<5?'relieve predominantemente suave':s.avg<15?'relieve ondulado':s.avg<30?'relieve de inclinación apreciable':'relieve de pendientes pronunciadas';
+ const advice=type.type===1?'Analizar drenaje superficial y pendientes mínimas de evacuación.':type.type===2?'Comparar alternativas de trazo, pendientes de rasante y volúmenes de corte y relleno.':type.type===3?'Priorizar levantamiento de detalle, diseño de curvas y estudio de cortes, rellenos y drenaje.':'Evaluar alternativas de corredor, estructuras de contención y estudios específicos de taludes.';
+ $('nInterpret').textContent='Lectura del terreno: '+uneven+'; cota media '+nFmt(s.mean,1)+' m, desnivel '+nFmt(s.max-s.min,1)+' m y pendiente media '+nFmt(s.avg,1)+' % en una cuadrícula de '+(current.spacing*6)+' × '+(current.spacing*6)+' m. Clasificación orográfica local orientativa: Tipo '+type.type+' ('+type.name+'), con '+type.movement+'. '+advice+' La clasificación del MTC para un proyecto vial requiere el corredor completo y un eje definido.';
+}
+function downloadNormativeReport(){
+ if(!current)return;
+ const s=current.s,o=current.road||nAutoAxis(current.points,current.spacing),type=nOroType(o.defined?o.cross:s.avg);
+ const lines=[
+ 'GEOPENDIENTE | RESUMEN DEL TERRENO Y LAS RUTAS',
+ 'Fecha: '+new Date().toLocaleString('es-PE'),
+ 'Latitud WGS84: '+current.lat.toFixed(7),
+ 'Longitud WGS84: '+current.lon.toFixed(7),
+ 'Zona UTM: '+current.zone+(current.lat<0?'S':'N'),
+ 'Fuente de elevaciones: '+current.source,
+ 'Separación de muestreo: '+current.spacing+' m',
+ 'Cobertura: '+(current.spacing*6)+' × '+(current.spacing*6)+' m',
+ '',
+ 'CLASIFICACIÓN OROGRÁFICA ORIENTATIVA MTC DG-2018: Tipo '+type.type+' · '+type.name,
+ 'Azimut de eje topográfico de referencia: '+(o.defined?nFmt(o.azimuth,2)+'° (sentido inverso '+nFmt((o.azimuth+180)%360,2)+'°)':'No definido (relieve casi plano)'),
+ 'Azimut de descenso local: '+(s.grade>=.1?nFmt(s.aspect,1)+'°':'No definido'),
+ 'Pendiente longitudinal media del eje de referencia: '+nFmt(o.along,2)+' %',
+ 'Pendiente transversal media del eje de referencia: '+nFmt(o.cross,2)+' %',
+ 'Pendiente local central: '+nFmt(s.grade,2)+' %',
+ 'Pendiente media del entorno: '+nFmt(s.avg,2)+' %',
+ 'Cota central DEM: '+nFmt(current.points[24].z,1)+' m',
+ 'Cota media DEM: '+nFmt(s.mean,1)+' m',
+ 'Desnivel máximo-mínimo: '+nFmt(s.max-s.min,1)+' m',
+ '',
+ 'INTERPRETACIÓN:', $('nInterpret').textContent,'',
+ 'REFERENCIA: MTC Manual de Carreteras DG-2018, sección 102.',
+ 'https://portal.mtc.gob.pe/transportes/caminos/normas_carreteras/documentos/manuales/Manual.de.Carreteras.DG-2018.pdf','',
+ 'ADVERTENCIA: El azimut es un eje de referencia calculado desde el relieve, no el rumbo real de una carretera. La clasificación es local y preliminar. El DEM no sustituye un levantamiento topográfico ni el diseño geométrico vial.'
+ ];
+ const blob=new Blob(['\ufeff'+lines.join('\r\n')],{type:'text/plain;charset=utf-8'});
+ const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='GeoPendiente_diagnostico_caminos_topografia.txt';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+$('nDownloadReport').addEventListener('click',downloadNormativeReport);
+updateNormative();
+
+/* Paletas visuales de Marte y la Luna. Las cotas y coordenadas siguen siendo terrestres. */
+function setPlanetTheme(planet){
+ const theme=planet==='moon'?'moon':'mars';
+ document.body.dataset.planet=theme;
+ $('themeMars').classList.toggle('active',theme==='mars');
+ $('themeMoon').classList.toggle('active',theme==='moon');
+ $('themeMars').setAttribute('aria-pressed',String(theme==='mars'));
+ $('themeMoon').setAttribute('aria-pressed',String(theme==='moon'));
+ if(current)requestRender();
+}
+$('themeMars').addEventListener('click',()=>setPlanetTheme('mars'));
+$('themeMoon').addEventListener('click',()=>setPlanetTheme('moon'));
+
+
+/* ===============================================================
+   Biblioteca NASA de lugares: persistencia local y respaldo JSON.
+   Datos del dossier Orbita / GeoAnalogos Peru, 15-11-2026.
+   No modifica el calculo terrestre existente.
+   =============================================================== */
+const LIB_KEY='GeoPendiente_NASA_lugares_v1';
+const LIB_CATALOG=[{"id":"luna-copernico","body":"moon","name":"Cráter Copérnico","lat":9.62,"lon":-20.08,"windowKm":20,"resolutionM":1000,"minM":-3569,"maxM":-2474,"medianM":-3473,"slopeDeg":2.83,"smoothPct":75.75,"reliefM":641.4,"coveragePct":100,"source":"LRO LOLA LDEM_64","notes":"Cráter complejo con terrazas, picos centrales y eyección.","datum":"Radio lunar de referencia 1 737 400 m","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":4},{"id":"luna-tranquillitatis","body":"moon","name":"Mare Tranquillitatis · Apollo 11","lat":0.674,"lon":23.473,"windowKm":20,"resolutionM":1000,"minM":-2050,"maxM":-1781,"medianM":-1926,"slopeDeg":0.7,"smoothPct":100,"reliefM":221.4,"coveragePct":100,"source":"LRO LOLA LDEM_64","notes":"Llanura basáltica lunar; datos de minerales solo puntuales.","datum":"Radio lunar de referencia 1 737 400 m","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":4},{"id":"luna-tycho","body":"moon","name":"Cráter Tycho","lat":-43.3,"lon":-11.22,"windowKm":20,"resolutionM":1000,"minM":-3493,"maxM":-1143,"medianM":-3247,"slopeDeg":5.55,"smoothPct":61.75,"reliefM":1599.3,"coveragePct":100,"source":"LRO LOLA LDEM_64","notes":"Cráter de impacto de tierras altas.","datum":"Radio lunar de referencia 1 737 400 m","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":5},{"id":"luna-hadley","body":"moon","name":"Montes Apenninus · Hadley","lat":26.13,"lon":3.63,"windowKm":20,"resolutionM":1000,"minM":-2085,"maxM":227,"medianM":-1921,"slopeDeg":1.52,"smoothPct":76.75,"reliefM":1038.6,"coveragePct":100,"source":"LRO LOLA LDEM_64","notes":"Pie de los Apeninos, entorno de Apollo 15.","datum":"Radio lunar de referencia 1 737 400 m","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":5},{"id":"luna-sha01","body":"moon","name":"SHA-01 · borde de Shackleton","lat":-89.766811,"lon":-171.869898,"windowKm":2,"resolutionM":100,"minM":144.4,"maxM":1398.5,"medianM":null,"slopeDeg":32.16,"smoothPct":0,"reliefM":1121.8,"coveragePct":100,"source":"LRO LOLA Site04 · malla agregada a 100 m","notes":"Ventana del borde; no confundir con el centro del cráter. DEM nativo con interpolación entre trayectorias.","datum":"Radio lunar de referencia 1 737 400 m","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":6},{"id":"marte-gale","body":"mars","name":"Cráter Gale · Monte Sharp","lat":-5.44,"lon":137.81,"windowKm":20,"resolutionM":1000,"minM":-3334,"maxM":722,"medianM":-2171,"slopeDeg":9.9,"smoothPct":42,"reliefM":3259.8,"coveragePct":100,"source":"MGS MOLA MEGDR","notes":"Cráter con depósitos lacustres y eólicos; minerales dependen de la muestra.","datum":"Areoide MOLA","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":7},{"id":"marte-jezero","body":"mars","name":"Cráter Jezero · aterrizaje","lat":18.4446,"lon":77.4509,"windowKm":20,"resolutionM":1000,"minM":-2684,"maxM":-1798,"medianM":-2534,"slopeDeg":1.22,"smoothPct":92.25,"reliefM":701.6,"coveragePct":100,"source":"MGS MOLA MEGDR","notes":"Ventana de 20 km centrada en el aterrizaje, no todo el delta.","datum":"Areoide MOLA","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":7},{"id":"marte-coprates","body":"mars","name":"Coprates Chasma","lat":-13.25,"lon":-61.4,"windowKm":20,"resolutionM":1000,"minM":-5221,"maxM":-4681,"medianM":-5127,"slopeDeg":1.02,"smoothPct":97.25,"reliefM":246.7,"coveragePct":100,"source":"MGS MOLA MEGDR","notes":"Centro nominal; no representa todas las paredes del cañón.","datum":"Areoide MOLA","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":8},{"id":"marte-olympus","body":"mars","name":"Olympus Mons · cumbre","lat":18.4,"lon":-134,"windowKm":20,"resolutionM":1000,"minM":19117,"maxM":20462,"medianM":20191,"slopeDeg":1.61,"smoothPct":90.25,"reliefM":547.8,"coveragePct":100,"source":"MGS MOLA MEGDR","notes":"Área de cumbre y caldera de volcán escudo.","datum":"Areoide MOLA","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":8},{"id":"marte-hellas","body":"mars","name":"Hellas Planitia","lat":-42.66,"lon":70,"windowKm":20,"resolutionM":1000,"minM":-6950,"maxM":-5691,"medianM":-6626,"slopeDeg":2.81,"smoothPct":94.75,"reliefM":988.8,"coveragePct":100,"source":"MGS MOLA MEGDR","notes":"Centro nominal de cuenca de impacto.","datum":"Areoide MOLA","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":9},{"id":"marte-chryse","body":"mars","name":"Chryse · Mars Pathfinder","lat":19.13,"lon":-33.22,"windowKm":20,"resolutionM":1000,"minM":-3762,"maxM":-3660,"medianM":-3685,"slopeDeg":0.2,"smoothPct":100,"reliefM":78.6,"coveragePct":100,"source":"MGS MOLA MEGDR","notes":"Llanura con sedimentos y bloques, entorno Pathfinder.","datum":"Areoide MOLA","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":9},{"id":"marte-jez01","body":"mars","name":"JEZ-01 · Jezero (detalle)","lat":18.4446,"lon":77.4509,"windowKm":2,"resolutionM":100,"minM":-2564.4,"maxM":-2506.5,"medianM":null,"slopeDeg":1.97,"smoothPct":100,"reliefM":38.0,"coveragePct":100,"source":"MRO CTX TRN · GeoTIFF · 100 m","notes":"Ventana 2 × 2 km; pareja sugerida: Sechura SE-05.","datum":"Areoide MOLA","crs":"Latitud planetocéntrica, longitud este positiva","kind":"Publicado · dossier científico","page":13},{"id":"tierra-atacama","body":"earth","name":"Atacama · Yungay","lat":-24.08,"lon":-69.91,"windowKm":20,"resolutionM":1000,"minM":911,"maxM":1647,"medianM":1059,"slopeDeg":2.23,"smoothPct":96.25,"reliefM":373.1,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Desierto hiperárido","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":10},{"id":"tierra-meteor","body":"earth","name":"Meteor Crater · Barringer","lat":35.03,"lon":-111.02,"windowKm":20,"resolutionM":1000,"minM":1507,"maxM":1789,"medianM":1668,"slopeDeg":0.6,"smoothPct":100,"reliefM":201.0,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Cráter de impacto","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":10},{"id":"tierra-haughton","body":"earth","name":"Cráter Haughton","lat":75.38,"lon":-89.68,"windowKm":20,"resolutionM":1000,"minM":95,"maxM":323,"medianM":231,"slopeDeg":1.09,"smoothPct":100,"reliefM":162.8,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Cráter polar","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":10},{"id":"tierra-mcmurdo","body":"earth","name":"Valles Secos de McMurdo","lat":-77.47,"lon":162.52,"windowKm":20,"resolutionM":1000,"minM":181,"maxM":1709,"medianM":859,"slopeDeg":8.97,"smoothPct":42.5,"reliefM":1209.0,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Desierto polar","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":10},{"id":"tierra-maunakea","body":"earth","name":"Mauna Kea · cumbre","lat":19.82,"lon":-155.47,"windowKm":20,"resolutionM":1000,"minM":1537,"maxM":4096,"medianM":2776,"slopeDeg":10.68,"smoothPct":23.0,"reliefM":1913.4,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Volcán basáltico","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":11},{"id":"tierra-gran-canon","body":"earth","name":"Gran Cañón del Colorado","lat":36.1,"lon":-112.11,"windowKm":20,"resolutionM":1000,"minM":845,"maxM":2457,"medianM":1505,"slopeDeg":8.97,"smoothPct":43.25,"reliefM":1185.2,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Cañón fluvial","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":11},{"id":"tierra-riotinto","body":"earth","name":"Cuenca de Río Tinto","lat":37.72,"lon":-6.55,"windowKm":20,"resolutionM":1000,"minM":196,"maxM":590,"medianM":378,"slopeDeg":1.85,"smoothPct":100,"reliefM":271.3,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Cuenca con minerales férricos","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":11},{"id":"tierra-ries","body":"earth","name":"Cráter Nördlinger Ries","lat":48.88,"lon":10.57,"windowKm":20,"resolutionM":1000,"minM":408,"maxM":604,"medianM":427,"slopeDeg":0.36,"smoothPct":100,"reliefM":80.3,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Cráter de impacto","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":11},{"id":"tierra-uyuni","body":"earth","name":"Salar de Uyuni","lat":-20.13,"lon":-67.49,"windowKm":20,"resolutionM":1000,"minM":3654,"maxM":3654,"medianM":3654,"slopeDeg":0,"smoothPct":100,"reliefM":0,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Modelo DSM aplanado a escala 1 km","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":12},{"id":"tierra-timanfaya","body":"earth","name":"Timanfaya","lat":29.01,"lon":-13.75,"windowKm":20,"resolutionM":1000,"minM":0,"maxM":449,"medianM":136,"slopeDeg":1.96,"smoothPct":100,"reliefM":346.3,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Ventana incluye océano; no es exclusivamente terreno","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":12},{"id":"tierra-lonar","body":"earth","name":"Cráter de Lonar","lat":19.98,"lon":76.51,"windowKm":20,"resolutionM":1000,"minM":492,"maxM":604,"medianM":552,"slopeDeg":0.48,"smoothPct":100,"reliefM":73.9,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Cráter sobre basaltos","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":12},{"id":"tierra-namib","body":"earth","name":"Namib · Sossusvlei","lat":-24.73,"lon":15.29,"windowKm":20,"resolutionM":1000,"minM":474,"maxM":822,"medianM":644,"slopeDeg":0.78,"smoothPct":100,"reliefM":203.2,"coveragePct":100,"source":"Copernicus GLO-90 · EGM2008","notes":"Dunas eólicas","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":12},{"id":"peru-se-01","body":"earth","name":"Sechura · SE-01","lat":-5.639139,"lon":-80.629972,"windowKm":2,"resolutionM":100,"minM":0.5,"maxM":4.2,"medianM":null,"slopeDeg":0.16,"smoothPct":100,"reliefM":2.3,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. ","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-02","body":"earth","name":"Sechura · SE-02","lat":-5.639128,"lon":-80.611912,"windowKm":2,"resolutionM":100,"minM":1.5,"maxM":4.9,"medianM":null,"slopeDeg":0.11,"smoothPct":100,"reliefM":1.7,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. ","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-03","body":"earth","name":"Sechura · SE-03","lat":-5.639115,"lon":-80.593852,"windowKm":2,"resolutionM":100,"minM":1.4,"maxM":4.7,"medianM":null,"slopeDeg":0.05,"smoothPct":100,"reliefM":1.1,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. ","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-04","body":"earth","name":"Sechura · SE-04","lat":-5.657232,"lon":-80.62996,"windowKm":2,"resolutionM":100,"minM":0,"maxM":3.1,"medianM":null,"slopeDeg":0.09,"smoothPct":100,"reliefM":2.7,"coveragePct":72,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. ","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-05","body":"earth","name":"Sechura · SE-05","lat":-5.65722,"lon":-80.6119,"windowKm":2,"resolutionM":100,"minM":0,"maxM":40.8,"medianM":null,"slopeDeg":0.27,"smoothPct":98.29,"reliefM":26.6,"coveragePct":87.75,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. ","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-06","body":"earth","name":"Sechura · SE-06","lat":-5.657208,"lon":-80.59384,"windowKm":2,"resolutionM":100,"minM":1.4,"maxM":5.6,"medianM":null,"slopeDeg":0.15,"smoothPct":100,"reliefM":2.6,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. ","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-07","body":"earth","name":"Sechura · SE-07","lat":-5.675324,"lon":-80.629949,"windowKm":2,"resolutionM":100,"minM":0,"maxM":0.1,"medianM":null,"slopeDeg":0,"smoothPct":100,"reliefM":0,"coveragePct":4.75,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. Cobertura baja: evitar generalizar.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-08","body":"earth","name":"Sechura · SE-08","lat":-5.675312,"lon":-80.611888,"windowKm":2,"resolutionM":100,"minM":0,"maxM":1.9,"medianM":null,"slopeDeg":0,"smoothPct":100,"reliefM":0.2,"coveragePct":13.25,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. Cobertura baja: evitar generalizar.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-se-09","body":"earth","name":"Sechura · SE-09","lat":-5.6753,"lon":-80.593827,"windowKm":2,"resolutionM":100,"minM":0,"maxM":8.8,"medianM":null,"slopeDeg":0.35,"smoothPct":100,"reliefM":5.3,"coveragePct":49.5,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 17S · las celdas de agua permanente se excluyen. Cobertura baja: evitar generalizar.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":13},{"id":"peru-an-01","body":"earth","name":"Andagua · AN-01","lat":-15.402161,"lon":-72.348849,"windowKm":2,"resolutionM":100,"minM":3857.1,"maxM":4113.1,"medianM":null,"slopeDeg":3.98,"smoothPct":76.25,"reliefM":61.4,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-02","body":"earth","name":"Andagua · AN-02","lat":-15.401938,"lon":-72.330231,"windowKm":2,"resolutionM":100,"minM":3889.3,"maxM":4332.1,"medianM":null,"slopeDeg":13.66,"smoothPct":42,"reliefM":370.5,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-03","body":"earth","name":"Andagua · AN-03","lat":-15.401713,"lon":-72.311613,"windowKm":2,"resolutionM":100,"minM":3921.4,"maxM":4392.7,"medianM":null,"slopeDeg":16.01,"smoothPct":11,"reliefM":406.1,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-04","body":"earth","name":"Andagua · AN-04","lat":-15.420223,"lon":-72.34862,"windowKm":2,"resolutionM":100,"minM":3849.4,"maxM":4248.1,"medianM":null,"slopeDeg":5.54,"smoothPct":61.75,"reliefM":282.0,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-05","body":"earth","name":"Andagua · AN-05","lat":-15.42,"lon":-72.33,"windowKm":2,"resolutionM":100,"minM":3862.9,"maxM":4248.0,"medianM":null,"slopeDeg":11.48,"smoothPct":34.5,"reliefM":298.7,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-06","body":"earth","name":"Andagua · AN-06","lat":-15.419775,"lon":-72.31138,"windowKm":2,"resolutionM":100,"minM":3919.9,"maxM":4468.0,"medianM":null,"slopeDeg":14.82,"smoothPct":11.75,"reliefM":488.6,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-07","body":"earth","name":"Andagua · AN-07","lat":-15.438285,"lon":-72.348391,"windowKm":2,"resolutionM":100,"minM":3734.7,"maxM":4160.3,"medianM":null,"slopeDeg":10.32,"smoothPct":35.75,"reliefM":219.7,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-08","body":"earth","name":"Andagua · AN-08","lat":-15.438062,"lon":-72.329769,"windowKm":2,"resolutionM":100,"minM":3811.5,"maxM":4167.3,"medianM":null,"slopeDeg":12.46,"smoothPct":23.25,"reliefM":255.4,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14},{"id":"peru-an-09","body":"earth","name":"Andagua · AN-09","lat":-15.437837,"lon":-72.311148,"windowKm":2,"resolutionM":100,"minM":4068.8,"maxM":4419.7,"medianM":null,"slopeDeg":9.1,"smoothPct":41.75,"reliefM":280.0,"coveragePct":100,"source":"Copernicus GLO-90 + WorldCover 2021","notes":"Zona UTM 18S · terreno volcánico; clasificación de materiales pendiente de verificación.","datum":"EGM2008 (elevación ortométrica)","crs":"WGS84 / UTM (Tierra)","kind":"Publicado · dossier científico","page":14}];
+const libBodyNames={earth:'Tierra',mars:'Marte',moon:'Luna'};
+const libDatumDefaults={earth:'EGM2008 (elevación ortométrica)',mars:'Areoide MOLA',moon:'Radio lunar de referencia 1 737 400 m'};
+let libSaved=[],libPairs=[],libEditId=null,libLocalAvailable=true,libRestoredSelection=null;
+const libN=(v,d=1)=>v===null||v===undefined||!Number.isFinite(Number(v))?'Sin dato':fmt(v,d);
+const libNullable=v=>v===''||v===null||v===undefined?null:Number(v);
+const libNum=(v)=>Number.isFinite(Number(v))&&v!==null&&v!==''?Number(v):null;
+const libId=()=>('usr-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9));
+const libText=(s,n=200)=>String(s??'').slice(0,n).trim();
+function libAll(){return [...libSaved,...LIB_CATALOG];}
+function libGet(id){return libAll().find(s=>s.id===id)||null;}
+function libAlert(s){$('libStatus').textContent=s;}
+function libPersist(){
+ try{localStorage.setItem(LIB_KEY,JSON.stringify({version:1,saved:libSaved,pairs:libPairs,selection:{a:$('libCompareA')?.value||null,b:$('libCompareB')?.value||null,filter:$('libMatchBody')?.value||'mars'}}));libLocalAvailable=true;return true;}
+ catch(err){libLocalAvailable=false;libAlert('El navegador bloqueó el almacenamiento local o se quedó sin espacio. Exporta el respaldo JSON para no perder los cambios.');return false;}
+}
+function libLoad(){
+ try{const raw=localStorage.getItem(LIB_KEY);if(!raw)return;
+  const data=JSON.parse(raw);if(!data||data.version!==1)return;
+  libSaved=(Array.isArray(data.saved)?data.saved:[]).slice(0,500).map(libNormalize).filter(Boolean);
+  libPairs=(Array.isArray(data.pairs)?data.pairs:[]).slice(0,200).filter(x=>x&&typeof x.a==='string'&&typeof x.b==='string'&&typeof x.id==='string');
+  libRestoredSelection=data.selection&&typeof data.selection==='object'?data.selection:null;
+ }catch(e){libLocalAvailable=false;libAlert('No se pudo leer el almacenamiento del navegador. Puedes recuperar los lugares importando un respaldo JSON.');}
+}
+function libNormalize(raw){
+ if(!raw||typeof raw!=='object'||!['earth','mars','moon'].includes(raw.body))return null;
+ const lat=libNum(raw.lat),lon=libNum(raw.lon);
+ if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat< -90||lat>90||lon< -180||lon>180||!libText(raw.name,100))return null;
+ const v={id:libText(raw.id,90)||libId(),body:raw.body,name:libText(raw.name,100),lat,lon,
+  windowKm:libNum(raw.windowKm),resolutionM:libNum(raw.resolutionM),minM:libNum(raw.minM),maxM:libNum(raw.maxM),medianM:libNum(raw.medianM),slopeDeg:libNum(raw.slopeDeg),smoothPct:libNum(raw.smoothPct),reliefM:libNum(raw.reliefM),coveragePct:libNum(raw.coveragePct),
+  datum:libText(raw.datum,130)||libDatumDefaults[raw.body],crs:libText(raw.crs,120)||'Coordenadas decimales',source:libText(raw.source,180),notes:libText(raw.notes,1200),kind:libText(raw.kind,90)||'Registro del usuario',metricsSource:raw.metricsSource==='dossier'?'dossier':'dem',originId:libText(raw.originId,90),updatedAt:libText(raw.updatedAt,40)||new Date().toISOString()};
+ for(const k of ['slopeDeg','smoothPct','reliefM','coveragePct','windowKm','resolutionM'])if(v[k]!==null&&v[k]<0)return null;
+ if(v.slopeDeg!==null&&v.slopeDeg>90||v.smoothPct!==null&&v.smoothPct>100||v.coveragePct!==null&&v.coveragePct>100)return null;
+ if(v.minM!==null&&v.maxM!==null&&v.minM>v.maxM)return null;
+ if(raw.dem&&Array.isArray(raw.dem.values)){
+  const n=Number(raw.dem.n)||Math.round(Math.sqrt(raw.dem.values.length));
+  if(Number.isInteger(n)&&n>=3&&n<=50&&raw.dem.values.length===n*n){
+   const vals=raw.dem.values.map(libNum),spacing=libNum(raw.dem.spacing);
+   if(vals.every(Number.isFinite)&&spacing>0&&spacing<=100000){v.dem={values:vals,n,spacing,source:libText(raw.dem.source,180),importedAt:libText(raw.dem.importedAt,40),coreOnly:raw.dem.coreOnly===true};}
+  }
+ }
+ return v;
+}
+function libOptionLabel(s){return libBodyNames[s.body]+' · '+s.name+(s.dem?' [DEM]':'');}
+function libSetOptions(selectId,options,previous){
+ const sel=$(selectId),frag=document.createDocumentFragment();
+ for(const s of options){const opt=document.createElement('option');opt.value=s.id;opt.textContent=libOptionLabel(s);frag.append(opt);}
+ sel.replaceChildren(frag);if(previous&&options.some(s=>s.id===previous))sel.value=previous;
+}
+function libMakeButton(text,action,id){const b=document.createElement('button');b.type='button';b.className='lib-mini';b.textContent=text;b.dataset.action=action;b.dataset.id=id;return b;}
+function libRenderList(){
+ const term=$('libSearch').value.toLocaleLowerCase('es'),filter=$('libFilter').value;
+ const filtered=libAll().filter(s=>(filter==='all'||(filter==='saved'?libSaved.includes(s):s.body===filter))&&(!term||(s.name+' '+s.source+' '+s.notes).toLocaleLowerCase('es').includes(term)));
+ const frag=document.createDocumentFragment();
+ for(const s of filtered){
+  const item=document.createElement('div');item.className='lib-item';
+  const text=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=s.name;
+  small.textContent=libBodyNames[s.body]+' · '+(s.windowKm===null?'escala sin dato':libN(s.windowKm,2)+' km')+' · '+(s.dem?'DEM '+s.dem.n+'×'+s.dem.n+' guardado':(libSaved.includes(s)?'Ficha propia':'Dossier · pág. '+s.page));text.append(strong,small);
+  const actions=document.createElement('div');actions.className='lib-actions';actions.append(libMakeButton('A','compareA',s.id),libMakeButton('B','compareB',s.id));
+  if(libSaved.includes(s))actions.append(libMakeButton('Buscar parecidos','match',s.id),libMakeButton('Editar','edit',s.id),libMakeButton('Eliminar','delete',s.id));
+  else actions.append(libMakeButton('Guardar copia','copy',s.id));
+  item.append(text,actions);frag.append(item);
+ }
+ if(!filtered.length){const div=document.createElement('div');div.className='lib-empty';div.textContent='No se encontraron lugares con este filtro.';frag.append(div);}
+ $('libList').replaceChildren(frag);
+}
+function libRefresh(){
+ const a=$('libCompareA').value||libRestoredSelection?.a||'peru-se-05',b=$('libCompareB').value||libRestoredSelection?.b||'marte-jez01',target=$('libDemTarget').value;
+ const options=libAll();libSetOptions('libCompareA',options,a);libSetOptions('libCompareB',options,b);libSetOptions('libDemTarget',libSaved,target);
+ if(libRestoredSelection?.filter&&['other','mars','moon','earth','all'].includes(libRestoredSelection.filter))$('libMatchBody').value=libRestoredSelection.filter;
+ libRestoredSelection=null;
+ $('libSaveCurrent').disabled=!current;
+ $('libCount').textContent=LIB_CATALOG.length+' fichas científicas · '+libSaved.length+' propias';
+ libRenderList();libRenderPairs();libRenderQuickPlaces();libCompare();libRenderMatches();
+}
+
+// Buscar análogos solo entre fichas del dossier; jamás rellenar valores faltantes.
+function libReferenceAffinity(site,ref){
+ const a=libMetrics(site),b=libMetrics(ref);
+ const axes=[['slopeDeg',.42,15],['smoothPct',.28,50],['reliefM',.30,1500]];
+ let weight=0,distance=0,count=0;
+ for(const [key,w,scale] of axes){
+  const x=libNum(a?.[key]),y=libNum(b?.[key]);
+  if(x===null||y===null)continue;
+  count++;weight+=w;distance+=w*Math.min(1,Math.abs(x-y)/scale);
+ }
+ if(count<2)return null;
+ const score=Math.max(0,100*(1-distance/weight));
+ const scaleOK=site.windowKm>0&&ref.windowKm>0&&site.resolutionM>0&&ref.resolutionM>0
+  &&Math.abs(site.windowKm-ref.windowKm)/Math.max(site.windowKm,ref.windowKm)<=.2
+  &&Math.abs(site.resolutionM-ref.resolutionM)/Math.max(site.resolutionM,ref.resolutionM)<=.2;
+ const coverageOK=(a.coveragePct===null||a.coveragePct>=50)&&(b.coveragePct===null||b.coveragePct>=50);
+ return {ref,score,count,scaleOK,coverageOK};
+}
+function libRankReferences(site,filter='other'){
+ if(!site)return [];
+ return LIB_CATALOG.filter(r=>r.id!==site.id&&(filter==='all'||(filter==='other'?r.body!==site.body:r.body===filter)))
+  .map(r=>libReferenceAffinity(site,r)).filter(Boolean)
+  .sort((a,b)=>Number(b.scaleOK)-Number(a.scaleOK)||Number(b.coverageOK)-Number(a.coverageOK)||b.score-a.score||b.count-a.count||a.ref.name.localeCompare(b.ref.name,'es'));
+}
+function libRenderMatches(){
+ const site=libGet($('libCompareA').value),filter=$('libMatchBody').value;
+ const list=$('libMatchResults'),summary=$('libMatchSummary');
+ if(!site){summary.textContent='Elige una Zona A para encontrar lugares similares.';list.replaceChildren();return;}
+ const matches=libRankReferences(site,filter),frag=document.createDocumentFragment();
+ if(!matches.length){
+  summary.textContent='No hay referencias con al menos dos indicadores compartidos para «'+site.name+'». Puedes comparar manualmente o completar pendientes y desnivel de tu ficha.';
+  list.replaceChildren();return;
+ }
+ summary.textContent='Se comparó «'+site.name+'» con '+matches.length+' referencias del dossier que tienen al menos dos medidas en común. Estas son las 5 más cercanas según los indicadores disponibles:';
+ for(const match of matches.slice(0,5)){
+  const item=document.createElement('div');item.className='lib-match-item';
+  const info=document.createElement('div'),title=document.createElement('strong'),small=document.createElement('small'),score=document.createElement('span');
+  score.className='lib-match-score';score.textContent=fmt(match.score,0)+' / 100 · parecido orientativo';
+  title.textContent=libBodyNames[match.ref.body]+' · '+match.ref.name;
+  small.textContent=match.count+' de 3 indicadores · '+(match.scaleOK?'escala similar':'escala distinta o no informada')+(match.coverageOK?'':' · cobertura limitada');
+  info.append(score,title,small);
+  item.append(info,libMakeButton('Comparar ↔','pickReference',match.ref.id));frag.append(item);
+ }
+ list.replaceChildren(frag);
+}
+function libSelectAndMatch(id,forceMars=false){
+ const site=libGet(id);if(!site)return;
+ $('libCompareA').value=id;
+ if(forceMars&&site.body==='earth')$('libMatchBody').value=$('endBody')?.value||'mars';
+ const matches=libRankReferences(site,$('libMatchBody').value);
+ if(matches.length)$('libCompareB').value=matches[0].ref.id;
+ libCompare();libRenderMatches();libEnsurePair(id,$('libCompareB').value,true);libPersist();
+}
+
+function libNewEditor(site=null){
+ libEditId=site?.id||null;
+ $('libEditor').classList.remove('hidden');$('libEditorTitle').textContent=site?'Editar lugar guardado':'Añadir lugar de estudio';
+ $('libSiteForm').reset();
+ const values={libName:site?.name||'',libBody:site?.body||'earth',libLat:site?.lat??'',libLon:site?.lon??'',libWindow:site?.windowKm??'',libRes:site?.resolutionM??'',libSlope:site?.slopeDeg??'',libSmooth:site?.smoothPct??'',libRelief:site?.reliefM??'',libCoverage:site?.coveragePct??'',libMin:site?.minM??'',libMax:site?.maxM??'',libSource:site?.source||'',libNotes:site?.notes||''};
+ for(const [id,v] of Object.entries(values))$(id).value=v;
+ $('libDatum').value=site?.datum||libDatumDefaults[values.libBody];
+ $('libEditor').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function libSaveEditor(ev){
+ ev.preventDefault();
+ const name=libText($('libName').value,100),body=$('libBody').value,lat=parseCoord($('libLat').value),lon=parseCoord($('libLon').value);
+ if(!name||!['earth','mars','moon'].includes(body)||!Number.isFinite(lat)||!Number.isFinite(lon)||lat< -90||lat>90||lon< -180||lon>180){libAlert('Revisa nombre, latitud (-90 a 90) y longitud (-180 a 180).');return;}
+ const old=libSaved.find(s=>s.id===libEditId);
+ const fields={id:old?.id||libId(),body,name,lat,lon,windowKm:libNullable($('libWindow').value),resolutionM:libNullable($('libRes').value),slopeDeg:libNullable($('libSlope').value),smoothPct:libNullable($('libSmooth').value),reliefM:libNullable($('libRelief').value),coveragePct:libNullable($('libCoverage').value),minM:libNullable($('libMin').value),maxM:libNullable($('libMax').value),medianM:old?.medianM??null,datum:$('libDatum').value,source:libText($('libSource').value,180),notes:libText($('libNotes').value,1200),kind:old?.kind||'Registro del usuario',metricsSource:old?.metricsSource||'dem',originId:old?.originId||'',updatedAt:new Date().toISOString(),dem:old?.dem};
+ const site=libNormalize(fields);
+ if(!site){libAlert('Revisa los porcentajes (0–100), pendientes (0–90°), desnivel y rango de elevaciones.');return;}
+ if(old)libSaved[libSaved.indexOf(old)]=site;else libSaved.unshift(site);
+ libPersist();$('libEditor').classList.add('hidden');libRefresh();libSelectAndMatch(site.id,site.body==='earth');libAlert('Ficha «'+site.name+'» guardada. Se buscaron automáticamente referencias comparables del dossier.');
+}
+function libSaveEarth(opts={}){
+ if(!current){if(!opts.automatic)libAlert('Primero calcula un terreno terrestre.');return null;}
+ const c=current,vals=c.points.map(p=>p.z),derived=libDemStats(vals,c.spacing,7);
+ const selected=libGet(opts.quickId||'');
+ const suggested=selected?.body==='earth'?selected.name:libText($('libCurrentName').value,100);
+ const name=suggested||'Tierra · '+c.lat.toFixed(5)+', '+c.lon.toFixed(5);
+ const previous=libSaved.find(x=>x.body==='earth'&&Math.abs(x.lat-c.lat)<1e-6&&Math.abs(x.lon-c.lon)<1e-6);
+ const published=LIB_CATALOG.includes(selected)&&Math.abs(selected.lat-c.lat)<1e-6&&Math.abs(selected.lon-c.lon)<1e-6?selected:null;
+ const dossier=previous?.metricsSource==='dossier'?previous:published;
+ const source=dossier?dossier.source:c.source+' · consulta '+new Date().toLocaleDateString('es-PE');
+ const site=libNormalize({id:previous?.id||libId(),name:previous?.name||name,body:'earth',lat:c.lat,lon:c.lon,
+  windowKm:dossier?dossier.windowKm:6*c.spacing/1000,resolutionM:dossier?dossier.resolutionM:c.spacing,
+  minM:dossier?dossier.minM:derived.minM,maxM:dossier?dossier.maxM:derived.maxM,
+  medianM:dossier?dossier.medianM:derived.medianM,slopeDeg:dossier?dossier.slopeDeg:derived.slopeDeg,
+  smoothPct:dossier?dossier.smoothPct:derived.smoothPct,reliefM:dossier?dossier.reliefM:derived.reliefM,
+  coveragePct:dossier?dossier.coveragePct:100,datum:dossier?dossier.datum:'Elevación del DEM terrestre; datum según proveedor',
+  crs:'WGS84 · UTM '+c.zone+(c.lat<0?'S':'N'),source,
+  notes:dossier?dossier.notes:'Elevaciones reales consultadas en línea. Pendientes derivadas de la cuadrícula; resultados preliminares para exploración de terrenos.',
+  kind:dossier?dossier.kind:'Derivado de DEM terrestre',metricsSource:dossier?'dossier':'dem',originId:previous?.originId||published?.id||'',
+  updatedAt:new Date().toISOString(),dem:{values:vals,n:7,spacing:c.spacing,source:c.source,importedAt:new Date().toISOString()}});
+ if(!site)return null;
+ if(previous)libSaved[libSaved.indexOf(previous)]=site;else libSaved.unshift(site);
+ libPersist();libRefresh();libSelectAndMatch(site.id,true);
+ $('quickPlace').value=site.id;libQuickSelectedId=site.id;
+ const message='✓ «'+site.name+'» guardado automáticamente y comparado con '+libGet($('libCompareB').value)?.name+'.';
+ $('quickState').textContent=message;
+ libAlert(message+(dossier?' Los indicadores publicados se conservan; el DEM de 7×7 solo ilustra el relieve.':''));
+ return site;
+}
+
+function libCopyCatalog(id){
+ const s=LIB_CATALOG.find(x=>x.id===id);if(!s)return;
+ const copy=libNormalize({...s,id:libId(),name:s.name,metricsSource:'dossier',originId:s.id,kind:'Copia editable del dossier',notes:(s.notes||'')+' | Origen: Órbita, página '+s.page,updatedAt:new Date().toISOString()});
+ if(!copy)return;libSaved.unshift(copy);libPersist();libRefresh();$('libDemTarget').value=copy.id;libSelectAndMatch(copy.id);libAlert('Referencia «'+s.name+'» copiada a Mis lugares. Ya puedes importar su DEM y compararla.');
+}
+function libDelete(id){
+ const s=libSaved.find(x=>x.id===id);if(!s)return;
+ if(!confirm('¿Eliminar «'+s.name+'» y su DEM guardado? Esta acción no se puede deshacer sin un respaldo JSON.'))return;
+ libSaved=libSaved.filter(x=>x.id!==id);libPairs=libPairs.filter(p=>p.a!==id&&p.b!==id);libPersist();libRefresh();libAlert('Se eliminó la ficha guardada.');
+}
+function libDownload(name,text,mime){
+ const blob=new Blob([text],{type:mime}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
+function libBackup(){
+ const obj={app:'GeoPendiente NASA',version:1,exportedAt:new Date().toISOString(),saved:libSaved,pairs:libPairs};
+ libDownload('GeoPendiente_NASA_respaldo_lugares.json',JSON.stringify(obj,null,2),'application/json;charset=utf-8');
+ libAlert('Respaldo JSON generado: incluye '+libSaved.length+' fichas propias, sus DEM y '+libPairs.length+' comparaciones guardadas.');
+}
+async function libRestore(ev){
+ const file=ev.target.files?.[0];if(!file)return;
+ try{
+  if(file.size>3_000_000)throw Error('El respaldo supera 3 MB.');
+  const obj=JSON.parse(await file.text());if(obj.version!==1||!Array.isArray(obj.saved))throw Error('No es un respaldo compatible de GeoPendiente.');
+  const normalized=obj.saved.slice(0,500).map(libNormalize).filter(Boolean);
+  const byId=new Map(libSaved.map(s=>[s.id,s]));for(const s of normalized)byId.set(s.id,s);libSaved=[...byId.values()].slice(0,500);
+  const pairMap=new Map(libPairs.map(p=>[p.id,p]));for(const p of (Array.isArray(obj.pairs)?obj.pairs:[]))if(p&&typeof p.id==='string'&&typeof p.a==='string'&&typeof p.b==='string')pairMap.set(p.id,{id:libText(p.id,90),a:libText(p.a,90),b:libText(p.b,90),name:libText(p.name,150)});
+  libPairs=[...pairMap.values()].filter(p=>libGet(p.a)&&libGet(p.b)).slice(0,200);
+  libPersist();libRefresh();libAlert('Respaldo importado: '+normalized.length+' fichas válidas. Se combinaron con los lugares existentes.');
+ }catch(err){libAlert('No se pudo importar el respaldo: '+err.message);}
+ finally{ev.target.value='';}
+}
+function libCSVCells(line,sep){return line.split(sep).map(x=>x.trim().replace(/^"|"$/g,''));}
+function libParseDEM(text){
+ const lines=text.replace(/^\uFEFF/,'').split(/\r?\n/).map(s=>s.trim()).filter(s=>s&&!s.startsWith('#'));
+ if(!lines.length)throw Error('El CSV está vacío.');
+ const sep=lines[0].includes(';')?';':lines[0].includes('\t')?'\t':',';
+ const cells=lines.map(l=>libCSVCells(l,sep));
+ const parse=(s)=>Number(String(s).trim().replace(',','.'));
+ const n=cells.length;
+ if(n>=3&&n<=50&&cells.every(row=>row.length===n&&row.every(x=>Number.isFinite(parse(x)))))return {values:cells.flat().map(parse),n};
+ let start=0,columns={row:0,col:1,z:2};
+ const header=cells[0].map(s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+ const find=(regex)=>header.findIndex(s=>regex.test(s));
+ if(header.some(s=>/[a-z]/.test(s))){
+  const r=find(/^(fila|row|r)$/),c=find(/^(columna|col|column|c)$/),z=find(/(elev|cota|altura|height|^z$)/);
+  if(r<0||c<0||z<0)throw Error('Cabecera no reconocida: usa fila,columna,elevacion_m.');
+  columns={row:r,col:c,z};start=1;
+ }
+ const records=cells.slice(start),side=Math.round(Math.sqrt(records.length));
+ if(side<3||side>50||side*side!==records.length)throw Error('Se requiere una malla cuadrada de 3×3 a 50×50, por ejemplo 49 o 400 registros; se recibieron '+records.length+'.');
+ const tuples=records.map(row=>({r:parse(row[columns.row]),c:parse(row[columns.col]),z:parse(row[columns.z])}));
+ if(tuples.some(t=>!Number.isInteger(t.r)||!Number.isInteger(t.c)||!Number.isFinite(t.z)))throw Error('Filas, columnas o cotas inválidas.');
+ const minR=Math.min(...tuples.map(t=>t.r)),minC=Math.min(...tuples.map(t=>t.c));
+ if(![0,1].includes(minR)||![0,1].includes(minC))throw Error('Los índices de fila y columna deben empezar en 0 o 1.');
+ const values=Array(side*side).fill(null);
+ for(const t of tuples){const r=t.r-minR,c=t.c-minC;if(r<0||r>=side||c<0||c>=side||values[r*side+c]!==null)throw Error('Hay índices fuera de la malla o celdas repetidas.');values[r*side+c]=t.z;}
+ if(values.some(v=>v===null))throw Error('Faltan celdas en la malla '+side+'×'+side+'.');
+ return {values,n:side};
+}
+async function libImportDEM(){
+ const id=$('libDemTarget').value,site=libSaved.find(s=>s.id===id),file=$('libDemFile').files?.[0],spacing=Number($('libDemSpacing').value);
+ if(!site){libAlert('Guarda o copia una ficha antes de importar un DEM.');return;}
+ if(!file){libAlert('Selecciona el CSV con la malla de 7×7.');return;}
+ if(file.size>300_000||!Number.isFinite(spacing)||spacing<=0||spacing>100000){libAlert('Revisa el archivo (máximo 300 KB) y el espaciado en metros.');return;}
+ try{
+  const {values,n}=libParseDEM(await file.text());
+  site.dem={values,n,spacing,source:libText($('libDemProvenance').value,180)||file.name,importedAt:new Date().toISOString()};site.metricsSource='dem';site.windowKm=(n-1)*spacing/1000;site.resolutionM=spacing;
+  site.updatedAt=new Date().toISOString();libPersist();libRefresh();$('libDemTarget').value=id;
+  if($('libCompareA').value!==id&&$('libCompareB').value!==id)$('libCompareB').value=id;
+  libCompare();libAlert('DEM '+n+'×'+n+' guardado en «'+site.name+'» con '+spacing+' m de separación. Curvas y superficie habilitadas.');
+ }catch(e){libAlert('DEM no importado: '+e.message);}finally{$('libDemFile').value='';}
+}
+function libQuantile(arr,p){const sorted=[...arr].sort((a,b)=>a-b),x=(sorted.length-1)*p,i=Math.floor(x);return sorted[i]+(sorted[Math.min(i+1,sorted.length-1)]-sorted[i])*(x-i);}
+function libDemStats(values,spacing,n,coreOnly=false){
+ const slopes=[];for(let r=1;r<n-1;r++)for(let c=1;c<n-1;c++){
+  const z=(rr,cc)=>values[rr*n+cc];
+  const gx=(z(r-1,c+1)+2*z(r,c+1)+z(r+1,c+1)-z(r-1,c-1)-2*z(r,c-1)-z(r+1,c-1))/(8*spacing);
+  const gy=(z(r-1,c-1)+2*z(r-1,c)+z(r-1,c+1)-z(r+1,c-1)-2*z(r+1,c)-z(r+1,c+1))/(8*spacing);
+  slopes.push(Math.atan(Math.hypot(gx,gy))/RAD);
+ }
+ const zValues=coreOnly?values.filter((_,i)=>Math.floor(i/n)>0&&Math.floor(i/n)<n-1&&i%n>0&&i%n<n-1):values;
+ return {minM:Math.min(...zValues),maxM:Math.max(...zValues),medianM:libQuantile(zValues,.5),slopeDeg:libQuantile(slopes,.5),smoothPct:100*slopes.filter(v=>v<8).length/slopes.length,reliefM:libQuantile(zValues,.95)-libQuantile(zValues,.05),coveragePct:100};
+}
+function libMetrics(s){if(!s)return null;return s.metricsSource==='dossier'?s:(s.dem?libDemStats(s.dem.values,s.dem.spacing,s.dem.n,s.dem.coreOnly):s);}
+function libMetricLabel(s){return s?.metricsSource==='dossier'?'Indicadores publicados del dossier; DEM local solo para visualización':s?.dem?'DEM '+s.dem.n+'×'+s.dem.n+' guardado · Horn 3×3':'Ficha publicada o introducida · sin DEM de celdas';}
+function libCompare(){
+ const A=libGet($('libCompareA').value),B=libGet($('libCompareB').value);
+ if(!A||!B)return;
+ const ma=libMetrics(A),mb=libMetrics(B),headA=$('libHeadA'),headB=$('libHeadB');
+ const comparable=Math.abs((A.windowKm||0)-(B.windowKm||0))<.00001&&Math.abs((A.resolutionM||0)-(B.resolutionM||0))<.00001&&A.windowKm>0&&A.resolutionM>0;
+ headA.textContent=A.name;headB.textContent=B.name;
+ const rows=[['Pendiente mediana (°)','slopeDeg',2,'°'],['Área suave (<8°) (%)','smoothPct',2,'%'],['Desnivel P95−P5 (m)','reliefM',1,'m'],['Cobertura válida (%)','coveragePct',1,'%']];
+ const frag=document.createDocumentFragment();
+ for(const [label,key,dec,unit] of rows){
+  const tr=document.createElement('tr'),av=libNum(ma[key]),bv=libNum(mb[key]);
+  for(const t of [label,av===null?'—':fmt(av,dec)+' '+unit,bv===null?'—':fmt(bv,dec)+' '+unit,!comparable||av===null||bv===null?'—':(bv-av>0?'+':'')+fmt(bv-av,dec)+' '+(key==='smoothPct'||key==='coveragePct'?'pp':unit)]){
+   const td=document.createElement('td');td.textContent=t;tr.append(td);
+  }frag.append(tr);
+ }
+ $('libMetricsBody').replaceChildren(frag);
+ const dataA=libMetricLabel(A),dataB=libMetricLabel(B);
+ let info='A: '+libBodyNames[A.body]+' · '+dataA+'. B: '+libBodyNames[B.body]+' · '+dataB+'. ';
+ info+=comparable?'Las fichas indican la misma ventana y resolución de análisis. ':'ATENCIÓN: ventanas o resoluciones diferentes; las métricas no son directamente comparables. ';
+ if(A.coveragePct!==null&&A.coveragePct<50||B.coveragePct!==null&&B.coveragePct<50)info+='Una zona presenta cobertura de pendiente inferior al 50 %. ';
+ info+='Las cotas absolutas no se comparan entre cuerpos por sus datums verticales distintos. Las curvas pueden provenir de DEM reales o, cuando solo existe una ficha científica, de una superficie estimada a partir de sus indicadores publicados.';
+ $('libCompareInfo').textContent=info;
+ libDrawSurface($('libCanvasA'),A);libDrawSurface($('libCanvasB'),B);
+ const visA=libVisualDem(A);$('libCanvasLabelA').textContent=A.name+' · '+(A.dem?'DEM '+A.dem.n+'×'+A.dem.n+' · '+A.dem.spacing+' m · '+A.datum:(visA?'Curvas estimadas · '+visA.n+'×'+visA.n+' · '+visA.spacing+' m · '+A.datum:'sin malla DEM; ficha resumen'));
+ const visB=libVisualDem(B);$('libCanvasLabelB').textContent=B.name+' · '+(B.dem?'DEM '+B.dem.n+'×'+B.dem.n+' · '+B.dem.spacing+' m · '+B.datum:(visB?'Curvas estimadas · '+visB.n+'×'+visB.n+' · '+visB.spacing+' m · '+B.datum:'sin malla DEM; ficha resumen'));
+ libRenderInstantComparison(A,B,ma,mb,comparable);
+ endRenderComparison(A,B);
+}
+function libColor(t,body){
+ const colors=body==='moon'?[[44,55,72],[111,121,137],[180,188,197],[234,234,231]]:body==='mars'?[[79,47,53],[158,78,63],[211,140,98],[247,207,154]]:[[30,76,87],[55,131,127],[152,176,124],[238,217,159]];
+ const x=Math.max(0,Math.min(.99999,t))*(colors.length-1),i=Math.floor(x),f=x-i;
+ return colors[i].map((v,k)=>Math.round(v+(colors[i+1][k]-v)*f));
+}
+function libSample(values,u,v,n){
+ const count=n-1,x=Math.min(count-.000001,Math.max(0,u*count)),y=Math.min(count-.000001,Math.max(0,v*count)),c=Math.floor(x),r=Math.floor(y),fx=x-c,fy=y-r;
+ const a=values[r*n+c],b=values[r*n+c+1],d=values[(r+1)*n+c],e=values[(r+1)*n+c+1];
+ return (a*(1-fx)+b*fx)*(1-fy)+(d*(1-fx)+e*fx)*fy;
+}
+
+function libTerrainStyle(site){
+ const t=((site?.name||'')+' '+(site?.notes||'')).toLowerCase();
+ if(/cráter|crater|jezero|gale|tycho|copérnico|copernico|ries|meteor|haughton|shackleton/.test(t))return 'crater';
+ if(/chasma|cañón|canon|valles secos|gran cañón|gran canon/.test(t))return 'canyon';
+ if(/mons|mauna|volcán|volcan|apenninus|hadley|andagua/.test(t))return 'mountain';
+ if(/mare|salar|sechura|llanura|planitia|tranquillitatis|chryse|uyuni/.test(t))return 'plain';
+ return 'rolling';
+}
+function libDerivedAzimuth(site){
+ const lat=Number(site?.lat||0),lon=Number(site?.lon||0);
+ let seed=Math.sin((lat+lon*1.7)*12.9898)*43758.5453;
+ seed=seed-Math.floor(seed);
+ return (seed*360)%360;
+}
+function libNormalize01(values){
+ const min=Math.min(...values),max=Math.max(...values),span=Math.max(1e-9,max-min);
+ return values.map(v=>(v-min)/span);
+}
+function libVisualDem(site){
+ if(!site)return null;
+ if(site.__visualDem)return site.__visualDem;
+ if(site.dem){site.__visualDem={values:site.dem.values,n:site.dem.n,spacing:site.dem.spacing,synthetic:false,source:'dem'};return site.__visualDem;}
+ const hasAny=Number.isFinite(site.minM)||Number.isFinite(site.maxM)||Number.isFinite(site.reliefM)||Number.isFinite(site.slopeDeg);
+ if(!hasAny)return null;
+ const spacing=Math.max(10,Number(site.resolutionM)||100);
+ const sideM=Math.max(spacing*6,Math.round((Number(site.windowKm)||2)*1000));
+ const n=Math.max(7,Math.min(41,Math.round(sideM/spacing)+1));
+ const style=libTerrainStyle(site),theta=libDerivedAzimuth(site)*RAD;
+ const slopeTarget=Math.max(0,Number(site.slopeDeg)||0);
+ const smoothPct=Math.max(0,Math.min(100,Number(site.smoothPct)||50));
+ const roughFactor=Math.max(.04,(100-smoothPct)/100);
+ const values=[];
+ for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+  const x=(c/(n-1))*2-1,y=(r/(n-1))*2-1,rad=Math.hypot(x,y),ang=Math.atan2(y,x);
+  let z=0;
+  if(style==='crater')z=0.9*Math.exp(-Math.pow((rad-.58)/.16,2))-1.25*Math.exp(-(rad*rad)/.12)+0.12*Math.sin(4*ang)*Math.exp(-rad*1.6);
+  else if(style==='canyon')z=-1.1*Math.exp(-(y*y)/.09)+0.25*x+0.16*Math.sin(2.5*x+1.4*y);
+  else if(style==='mountain')z=1.15*Math.exp(-(rad*rad)/.16)+0.14*Math.sin(5*ang)*Math.exp(-rad*1.8)-0.10*rad;
+  else if(style==='plain')z=0.24*x+0.12*y+0.08*Math.sin(2.6*x)*Math.cos(2.2*y);
+  else z=0.32*x+0.24*Math.sin(2.8*x+1.7*y)+0.14*Math.cos(2.1*y);
+  const tilt=(Math.cos(theta)*x+Math.sin(theta)*y)*Math.tan(slopeTarget*RAD)*1.8;
+  const rough=roughFactor*(0.26*Math.sin((3.1+roughFactor*3.7)*x+1.1*y)+0.19*Math.cos(2.7*y-1.4*x)+0.10*Math.sin(4.6*rad+2*ang));
+  values.push(z+tilt+rough);
+ }
+ let normalized=libNormalize01(values);
+ const minM=Number.isFinite(site.minM)?site.minM:0;
+ const maxM=Number.isFinite(site.maxM)?site.maxM:(minM+(Number(site.reliefM)||50));
+ const targetSpan=Math.max(1e-6,maxM-minM);
+ let scaled=normalized.map(v=>minM+v*targetSpan);
+ const currentMin=Math.min(...scaled),currentMax=Math.max(...scaled),span=Math.max(1e-6,currentMax-currentMin);
+ scaled=scaled.map(v=>minM+(v-currentMin)/span*targetSpan);
+ const centerTarget=Number.isFinite(site.medianM)?site.medianM:(minM+maxM)/2;
+ const currentMedian=libQuantile(scaled,.5);
+ const offset=centerTarget-currentMedian;
+ scaled=scaled.map(v=>v+offset);
+ const floor=minM-(targetSpan*.15),ceil=maxM+(targetSpan*.15);
+ scaled=scaled.map(v=>Math.max(floor,Math.min(ceil,v)));
+ site.__visualDem={values:scaled,n,spacing,synthetic:true,source:'metrics',estimated:true};
+ return site.__visualDem;
+}
+function libContours(vals,n){
+ const min=Math.min(...vals),max=Math.max(...vals),range=max-min;
+ if(range<.00001)return [];
+ const interval=contourInterval(range),out=[];let count=0;
+ for(let level=Math.ceil(min/interval)*interval;level<=max+1e-8&&count<18;level+=interval,count++){
+  const segments=[];
+  for(let r=0;r<n-1;r++)for(let c=0;c<n-1;c++){
+   const count=n-1,nodes=[{x:c/count,y:r/count,z:vals[r*n+c]},{x:(c+1)/count,y:r/count,z:vals[r*n+c+1]},{x:(c+1)/count,y:(r+1)/count,z:vals[(r+1)*n+c+1]},{x:c/count,y:(r+1)/count,z:vals[(r+1)*n+c]}],cuts=[];
+   for(let k=0;k<4;k++){const A=nodes[k],B=nodes[(k+1)%4];if((A.z<level&&B.z>=level)||(B.z<level&&A.z>=level)){
+    const t=(level-A.z)/(B.z-A.z);cuts.push({x:A.x+(B.x-A.x)*t,y:A.y+(B.y-A.y)*t});}}
+   for(let k=0;k+1<cuts.length;k+=2)segments.push([cuts[k],cuts[k+1]]);
+  }
+  out.push({level,segments,major:count%3===0});
+ }
+ return out;
+}
+
+// Todas las líneas del DEM, incluida la primera y la última. Contorno oscuro y línea clara
+// para conservar contraste en zonas claras de Marte y de la Luna.
+function libGridPath(ctx,points,major){
+ if(points.length<2)return;
+ ctx.beginPath();for(let i=0;i<points.length;i++){const p=points[i];i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);}
+ ctx.strokeStyle=major?'rgba(13,24,35,.88)':'rgba(15,26,36,.62)';ctx.lineWidth=major?3.3:2.0;ctx.stroke();
+ ctx.strokeStyle=major?'rgba(255,251,236,1)':'rgba(242,247,251,.91)';ctx.lineWidth=major?1.65:.8;ctx.stroke();
+}
+function libFullGrid2D(ctx,left,top,side,n){
+ const count=n-1,majorEvery=Math.max(1,Math.round(count/5));
+ for(let k=0;k<=count;k++){
+  const v=k/count,p=left+v*side,q=top+v*side,major=k===0||k===count||k%majorEvery===0;
+  libGridPath(ctx,[{x:p,y:top},{x:p,y:top+side}],major);
+  libGridPath(ctx,[{x:left,y:q},{x:left+side,y:q}],major);
+ }
+}
+function libFullGrid3D(ctx,project,values,n){
+ const count=n-1,majorEvery=Math.max(1,Math.round(count/5)),steps=Math.max(80,n*3);
+ for(let k=0;k<=count;k++)for(let axis=0;axis<2;axis++){
+  const points=[],v=k/count,major=k===0||k===count||k%majorEvery===0;
+  for(let j=0;j<=steps;j++){
+   const t=j/steps,u=axis===0?v:t,w=axis===0?t:v;
+   points.push(project(u,w,libSample(values,u,w,n)));
+  }
+  libGridPath(ctx,points,major);
+ }
+}
+
+
+function libDrawSurface(canvas,site,modeOverride=null){
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ const W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H);
+ const gradient=ctx.createLinearGradient(0,0,W,H);gradient.addColorStop(0,'#172231');gradient.addColorStop(1,'#334052');ctx.fillStyle=gradient;ctx.fillRect(0,0,W,H);
+ ctx.fillStyle='#dbe6f1';ctx.font='bold 15px system-ui';ctx.fillText(libBodyNames[site.body]+' · '+site.name.slice(0,32),18,28);
+ const vis=libVisualDem(site);
+ if(!vis){
+  for(let i=0;i<10;i++){const x=30+i*(W-60)/9,y=60+i*(H-105)/9;libGridPath(ctx,[{x,y:58},{x,y:H-40}],i===0||i===9||i%3===0);libGridPath(ctx,[{x:30,y},{x:W-30,y}],i===0||i===9||i%3===0);}
+  ctx.fillStyle='rgba(12,21,32,.93)';ctx.fillRect(W/2-197,H/2-82,394,166);
+  const m=libMetrics(site);ctx.textAlign='center';ctx.fillStyle='#f7f9fc';ctx.font='bold 16px system-ui';ctx.fillText('SIN DATOS SUFICIENTES',W/2,H/2-52);
+  ctx.font='14px system-ui';ctx.fillStyle='#e0e9f3';ctx.fillText('Pendiente mediana: '+libN(m?.slopeDeg,2)+'°',W/2,H/2-23);ctx.fillText('Área suave: '+libN(m?.smoothPct,1)+' %',W/2,H/2+2);ctx.fillText('Desnivel: '+libN(m?.reliefM,1)+' m',W/2,H/2+27);
+  ctx.font='11px system-ui';ctx.fillStyle='#ffdfb9';ctx.fillText('Solo hay una cuadrícula de referencia visible',W/2,H/2+56);ctx.textAlign='left';return;
+ }
+ const values=vis.values,n=vis.n,spacing=vis.spacing,min=Math.min(...values),max=Math.max(...values),range=Math.max(1e-6,max-min),contours=libContours(values,n),mode=modeOverride||$('libView').value;
+ if(mode==='2d'){
+  const side=300,left=(W-side)/2,top=62,image=ctx.createImageData(side,side);
+  for(let y=0;y<side;y++)for(let x=0;x<side;x++){
+   const u=x/(side-1),v=y/(side-1),z=libSample(values,u,v,n),eps=.01;
+   const gx=(libSample(values,Math.min(1,u+eps),v,n)-libSample(values,Math.max(0,u-eps),v,n))/(2*eps*(n-1)*spacing);
+   const gy=(libSample(values,u,Math.max(0,v-eps),n)-libSample(values,u,Math.min(1,v+eps),n))/(2*eps*(n-1)*spacing);
+   const shade=Math.max(.5,Math.min(1.16,.86+gx*.25-gy*.25)),rgb=libColor((z-min)/range,site.body),k=(y*side+x)*4;
+   image.data[k]=rgb[0]*shade;image.data[k+1]=rgb[1]*shade;image.data[k+2]=rgb[2]*shade;image.data[k+3]=255;
+  }
+  ctx.putImageData(image,left,top);
+  libFullGrid2D(ctx,left,top,side,n);
+  for(const c of contours){ctx.strokeStyle=c.major?'#fff5d5':'#fff6e0b8';ctx.lineWidth=c.major?2:1;ctx.beginPath();for(const [a,b] of c.segments){ctx.moveTo(left+a.x*side,top+a.y*side);ctx.lineTo(left+b.x*side,top+b.y*side);}ctx.stroke();}
+  ctx.fillStyle='#f2f7ff';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText('N ↑',W/2,54);ctx.fillText('Cuadrícula completa '+n+'×'+n+' · '+fmt((n-1)*spacing,0)+' m de lado',W/2,H-12);ctx.textAlign='left';
+ }else{
+  const rad=-.65,sin=Math.sin(rad),cos=Math.cos(rad),S=235,vert=range>0?(1.1/Math.max(.1,range/((n-1)*spacing))):1;
+  const project=(u,v,z)=>{const x=u-.5,y=.5-v,h=(z-(min+max)/2)/((n-1)*spacing)*vert;return{x:W/2+(x*cos+y*sin)*S,y:H/2+30+(-x*sin+y*cos)*S*.55-h*S*.6};};
+  const tris=[];
+  for(let r=0;r<n-1;r++)for(let c=0;c<n-1;c++){
+   const pts=[{u:c/(n-1),v:r/(n-1),z:values[r*n+c]},{u:(c+1)/(n-1),v:r/(n-1),z:values[r*n+c+1]},{u:(c+1)/(n-1),v:(r+1)/(n-1),z:values[(r+1)*n+c+1]},{u:c/(n-1),v:(r+1)/(n-1),z:values[(r+1)*n+c]}];
+   const p=pts.map(t=>({...project(t.u,t.v,t.z),z:t.z,u:t.u,v:t.v}));
+   tris.push([p[0],p[1],p[2]],[p[0],p[2],p[3]]);
+  }
+  tris.sort((a,b)=>(a[0].y+a[1].y+a[2].y)-(b[0].y+b[1].y+b[2].y));
+  for(const tri of tris){
+   const avg=(tri[0].z+tri[1].z+tri[2].z)/3;
+   const rgb=libColor((avg-min)/range,site.body);
+   const ux=tri[1].x-tri[0].x,uy=tri[1].y-tri[0].y,vx=tri[2].x-tri[0].x,vy=tri[2].y-tri[0].y;
+   const shade=Math.max(.58,Math.min(1.18,.95-((ux*vy-uy*vx)/45000)));
+   ctx.beginPath();ctx.moveTo(tri[0].x,tri[0].y);ctx.lineTo(tri[1].x,tri[1].y);ctx.lineTo(tri[2].x,tri[2].y);ctx.closePath();
+   ctx.fillStyle=`rgb(${Math.round(rgb[0]*shade)},${Math.round(rgb[1]*shade)},${Math.round(rgb[2]*shade)})`;ctx.fill();
+  }
+  for(const c of contours){ctx.strokeStyle=c.major?'rgba(255,245,213,.95)':'rgba(255,246,224,.58)';ctx.lineWidth=c.major?1.7:.8;ctx.beginPath();for(const [a,b] of c.segments){const p1=project(a.x,a.y,libSample(values,a.x,a.y,n)),p2=project(b.x,b.y,libSample(values,b.x,b.y,n));ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);}ctx.stroke();}
+  libFullGrid3D(ctx,project,values,n);
+ }
+ const badge=vis.synthetic?'CURVAS ESTIMADAS':'CURVAS CALCULADAS';
+ const detail=vis.synthetic?'Basadas en pendiente, desnivel y cotas publicadas':'Basadas en un DEM con alturas por celda';
+ ctx.fillStyle='rgba(9,16,24,.84)';ctx.fillRect(14,H-58,286,42);ctx.strokeStyle='rgba(255,255,255,.16)';ctx.strokeRect(14,H-58,286,42);
+ ctx.fillStyle='#fff4d8';ctx.font='bold 12px system-ui';ctx.fillText(badge,26,H-39);ctx.fillStyle='#dbe8f1';ctx.font='10.5px system-ui';ctx.fillText(detail,26,H-23);
+ if(vis.synthetic){ctx.fillStyle='rgba(10,18,27,.88)';ctx.fillRect(W-196,14,176,30);ctx.fillStyle='#fce5bf';ctx.font='bold 11px system-ui';ctx.fillText('Superficie aproximada',W-184,33);}
+}
+function libSavePair(){
+ const a=$('libCompareA').value,b=$('libCompareB').value;if(!libGet(a)||!libGet(b)){libAlert('Selecciona dos lugares para guardar la comparación.');return;}
+ const name=libGet(a).name+' ↔ '+libGet(b).name;
+ if(libPairs.some(p=>p.a===a&&p.b===b)){libAlert('Esa comparación ya está guardada.');return;}
+ libPairs.unshift({id:libId(),a,b,name,createdAt:new Date().toISOString()});libPersist();libRenderPairs();libAlert('Comparación guardada: '+name+'.');
+}
+function libRenderPairs(){
+ const frag=document.createDocumentFragment();
+ if(!libPairs.length){const label=document.createElement('span');label.className='lib-pill';label.textContent='Sin comparaciones guardadas';frag.append(label);}
+ for(const p of libPairs){if(!libGet(p.a)||!libGet(p.b))continue;const wrapper=document.createElement('span');wrapper.className='lib-row';wrapper.append(libMakeButton('↔ '+libText(p.name,55),'loadPair',p.id),libMakeButton('×','removePair',p.id));frag.append(wrapper);}
+ $('libSavedPairs').replaceChildren(frag);
+}
+function libExportCompare(){
+ const A=libGet($('libCompareA').value),B=libGet($('libCompareB').value);if(!A||!B)return;
+ const mA=libMetrics(A),mB=libMetrics(B);
+ const rows=[['Indicador','Zona A: '+A.name,'Zona B: '+B.name,'Diferencia B-A'],['Cuerpo',libBodyNames[A.body],libBodyNames[B.body],''],['Fuente',A.source,B.source,''],['Datum',A.datum,B.datum,''],['Ventana_km',A.windowKm??'',B.windowKm??'',''],['Resolucion_m',A.resolutionM??'',B.resolutionM??'','']];
+ for(const [name,key] of [['Pendiente_mediana_grados','slopeDeg'],['Area_suave_menor_8_grados_pct','smoothPct'],['Desnivel_P95_P5_m','reliefM'],['Cobertura_pct','coveragePct']]){
+  const x=libNum(mA[key]),y=libNum(mB[key]);rows.push([name,x??'',y??'',x===null||y===null?'':y-x]);
+ }
+ const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';
+ libDownload('GeoPendiente_comparacion_planetaria.csv','\ufeff'+rows.map(r=>r.map(quote).join(';')).join('\r\n'),'text/csv;charset=utf-8');
+}
+
+/* Selección de una sola zona: biblioteca + análisis terrestre + Marte. */
+function libRenderQuickPlaces(){
+ const sel=$('quickPlace'),old=libQuickSelectedId||sel.value;
+ const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Elige un lugar del proyecto o uno guardado…';
+ const saved=document.createElement('optgroup');saved.label='MIS ZONAS GUARDADAS';
+ const earth=document.createElement('optgroup');earth.label='SECTORES DEL PROYECTO · PERÚ';
+ const global=document.createElement('optgroup');global.label='OTROS ANÁLOGOS TERRESTRES · DOSSIER';
+ for(const site of libSaved.filter(x=>x.body==='earth')){const o=document.createElement('option');o.value=site.id;o.textContent=site.name+(site.dem?' · superficie guardada':'');saved.append(o);}
+ for(const site of LIB_CATALOG.filter(x=>x.body==='earth'&&x.id.startsWith('peru-'))){const o=document.createElement('option');o.value=site.id;o.textContent=site.name;earth.append(o);}
+ for(const site of LIB_CATALOG.filter(x=>x.body==='earth'&&!x.id.startsWith('peru-'))){const o=document.createElement('option');o.value=site.id;o.textContent=site.name;global.append(o);}
+ sel.replaceChildren(placeholder,saved,earth,global);
+ if(old&&libGet(old)?.body==='earth')sel.value=old;
+}
+function libEnsurePair(a,b,automatic=false){
+ if(!libGet(a)||!libGet(b)||a===b)return;
+ const existing=libPairs.find(p=>p.a===a&&p.b===b);if(existing)return existing;
+ const name=libGet(a).name+' ↔ '+libGet(b).name;
+ const pair={id:libId(),a,b,name,automatic,createdAt:new Date().toISOString()};
+ libPairs.unshift(pair);if(libPairs.length>200)libPairs.length=200;libPersist();libRenderPairs();return pair;
+}
+function libRenderInstantComparison(A,B,ma,mb,comparable){
+ const panel=$('autoMarsPanel');
+ if(A.body!=='earth'||B.body!=='mars'||!libSaved.some(x=>x.id===A.id)){panel.classList.add('hidden');return;}
+ panel.classList.remove('hidden');
+ $('autoMarsTitle').textContent=A.name+' ↔ '+B.name;
+ const affinity=libReferenceAffinity(A,B);
+ $('autoMarsScore').textContent=affinity?fmt(affinity.score,0)+'/100 · orientativo':'Datos insuficientes';
+ $('autoMarsSub').textContent='Tierra: '+(A.metricsSource==='dossier'?'métricas publicadas':A.dem?'DEM calculado':'ficha guardada')+' · Marte: '+B.source;
+ const frag=document.createDocumentFragment();
+ for(const [label,key,unit,dec] of [['Pendiente mediana','slopeDeg','°',2],['Área suave (<8°)','smoothPct','%',1],['Desnivel P95−P5','reliefM','m',1]]){
+  const box=document.createElement('div');box.className='auto-mars-stat';
+  const l=document.createElement('label');l.textContent=label;
+  const val=document.createElement('strong');val.textContent=libN(ma[key],dec)+' '+unit+' / '+libN(mb[key],dec)+' '+unit;
+  const sub=document.createElement('small');sub.textContent='Tierra / Marte';box.append(l,val,sub);frag.append(box);
+ }
+ $('autoMarsMetrics').replaceChildren(frag);
+ $('autoMarsNote').textContent=(comparable?'Ambas fichas usan la misma ventana y resolución declaradas. ':'Escalas distintas: el parecido es exploratorio, no una equivalencia directa. ')+
+  'La comparación utiliza pendientes y desniveles; no compara cotas absolutas entre planetas. '+(A.metricsSource==='dossier'?'':'El cálculo nuevo no aplica la máscara de agua WorldCover del dossier. ')+'Sin DEM marciano de celdas no se dibujan curvas reales en Marte.';
+}
+function libShowCachedEarth(site){
+ if(!site?.dem||site.body!=='earth')return false;
+ const {dem}=site,zone=autoZone(site.lon),spacing=(dem.n-1)*dem.spacing/6;
+ const points=buildPoints(site.lat,site.lon,zone,spacing);
+ points.forEach(p=>{p.z=libSample(dem.values,p.c/6,p.r/6,dem.n);});
+ const s=stats(points,spacing);current={lat:site.lat,lon:site.lon,zone,points,spacing,source:'Copernicus',s};
+ updateUI(current);setStatus('Superficie recuperada de la biblioteca local, sin nueva consulta. La comparación con Marte ya está disponible.','success');
+ return true;
+}
+function libSelectQuick(id){
+ const found=libGet(id);if(!found||found.body!=='earth')return;
+ let site=found;
+ if(LIB_CATALOG.includes(found)){
+  const previous=libSaved.find(s=>s.originId===found.id||(s.body==='earth'&&Math.abs(s.lat-found.lat)<1e-6&&Math.abs(s.lon-found.lon)<1e-6));
+  if(previous)site=previous;
+  else{
+   site=libNormalize({...found,id:libId(),originId:found.id,metricsSource:'dossier',kind:'Copia del dossier científico',updatedAt:new Date().toISOString()});
+   if(!site)return;libSaved.unshift(site);
+  }
+ }
+ libQuickSelectedId=site.id;
+ $('lat').value=String(site.lat);$('lon').value=String(site.lon);$('zone').value='auto';
+ $('libCurrentName').value=site.name;
+ libPersist();libRefresh();$('quickPlace').value=site.id;libSelectAndMatch(site.id,true);
+ const ref=libGet($('libCompareB').value);
+ $('quickState').textContent='✓ '+site.name+' guardado · comparación inmediata con '+(ref?.name||libBodyNames[$('endBody').value]);
+ libAlert('✓ '+site.name+' disponible y comparado con '+(ref?.name||libBodyNames[$('endBody').value])+'.');
+ if(site.dem){++libRequestSeq;busy(false);libShowCachedEarth(site);return;}
+ $('quickState').textContent+=' · consultando relieve para el visor…';
+ $('geoForm').requestSubmit();
+}
+async function libFetchComparisonDEM(lat,lon){
+ // Cuadrícula de 22×22: interior de 20×20 celdas para Horn (400 pendientes).
+ // El espaciamiento 100 m produce una ventana central comparable de ~2 km.
+ const n=22,spacing=100,points=[];
+ for(let r=0;r<n;r++)for(let c=0;c<n;c++){
+  const dx=(c-(n-1)/2)*spacing,dy=((n-1)/2-r)*spacing;
+  points.push(shifted(lat,lon,dx,dy));
+ }
+ const vals=[];
+ // Solicitudes pequeñas, dos a la vez para evitar URL excesiva y no saturar el servicio.
+ const batches=[];for(let i=0;i<points.length;i+=65)batches.push(points.slice(i,i+65));
+ for(let i=0;i<batches.length;i+=2){
+  const result=await Promise.all(batches.slice(i,i+2).map(async part=>{
+   const url='https://api.open-meteo.com/v1/elevation?'+new URLSearchParams({latitude:part.map(p=>p.lat.toFixed(7)).join(','),longitude:part.map(p=>p.lon.toFixed(7)).join(',')});
+   const j=await fetchJson(url);
+   if(!Array.isArray(j.elevation)||j.elevation.length!==part.length||j.elevation.some(x=>!Number.isFinite(Number(x))))throw Error('Elevaciones incompletas del servicio');
+   return j.elevation.map(Number);
+  }));
+  for(const part of result)vals.push(...part);
+ }
+ return {n,spacing,values:vals,coreOnly:true,source:'Copernicus GLO-90 (API Open-Meteo)',importedAt:new Date().toISOString()};
+}
+async function libImproveEarthComparison(id,lat,lon,seq){
+ const site=libSaved.find(s=>s.id===id);if(!site||site.metricsSource==='dossier')return;
+ $('quickState').textContent='✓ Guardado · calculando una ventana de 2 km para la comparación planetaria…';
+ try{
+  const dem=await libFetchComparisonDEM(lat,lon);
+  const saved=libSaved.find(s=>s.id===id);if(!saved||Math.abs(saved.lat-lat)>1e-6||Math.abs(saved.lon-lon)>1e-6)return;
+  saved.dem=dem;saved.windowKm=2;saved.resolutionM=100;saved.metricsSource='dem';saved.updatedAt=new Date().toISOString();
+  saved.source='Copernicus GLO-90 · cuadrícula 100 m, ventana 2 km';
+  const metric=libDemStats(dem.values,dem.spacing,dem.n,true);
+  Object.assign(saved,metric);
+  libPersist();
+  if(seq===libRequestSeq){libRefresh();libSelectAndMatch(id,true);$('quickPlace').value=id;libQuickSelectedId=id;
+   $('quickState').textContent='✓ Guardado · 400 pendientes de la ventana de 2 km calculadas para la comparación.';
+   libAlert('Comparación automática terminada: 22×22 alturas DEM terrestres y 400 pendientes calculadas. Puedes comparar con Marte o la Luna.');}
+ }catch(err){
+  if(seq===libRequestSeq){$('quickState').textContent='✓ Guardado y comparado con la cuadrícula inicial. No se pudo ampliar a 2 km.';
+   libAlert('Se guardó y comparó tu zona. La consulta adicional de 2 km no estuvo disponible ('+(err?.message||'sin respuesta')+'); se mantiene la escala original y se advierte la diferencia.');}
+ }
+}
+$('quickPlace').addEventListener('change',ev=>{if(ev.target.value)libSelectQuick(ev.target.value);});
+
+$('libNew').addEventListener('click',()=>libNewEditor());
+$('libCancel').addEventListener('click',()=>{$('libEditor').classList.add('hidden');libEditId=null;});
+$('libSiteForm').addEventListener('submit',libSaveEditor);
+$('libBody').addEventListener('change',ev=>{$('libDatum').value=libDatumDefaults[ev.target.value];});
+$('libSaveCurrent').addEventListener('click',libSaveEarth);
+$('libBackup').addEventListener('click',libBackup);
+$('libRestore').addEventListener('change',libRestore);
+$('libSearch').addEventListener('input',libRenderList);
+$('libFilter').addEventListener('change',libRenderList);
+$('libList').addEventListener('click',ev=>{
+ const b=ev.target.closest('button[data-action]');if(!b)return;
+ const {action,id}=b.dataset;
+ if(action==='compareA'||action==='compareB'){if(action==='compareA'&&libGet(id)?.body==='earth')libSelectAndMatch(id,true);else{$(action==='compareA'?'libCompareA':'libCompareB').value=id;libCompare();libRenderMatches();libEnsurePair($('libCompareA').value,$('libCompareB').value,true);libPersist();}}
+ else if(action==='match'){libSelectAndMatch(id);$('libMatchPanel').scrollIntoView({behavior:'smooth',block:'nearest'});}
+ else if(action==='copy')libCopyCatalog(id);
+ else if(action==='edit'){const s=libSaved.find(s=>s.id===id);if(s)libNewEditor(s);}
+ else if(action==='delete')libDelete(id);
+});
+$('libCompareA').addEventListener('change',()=>{libCompare();libRenderMatches();libPersist();});
+$('libCompareB').addEventListener('change',()=>{libCompare();libEnsurePair($('libCompareA').value,$('libCompareB').value,true);libPersist();});
+$('libMatchBody').addEventListener('change',()=>{libRenderMatches();libPersist();});
+$('libMatchResults').addEventListener('click',ev=>{const b=ev.target.closest('button[data-action="pickReference"]');if(!b)return;$('libCompareB').value=b.dataset.id;libCompare();libPersist();});
+$('libView').addEventListener('change',libCompare);
+$('libPresetJez').addEventListener('click',()=>{$('libCompareA').value='peru-se-05';$('libCompareB').value='marte-jez01';libCompare();libRenderMatches();libPersist();});
+$('libPresetSha').addEventListener('click',()=>{$('libCompareA').value='peru-an-05';$('libCompareB').value='luna-sha01';libCompare();libRenderMatches();libPersist();});
+$('libImportDem').addEventListener('click',libImportDEM);
+$('libSavePair').addEventListener('click',libSavePair);
+$('libExportCompare').addEventListener('click',libExportCompare);
+$('libSavedPairs').addEventListener('click',ev=>{
+ const b=ev.target.closest('button[data-action]');if(!b)return;
+ const p=libPairs.find(p=>p.id===b.dataset.id);if(!p)return;
+ if(b.dataset.action==='loadPair'){$('libCompareA').value=p.a;$('libCompareB').value=p.b;libCompare();libRenderMatches();libPersist();}
+ else if(b.dataset.action==='removePair'){libPairs=libPairs.filter(x=>x.id!==p.id);libPersist();libRenderPairs();}
+});
+
+/* Vista final: sigue automáticamente la zona terrestre elegida y permite elegir Marte o Luna.
+   Si una ficha no tiene DEM, genera una superficie estimada a partir de sus indicadores topográficos publicados. */
+let endSelectedEarth=null,endSelectedBody='mars',endSelectedReference=null;
+function endPlanetOptions(body){return libAll().filter(s=>s.body===body);}
+function endUpdateOptions(id,sites,selected,emptyText){
+ const el=$(id),previous=selected||el.value,frag=document.createDocumentFragment();
+ if(!sites.length){const op=document.createElement('option');op.value='';op.textContent=emptyText;frag.append(op);}
+ for(const site of sites){const op=document.createElement('option');op.value=site.id;op.textContent=site.name+(site.dem?' · DEM disponible':' · ficha científica');frag.append(op);}
+ el.replaceChildren(frag);
+ if(sites.some(s=>s.id===previous))el.value=previous;
+ else if(sites.length)el.value=sites[0].id;
+}
+function endFallbackReference(earth,body){
+ const options=endPlanetOptions(body),best=libRankReferences(earth,body)[0]?.ref;
+ return (best&&options.find(s=>s.id===best.id))||options[0]||null;
+}
+
+function endTerrainLabel(site){
+ const map={crater:'cráter o depresión de impacto',canyon:'cañón o valle encajado',mountain:'relieve montañoso o volcánico',plain:'llanura o meseta suave',rolling:'relieve ondulado'};
+ return map[libTerrainStyle(site)]||'relieve variado';
+}
+function endEsc(s){return String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+function endBuildFigureNote(site,vis,isReal){
+ const m=libMetrics(site)||site;
+ const visual=isReal?'DEM real':(vis?'superficie estimada':'sin malla');
+ const source=site.source||'Fuente no especificada';
+ const note=site.notes||'Sin observación adicional.';
+ const spacing=vis?(((vis.n-1)*vis.spacing)+' m de lado · '+vis.n+'×'+vis.n+' nodos'):'sin cuadrícula disponible';
+ return '<b>Tipo de relieve:</b> '+endEsc(endTerrainLabel(site))+
+        '<br><b>Característica del lugar:</b> '+endEsc(note)+
+        '<br><b>Datos de la grilla:</b> '+endEsc(visual)+' · '+endEsc(spacing)+
+        '<br><b>Indicadores guía:</b> pendiente '+endEsc(libN(m?.slopeDeg,2))+'° · desnivel '+endEsc(libN(m?.reliefM,1))+' m · área suave '+endEsc(libN(m?.smoothPct,1))+' %'+
+        '<br><b>Fuente:</b> '+endEsc(source);
+}
+function endRenderComparison(A,B){
+ if(A?.body==='earth')endSelectedEarth=A.id;
+ if(B?.body==='mars'||B?.body==='moon'){
+  endSelectedBody=B.body;
+  endSelectedReference=B.id;
+ }
+ const earthOptions=libAll().filter(s=>s.body==='earth');
+ if(!earthOptions.length)return;
+ const earth=libGet(endSelectedEarth)||earthOptions[0];
+ endSelectedEarth=earth.id;
+ $('endBody').value=endSelectedBody;
+ endUpdateOptions('endEarth',earthOptions,earth.id,'Sin terrenos');
+ const planetaryOptions=endPlanetOptions(endSelectedBody);
+ const chosen=planetaryOptions.find(s=>s.id===endSelectedReference)||endFallbackReference(earth,endSelectedBody);
+ if(!chosen)return;
+ endSelectedReference=chosen.id;
+ endUpdateOptions('endReference',planetaryOptions,chosen.id,'Sin referencias');
+ $('endPlanetLabel').textContent=(chosen.body==='moon'?'🌙 Terreno de la Luna':'🔴 Terreno de Marte');
+ $('endPlanetTag').textContent=chosen.body==='moon'?'LUNA':'MARTE';
+ const mode=$('endView').value;
+ libDrawSurface($('endEarthCanvas'),earth,mode);
+ libDrawSurface($('endPlanetCanvas'),chosen,mode);
+ const em=libMetrics(earth),pm=libMetrics(chosen);
+ const sameScale=earth.windowKm>0&&chosen.windowKm>0&&earth.resolutionM>0&&chosen.resolutionM>0&&Math.abs(earth.windowKm-chosen.windowKm)<1e-6&&Math.abs(earth.resolutionM-chosen.resolutionM)<1e-6;
+ const affinity=libReferenceAffinity(earth,chosen);
+ const visEarth=libVisualDem(earth),visPlanet=libVisualDem(chosen);
+ const bothVisible=Boolean(visEarth&&visPlanet);
+ const realEarth=Boolean(earth.dem),realPlanet=Boolean(chosen.dem);
+ $('endEarthCaption').textContent=earth.name+' · '+(realEarth?'Curvas calculadas de DEM '+earth.dem.n+'×'+earth.dem.n+' ('+earth.dem.spacing+' m por celda).':visEarth?'Curvas estimadas a partir de sus indicadores topográficos ('+visEarth.n+'×'+visEarth.n+' · '+visEarth.spacing+' m).':'Ficha sin malla suficiente para curvas.');
+ $('endPlanetCaption').textContent=chosen.name+' · '+(realPlanet?'Curvas calculadas de DEM '+chosen.dem.n+'×'+chosen.dem.n+' ('+chosen.dem.spacing+' m por celda).':visPlanet?'Curvas estimadas a partir del dossier científico ('+visPlanet.n+'×'+visPlanet.n+' · '+visPlanet.spacing+' m).':'Indicadores científicos insuficientes para trazar curvas.');
+ const score=affinity?' Parecido orientativo: '+fmt(affinity.score,0)+'/100.':'';
+ $('endStatus').textContent='Comparando «'+earth.name+'» con «'+chosen.name+'».'+score+' '+(sameScale?'Las fichas declaran la misma ventana y resolución.':'Las ventanas o resoluciones son diferentes: la comparación es exploratoria.')+' '+(bothVisible?(realEarth&&realPlanet?'Ambas superficies muestran curvas reales de sus DEM.':'Las dos superficies ya muestran grilla y curvas visibles; cuando no hay DEM se usa una superficie estimada marcada como aproximada.'):'No se pudo construir la superficie de una de las zonas.');
+ $('endEarthNote').innerHTML=endBuildFigureNote(earth,visEarth,realEarth);
+ $('endPlanetNote').innerHTML=endBuildFigureNote(chosen,visPlanet,realPlanet);
+ endRenderIndicators(earth,chosen,em,pm);
+ endDrawProfile(earth,chosen);
+ $('endSources').textContent='Tierra: '+(earth.source||'Fuente no especificada')+' · '+(earth.windowKm??'—')+' km / '+(earth.resolutionM??'—')+' m. '+libBodyNames[chosen.body]+': '+(chosen.source||'Fuente no especificada')+' · '+(chosen.windowKm??'—')+' km / '+(chosen.resolutionM??'—')+' m. No se comparan cotas absolutas entre planetas; los indicadores y perfiles deben interpretarse según su datum y resolución.';
+}
+function endRenderIndicators(earth,planet,em,pm){
+ const frag=document.createDocumentFragment();
+ for(const [label,key,unit,dec] of [['Pendiente mediana','slopeDeg','°',2],['Superficie suave (<8°)','smoothPct','%',1],['Desnivel P95−P5','reliefM','m',1]]){
+  const a=libNum(em?.[key]),b=libNum(pm?.[key]);
+  const max=Math.max(1,a??0,b??0);
+  const card=document.createElement('article');card.className='end-indicator';
+  const title=document.createElement('h4');title.textContent=label;card.append(title);
+  for(const [name,val,body] of [['Tierra',a,'earth'],[libBodyNames[planet.body],b,planet.body]]){
+   const row=document.createElement('div');row.className='end-meter-row';
+   const text=document.createElement('span');text.textContent=name;
+   const strong=document.createElement('strong');strong.textContent=val===null?'Sin dato':fmt(val,dec)+' '+unit;
+   row.append(text,strong);card.append(row);
+   const track=document.createElement('div');track.className='end-track';
+   const fill=document.createElement('span');fill.className='end-fill end-fill-'+body;
+   fill.style.width=val===null?'0%':Math.max(0,Math.min(100,100*val/max))+'%';
+   track.append(fill);card.append(track);
+  }
+  frag.append(card);
+ }
+ $('endIndicators').replaceChildren(frag);
+}
+
+function endDrawProfile(earth,planet){
+ const canvas=$('endProfile'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+ ctx.clearRect(0,0,W,H);
+ const grad=ctx.createLinearGradient(0,0,W,H);grad.addColorStop(0,'#1b2735');grad.addColorStop(1,'#2d3949');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+ const left=78,right=W-28,top=34,bottom=H-44;
+ const makeProfile=s=>{
+  const vis=libVisualDem(s);
+  if(!vis)return null;
+  const n=vis.n,vals=vis.values,center=libSample(vals,.5,.5,n);
+  return {vals:Array.from({length:121},(_,i)=>libSample(vals,i/120,.5,n)-center),synthetic:vis.synthetic,side:(n-1)*vis.spacing};
+ };
+ const ea=makeProfile(earth),pb=makeProfile(planet);
+ ctx.font='12px system-ui';ctx.fillStyle='#e9eef4';ctx.fillText('Altura relativa al centro (m)',left,20);
+ if(!ea&&!pb){ctx.font='bold 17px system-ui';ctx.textAlign='center';ctx.fillText('No hay perfiles suficientes para estas zonas',W/2,H/2);ctx.textAlign='left';$('endProfileNote').textContent='No existen DEM ni indicadores suficientes para trazar perfiles topográficos.';return;}
+ const all=[...(ea?.vals||[]),...(pb?.vals||[])],min=Math.min(0,...all),max=Math.max(0,...all),span=Math.max(1,max-min),pad=span*.12;
+ const lo=min-pad,hi=max+pad;
+ const x=i=>left+i/120*(right-left),y=z=>bottom-(z-lo)/(hi-lo)*(bottom-top);
+ for(let i=0;i<=4;i++){
+  const yy=top+(bottom-top)*i/4,zz=hi-(hi-lo)*i/4;
+  ctx.beginPath();ctx.moveTo(left,yy);ctx.lineTo(right,yy);ctx.strokeStyle='rgba(255,255,255,.17)';ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle='#d7e0e9';ctx.font='11px system-ui';ctx.textAlign='right';ctx.fillText(fmt(zz,0),left-12,yy+4);
+ }
+ ctx.textAlign='center';ctx.fillStyle='#d7e0e9';ctx.fillText('Oeste',left,bottom+22);ctx.fillText('Centro',W/2,bottom+22);ctx.fillText('Este',right,bottom+22);
+ const draw=(pack,color)=>{if(!pack)return;ctx.beginPath();pack.vals.forEach((v,i)=>i?ctx.lineTo(x(i),y(v)):ctx.moveTo(x(i),y(v)));ctx.strokeStyle=color;ctx.lineWidth=3.4;ctx.stroke();};
+ draw(ea,'#6ce1d1');draw(pb,planet.body==='moon'?'#c5d3e5':'#f7a57c');
+ ctx.textAlign='left';ctx.font='bold 11px system-ui';
+ ctx.fillStyle='#6ce1d1';ctx.fillText('— Tierra'+(ea?.synthetic?' (estimada)':''),W-300,20);
+ ctx.fillStyle=planet.body==='moon'?'#c5d3e5':'#f7a57c';ctx.fillText('— '+libBodyNames[planet.body]+(pb?.synthetic?' (estimada)':''),W-165,20);
+ $('endProfileNote').textContent=(ea&&pb)?('Perfiles oeste–este '+((!ea.synthetic&&!pb.synthetic)?'de DEM reales':'combinados: reales y/o estimados desde los indicadores topográficos publicados')+'. Cada altura se expresa respecto al centro de su propia zona (m); anchuras: Tierra '+fmt(ea.side,0)+' m, '+libBodyNames[planet.body]+' '+fmt(pb.side,0)+' m. Si difieren, la distancia horizontal está normalizada para comparar la forma del relieve.'):(ea?('Solo está disponible el perfil de la Tierra'+(ea.synthetic?' estimado':' real')+'.'):('Solo está disponible el perfil de '+libBodyNames[planet.body]+(pb?.synthetic?' estimado':' real')+'.'));
+}
+function endApplySelection(earthId,body,planetId){
+ const earth=libGet(earthId);if(!earth||earth.body!=='earth')return;
+ const ref=libGet(planetId);if(!ref||ref.body!==body)return;
+ endSelectedEarth=earthId;endSelectedBody=body;endSelectedReference=planetId;
+ $('libCompareA').value=earthId;$('libCompareB').value=planetId;$('libMatchBody').value=body;
+ libCompare();libRenderMatches();libEnsurePair(earthId,planetId,true);libPersist();
+}
+$('endEarth').addEventListener('change',ev=>{
+ const id=ev.target.value,earth=libGet(id);if(!earth)return;
+ const target=endFallbackReference(earth,$('endBody').value);
+ if(!target)return;
+ // El selector principal guarda automáticamente la zona y consulta sus elevaciones si faltan.
+ libSelectQuick(id);
+ const selected=libGet($('libCompareA').value)||earth;
+ endApplySelection(selected.id,$('endBody').value,endFallbackReference(selected,$('endBody').value)?.id||target.id);
+});
+$('endBody').addEventListener('change',ev=>{
+ const earth=libGet($('endEarth').value),body=ev.target.value,ref=endFallbackReference(earth,body);
+ if(earth&&ref)endApplySelection(earth.id,body,ref.id);
+});
+$('endReference').addEventListener('change',ev=>{
+ const earth=libGet($('endEarth').value),ref=libGet(ev.target.value);
+ if(earth&&ref)endApplySelection(earth.id,ref.body,ref.id);
+});
+$('endView').addEventListener('change',()=>{
+ const earth=libGet(endSelectedEarth),ref=libGet(endSelectedReference);
+ if(earth&&ref)endRenderComparison(earth,ref);
+});
+$('endExport').addEventListener('click',()=>{
+ const earth=libGet(endSelectedEarth),ref=libGet(endSelectedReference);
+ if(!earth||!ref)return;
+ // Sincroniza la comparación elegida antes de reutilizar el exportador existente.
+ $('libCompareA').value=earth.id;$('libCompareB').value=ref.id;
+ libExportCompare();
+});
+$('endImportLink').addEventListener('click',()=>{
+ const ref=libGet(endSelectedReference);
+ if(!ref)return;
+ // Prepara la ficha del destino para el importador. La aplicación ya puede dibujar una superficie estimada aunque aún no exista un DEM real.
+ const own=libSaved.find(s=>s.id===ref.id||s.originId===ref.id);
+ if(own){$('libDemTarget').value=own.id;return;}
+ if(LIB_CATALOG.includes(ref)){
+  libCopyCatalog(ref.id);
+  const saved=libSaved.find(s=>s.originId===ref.id);
+  if(saved)$('libDemTarget').value=saved.id;
+ }
+});
+
+libLoad();libRefresh();
+$('quickState').textContent='Selecciona un lugar: se guardará y se comparará con Marte sin pasos adicionales.';
+
+
+/* Puente con GeoAnálogos Perú (React). Mantiene íntegros los cálculos previos. */
+(function activateGeoAnalogosBridge(){
+ const isEmbedded = new URLSearchParams(location.search).get('embed') === '1';
+ if (!isEmbedded) return;
+ document.documentElement.classList.add('ga-embedded');
+ const mapping={
+   ubicacion:'geoForm',
+   resultados:'metrics',
+   superficie:'terrainCanvas',
+   interpretacion:'normModule',
+   datos:'dataShow',
+   biblioteca:'siteLibrary',
+   comparar:'compareCurvesEnd'
+ };
+ const tell = (type, fields={}) => {
+   if (window.parent!==window) window.parent.postMessage({source:'geo-pendiente-lab',type,...fields},location.origin);
+ };
+ const page=document.querySelector('.page');
+ function notifyHeight(){
+   tell('height',{height:Math.ceil(page.getBoundingClientRect().height)+10});
+ }
+ function navigate(to){
+   const requested=document.getElementById(mapping[to]);
+   const el=requested?.closest('.hidden') ? requested.closest('section') : requested;
+   if (!el) return;
+   // Se usa el desplazamiento dentro del iframe: el contenedor React desplaza la página.
+   const top=el.getBoundingClientRect().top+window.scrollY;
+   tell('scroll',{top:Math.max(0,top),to});
+ }
+ function selectCurrent({sectorId,mission,lat,lon}={}){
+   const body=mission==='luna'?'moon':'mars';
+   const target=document.getElementById('endBody');
+   if(target)target.value=body;
+   const filter=document.getElementById('libMatchBody');
+   if(filter)filter.value=body;
+   let id=null;
+   if(typeof sectorId==='string'){
+     if(/^SE-0[1-9]$/.test(sectorId)) id='peru-se-'+sectorId.slice(-2);
+     if(/^AN-0[1-9]$/.test(sectorId)) id='peru-an-'+sectorId.slice(-2);
+   }
+   if(id && typeof libGet==='function' && libGet(id)){
+     const found=libGet(id);
+     invalidateEarthResults();
+     $('lat').value=String(found.lat);
+     $('lon').value=String(found.lon);
+     $('zone').value='auto';
+     $('libCurrentName').value=found.name;
+     $('quickPlace').value=found.id;
+     libQuickSelectedId=found.id;
+     const referenceId=body==='moon'?'luna-sha01':'marte-jez01';
+     endApplySelection(found.id,body,referenceId);
+     $('quickState').textContent=found.name+' · pulsa «Calcular elevación y pendiente» para el visor local.';
+     tell('selected',{site:found.name,reference:body});
+   } else if(Number.isFinite(lat)&&Number.isFinite(lon)&&Math.abs(lat)<=90&&Math.abs(lon)<=180){
+     invalidateEarthResults();
+     libQuickSelectedId=null;
+     $('quickPlace').value='';
+     $('libCurrentName').value='';
+     document.getElementById('lat').value=String(lat);
+     document.getElementById('lon').value=String(lon);
+     document.getElementById('zone').value='auto';
+     tell('selected',{site:'Coordenadas recibidas',reference:body});
+   }
+   const ref=libGet(document.getElementById('libCompareB')?.value);
+   const earth=libGet(document.getElementById('libCompareA')?.value);
+   if(earth?.body==='earth'){
+     const best=ref?.body===body?ref:endFallbackReference(earth,body);
+     if(best)endApplySelection(earth.id,body,best.id);
+   }
+   notifyHeight();
+ }
+ window.addEventListener('message',event=>{
+   if(event.origin!==location.origin || event.source!==window.parent || event.data?.source!=='geoanalogos-react')return;
+   const d=event.data;
+   if(d.type==='navigate') navigate(d.section);
+   if(d.type==='select') selectCurrent(d);
+ });
+ let timeout;
+ const observer=new ResizeObserver(()=>{clearTimeout(timeout);timeout=setTimeout(notifyHeight,90)});
+ observer.observe(page);
+ window.addEventListener('load',notifyHeight);
+ window.addEventListener('resize',notifyHeight);
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   notifyHeight();tell('ready');
+ }));
+})();
+
+</script>
+</body>
+</html>

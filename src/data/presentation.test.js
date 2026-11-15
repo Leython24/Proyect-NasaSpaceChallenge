@@ -25,7 +25,17 @@ test('zero is a measurement and missing values remain pending', () => {
   assert.equal(formatMetric(null, '°'), 'Pendiente de cálculo')
   assert.equal(formatDifference(null, 2, ' m'), '—')
   assert.equal(formatDifference(10, 18, ' pp'), '8 pp')
-  assert.ok(demo.sectores.every((sector) => sector.desnivel_m === null))
+  assert.equal(demo.referencias.find(({ id }) => id === 'SHA-01').area_suave_pct, 0)
+})
+
+test('local comparisons preserve the measured window, coverage and provenance', () => {
+  const sechura = demo.sectores.find(({ id }) => id === 'SE-05')
+  const andagua = demo.sectores.find(({ id }) => id === 'AN-05')
+  assert.equal(sechura.pendiente_mediana_deg, 0.2666)
+  assert.equal(sechura.cobertura_pct, 87.75)
+  assert.equal(andagua.pendiente_mediana_deg, 11.4781)
+  assert.deepEqual(demo.referencias.map(({ id, resolucion_analisis_m }) => [id, resolucion_analisis_m]), [['JEZ-01', 100], ['SHA-01', 100]])
+  assert.ok(demo.sectores.every(({ lado_m, fuente_id }) => lado_m === 2000 && fuente_id === 'copernicus-glo90'))
 })
 
 test('source links are restricted to web URLs', () => {

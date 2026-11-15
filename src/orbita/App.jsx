@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Mountain } from "lucide-react";
 import { CELESTIAL_BODIES } from "./catalog.js";
 import { computeAnalogCandidates } from "./similarity.js";
 import { fetchEarthContext, makeProbe, searchable } from "./geography.js";
@@ -12,6 +13,9 @@ import { TopBar } from "./TopBar.jsx";
 import { SearchDialog } from "./SearchDialog.jsx";
 import { RegionInspector } from "./RegionInspector.jsx";
 import { ComparisonView } from "./ComparisonView.jsx";
+import { missions } from "../data/catalog.js";
+
+const TerrainWorkspace = lazy(() => import("./TerrainWorkspace.jsx"));
 
 export default function App() {
   const [viewMode, setViewMode] = useState("system"); // 'system' | 'explore' | 'compare'
@@ -27,6 +31,7 @@ export default function App() {
   const { regions, sectorCatalog, dataState } = useAtlasCatalog();
   const [candidateScope, setCandidateScope] = useState("all");
   const [candidateDisplay, setCandidateDisplay] = useState("globe");
+  const [terrainTarget, setTerrainTarget] = useState(null);
   const telemetryRequest = useRef(null);
 
   useEffect(() => () => telemetryRequest.current?.abort(), []);
@@ -81,7 +86,7 @@ export default function App() {
         selectedRegion,
         regions,
         analogSortCriterion,
-        hasPeruCandidates ? candidateScope : "all",
+        hasPeruCandidates && viewMode === "compare" ? candidateScope : "all",
       ),
     [
       selectedRegion,
@@ -89,6 +94,7 @@ export default function App() {
       regions,
       hasPeruCandidates,
       candidateScope,
+      viewMode,
     ],
   );
 
@@ -162,11 +168,47 @@ export default function App() {
     [regions],
   );
 
-  const handleOpenComparison = () => {
+  const handleOpenComparison = (index = 0) => {
     if (rankedCandidates.length === 0) return;
-    setSelectedAnalogIndex(0);
+    setCandidateScope("all");
+    setSelectedAnalogIndex(index);
     setViewMode("compare");
   };
+
+  const handleComparePeru = () => {
+    const candidates = computeAnalogCandidates(selectedRegion, regions, "overall", "peru");
+    const defaultId = missions[activeBodyId]?.defaultSector;
+    setCandidateScope("peru");
+    setCandidateDisplay("map");
+    setShowCandidateMap(true);
+    setAnalogSortCriterion("overall");
+    setSelectedAnalogIndex(Math.max(0, candidates.findIndex(({ region }) => region.id === defaultId)));
+    setViewMode("compare");
+  };
+
+  const handleOpenTerrain = (region) => {
+    const sector = region?.sector;
+    const missionKey = sector?.mision ?? (activeBodyId === "luna" ? "luna" : "marte");
+    const defaultId = missionKey === "luna" ? "AN-05" : "SE-05";
+    setTerrainTarget({
+      missionKey,
+      sector: sector ?? (!region ? sectorCatalog.sectores.find(({ id }) => id === defaultId) : undefined),
+      coordinates: region?.body === "tierra" ? { lat: region.lat, lon: region.lon } : undefined,
+    });
+    setMobileMenuOpen(false);
+  };
+
+  if (terrainTarget) {
+    return (
+      <Suspense fallback={<p className="p-6" role="status">Abriendo GeoPendiente…</p>}>
+        <TerrainWorkspace
+          target={terrainTarget}
+          references={sectorCatalog.referencias}
+          onClose={() => setTerrainTarget(null)}
+        />
+      </Suspense>
+    );
+  }
 
   const currentStep =
     viewMode === "system" ? 1 : viewMode === "explore" ? 2 : 3;
@@ -298,6 +340,13 @@ export default function App() {
                     <path d="M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18" />
                   </svg>
                 ),
+              },
+              {
+                id: "geopendiente",
+                label: "Conoce tu terreno",
+                active: false,
+                onClick: () => handleOpenTerrain(),
+                icon: <Mountain size={16} aria-hidden="true" />,
               },
             ].map((item) => (
               <button
@@ -558,9 +607,9 @@ export default function App() {
                 rankedCandidates={rankedCandidates}
                 handleNavigateBody={handleNavigateBody}
                 handleOpenComparison={handleOpenComparison}
+                onComparePeru={hasPeruCandidates ? handleComparePeru : undefined}
+                handleOpenTerrain={handleOpenTerrain}
                 handleSelectRegion={handleSelectRegion}
-                setSelectedAnalogIndex={setSelectedAnalogIndex}
-                setViewMode={setViewMode}
               />
             </div>
           ) : (
@@ -588,6 +637,7 @@ export default function App() {
                 sectorCatalog={sectorCatalog}
                 dataState={dataState}
                 handleSelectRegion={handleSelectRegion}
+                handleOpenTerrain={handleOpenTerrain}
                 setViewMode={setViewMode}
                 setIsConfigOpen={setIsConfigOpen}
               />
@@ -613,7 +663,7 @@ export default function App() {
                 activeBodyId === "tierra"
                   ? "03 COMPARA CON LUNA / MARTE"
                   : "03 COMPARA CON LA TIERRA",
-              onClick: handleOpenComparison,
+              onClick: () => handleOpenComparison(),
             },
           ].map((s) => {
             const isActive = currentStep === s.step;

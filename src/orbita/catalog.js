@@ -153,8 +153,8 @@ export const PLANETARY_REGIONS = [
     body: "luna",
     name: "Cráter Shackleton (Polo Sur)",
     countryOrBody: "Luna · Polo Sur Lunar",
-    coordsText: "89,54° S · 129,78° E",
-    lat: -84.5,
+    coordsText: "89,67° S · 129,78° E",
+    lat: -89.67,
     lon: 129.78,
     elevation: "-4.200 m (interior en sombra permanente)",
     elevationNum: -4200,
@@ -163,8 +163,8 @@ export const PLANETARY_REGIONS = [
     tempMaxC: -170,
     terrainType: "Cráter polar en sombra permanente (PSR)",
     reliefShort: "Trampa fría polar",
-    mineralogy: "Anortosita lunar, regolito fino e hielo de agua intersticial",
-    materialShort: "Anortosita e hielo",
+    mineralogy: "Materiales de tierras altas lunares. Composición de la ventana del borde por verificar.",
+    materialShort: "Materiales de tierras altas",
     slope: "25° – 34° en laderas internas",
     slopeMeanDeg: 30,
     aridityScore: 0.98,
@@ -179,9 +179,9 @@ export const PLANETARY_REGIONS = [
       ironSulfates: 0.0,
     },
     waterIce:
-      "Alta probabilidad (confirmado por NASA LCROSS, LRO Diviner y M³)",
+      "Hay indicios regionales de hielo polar. Cantidad en la ventana SHA-01 por verificar.",
     geologyNotes:
-      "Cráter de 21 km en el Polo Sur lunar (región candidata Artemis). Su interior nunca recibe luz solar directa, actuando como trampa fría de volátiles.",
+      "El marcador indica el centro del cráter. Las mediciones de SHA-01 corresponden a otra ventana, ubicada en el borde de Shackleton.",
     comparisonSummary:
       "El frío criogénico extremo y la preservación de hielo en suelos hiperáridos guían la planificación de misiones Artemis.",
     comparisonHeadline: "Trampas frías polares.",

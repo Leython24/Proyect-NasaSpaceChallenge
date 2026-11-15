@@ -1,0 +1,157 @@
+/* Laboratorio NASA · módulos de comparación de superficies topográficas */
+.orbita-terrain-workspace{max-width:1480px;height:100dvh;overflow-y:auto;margin-inline:auto;padding:clamp(12px,3vw,32px)}
+.orbita-terrain-workspace .eyebrow{color:#b9d5e5;font-size:10px;font-weight:700;letter-spacing:.14em;margin-bottom:8px}
+.topo-entry{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:-3px 0 19px;padding:10px 14px;border:1px solid #456a80;background:linear-gradient(115deg,#163448,#213a4a);border-radius:11px;color:#c8deeb}
+.topo-entry button{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:8px;background:#cff3ac;color:#0d2a32;padding:10px 14px;font-size:13px;font-weight:800}
+.topo-entry button:hover{background:#e2ffc9}
+.topo-entry span{font-size:12px}
+.topo-lab{scroll-margin-top:20px;margin-top:24px;border:1px solid #486f83;border-radius:22px;background:linear-gradient(145deg,#10283d,#101e2f 52%,#111a2d);box-shadow:0 25px 70px #0008;padding:clamp(14px,2.2vw,28px);color:#e8f3fe;min-width:0}
+.topo-head{display:flex;align-items:start;justify-content:space-between;gap:20px;margin-bottom:20px}
+.topo-head h2{display:flex;align-items:center;gap:10px;font-size:clamp(23px,2.4vw,33px);line-height:1.12;letter-spacing:-.035em;margin-bottom:7px}
+.topo-head h2 svg{color:#b8ee9a;flex:none}
+.topo-head p:not(.eyebrow){font-size:13px;color:#a9c5d6;line-height:1.5}
+.topo-dismiss{border:1px solid #608398;background:#294154;color:#f4fcff;border-radius:10px;padding:8px 11px;font-size:12px;flex:none}
+.topo-coordinates,.topo-visuals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.topo-control{padding:18px;border:1px solid #4e6a7c;border-radius:16px;background:#1a3449;min-width:0;color:#eaf5ff}
+.topo-control.planet-coordinates{background:#2a3249;border-color:#5a6984}
+.topo-control-title{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.topo-control-title svg{color:#bcf19c;flex:none}
+.planet-coordinates .topo-control-title svg{color:#eab99f}
+.topo-control-title div{display:flex;flex-direction:column;gap:3px}
+.topo-control-title strong{font-size:15px}
+.topo-control-title small{color:#b5d0e1;font-size:11px}
+.topo-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-bottom:12px}
+.topo-field{display:grid;gap:6px;min-width:0}
+.topo-field span{font-size:11px;font-weight:700;color:#b9d5e5}
+.topo-field input{width:100%;min-width:0;height:39px;border-radius:8px;padding:5px 10px;border:1px solid #85a4b8;background:#f5f9fe;color:#112f44;font-size:13px;font-variant-numeric:tabular-nums}
+.topo-buttons,.topo-upload{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+.topo-buttons a{display:inline-block;font-size:11px;text-decoration:underline;text-underline-offset:2px;color:#bcdbff;overflow-wrap:anywhere}
+.topo-muted-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:1px solid #8297aa;color:#e0ecff;border-radius:8px;padding:9px 10px;background:#324d63;font-size:11px;font-weight:650}
+.topo-muted-button:hover{background:#476982}
+.topo-primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 16px;width:100%;background:#c2f19b;color:#102b27;border:1px solid #c2f19b;border-radius:9px;font-size:12px;font-weight:800}
+.topo-primary:hover{background:#e6ffca}
+.topo-upload .topo-primary{width:auto}
+.topo-meta{display:grid;gap:4px;align-content:center;min-width:0;line-height:1.4}
+.topo-meta strong{font-size:11px;color:#e0f5ff;overflow-wrap:anywhere}
+.topo-meta span{color:#adc9d9;font-size:10px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.topo-planet-xyz{background:#17263c;padding:12px;border-radius:9px;margin-bottom:10px;min-height:65px}
+.topo-source-caption{font-size:11px;color:#b2c5db;line-height:1.5;margin-bottom:13px}
+.topo-alert{margin:13px 0;padding:10px 12px;border:1px solid #6796a4;border-radius:9px;background:#254457;color:#d7f4f4;font-size:12px;line-height:1.5}
+.topo-alert.is-error{background:#5b2f39;border-color:#c77983;color:#ffe3e5}
+.topo-visuals{margin:16px 0}
+.topo-visual-card{min-width:0;border:1px solid #34566b;background:#0e2335;border-radius:14px;padding:13px}
+.topo-visual-card h3{display:flex;align-items:center;gap:7px;color:#ecf8ff;font-size:15px}
+.topo-visual-card h3 svg{color:#c8edb8}
+.topo-visual-card>p{font-size:11px;color:#9ebbd0;margin-top:5px;margin-bottom:9px}
+.terrain-display{min-width:0}
+.terrain-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:9px}
+.terrain-tools button{border:1px solid #537487;background:#254257;border-radius:7px;color:#dbebf6;font-size:10px;font-weight:750;padding:7px 8px}
+.terrain-tools button.is-active{background:#ccedb0;color:#1c3d38;border-color:#ccedb0}
+.terrain-tools label{display:flex;align-items:center;gap:4px;font-size:10px;color:#c0d8e7;white-space:nowrap}
+.terrain-tools input{accent-color:#a5ea8a}
+.terrain-canvas{display:block;touch-action:none;width:100%;height:clamp(250px,29vw,380px);background:#0d2438;border-radius:9px;border:1px solid #406176;cursor:grab}
+.terrain-canvas:active{cursor:grabbing}
+.terrain-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.terrain-actions button{border:1px solid #5b8195;background:#1c394f;color:#d2e4ec;border-radius:7px;padding:6px 8px;font-size:10px}
+.terrain-actions label{display:flex;align-items:center;gap:8px;font-size:10px;color:#b7d2e2}
+.terrain-actions input{accent-color:#c2f19b;width:90px}
+.canvas-probe{color:#d2edff;font-size:11px;margin-top:8px}
+.terrain-unavailable{min-height:230px;background:linear-gradient(150deg,#1b3444,#101d30);border:1px dashed #648395;border-radius:9px;padding:26px 22px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;color:#d2e7f2}
+.terrain-unavailable strong{font-size:15px}
+.terrain-unavailable p{margin-top:10px;font-size:12px;color:#a3bed0;max-width:340px;line-height:1.55}
+.terrain-disclaimer{display:block;margin:9px 0 0;font-size:10px;color:#95b2c5;line-height:1.5}
+.topo-summary{border:1px solid #466b80;background:#122b3e;border-radius:14px;padding:18px}
+.topo-summary-title{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.topo-summary h3{font-size:16px;margin:0 0 11px}
+.topo-summary-title h3{margin-bottom:0}
+.topo-summary-title span{font-size:11px;color:#a4d8c4}
+.topo-table-scroll{width:100%;overflow:auto}
+.topo-table-scroll table{width:100%;border-collapse:collapse;min-width:520px;font-size:12px}
+.topo-table-scroll th,.topo-table-scroll td{padding:10px;border-bottom:1px solid #436177;text-align:right;font-variant-numeric:tabular-nums}
+.topo-table-scroll th:first-child,.topo-table-scroll td:first-child{text-align:left}
+.topo-table-scroll thead th{color:#d0f8b2;font-size:11px}
+.topo-table-scroll tbody th{font-weight:500;color:#c1d7e5}
+.topo-interpretation,.topo-profile p{color:#a9c7d8;font-size:11px;line-height:1.55;margin:11px 0 19px}
+.topo-profile-empty{display:flex;gap:9px;align-items:center;background:#1b3a4e;padding:17px;color:#b6d2e2;border:1px dashed #58758a;border-radius:10px;font-size:12px}
+.topo-profile-legend{display:flex;gap:14px;margin:0 0 8px;color:#c4d9e9;font-size:11px}
+.topo-profile-legend span{display:flex;align-items:center;gap:7px}
+.topo-profile-legend i{display:block;width:25px;height:3px;border-radius:4px}
+.topo-profile-legend .profile-earth{background:#75dbb6}
+.topo-profile-legend .profile-planet{background:#edaa83}
+.topo-profile svg{display:block;width:100%;height:auto;max-height:280px;background:#0b2334;border-radius:10px;border:1px solid #3c6075}
+.topo-help{border:1px solid #436579;border-radius:12px;margin:15px 0;padding:14px;color:#c7dfef}
+.topo-help summary{font-size:13px;font-weight:700;cursor:pointer}
+.topo-help p{font-size:12px;line-height:1.7;margin:12px 0;color:#bad1e2}
+.topo-help code{padding:2px 4px;border-radius:4px;background:#263f52;color:#d2ffbc}
+.topo-footnote{font-size:11px;color:#91b0c5;line-height:1.6}
+@media(max-width:1080px){.topo-coordinates,.topo-visuals{grid-template-columns:1fr}}
+@media(max-width:670px){.topo-lab{scroll-margin-top:112px;padding:13px;margin-top:14px}.topo-head{flex-direction:column;gap:9px}.topo-dismiss{align-self:flex-start}.topo-entry{margin-bottom:10px;padding:9px}.topo-entry button{font-size:11px;padding:9px}.topo-entry span{font-size:10px}.topo-control{padding:12px}.topo-visual-card{padding:10px}.terrain-canvas{height:300px}.topo-head h2{font-size:24px}.topo-meta span{font-size:9px}}
+@media(max-width:360px){.topo-form-grid{grid-template-columns:1fr}.terrain-tools button{font-size:9px}.terrain-actions input{width:56px}}
+
+/* GeoAnálogos + GeoPendiente · recorrido visual guiado */
+.geostudio{color:#ebf4ff;display:grid;gap:18px;min-width:0;scroll-margin-top:80px}
+.geostudio-head{position:relative;isolation:isolate;overflow:hidden;min-height:220px;padding:24px 29px 29px;border-radius:21px;background:radial-gradient(ellipse at 83% 22%,#6d3f43 0%,#29334c 30%,#13283d 58%,#0a1e34 100%);border:1px solid #5e6f80}
+.luna .geostudio-head{background:radial-gradient(ellipse at 84% 21%,#526781 0%,#313f58 32%,#13283d 60%,#0a1e34 100%)}
+.geostudio-back{display:inline-flex;align-items:center;gap:5px;border:1px solid #648399;color:#deebf7;border-radius:30px;background:#213c50bb;font-size:11px;font-weight:750;padding:7px 11px;margin-bottom:20px}
+.geostudio-brand{max-width:730px;position:relative;z-index:2}
+.geostudio-brand>span,.geostudio-kicker{display:flex;align-items:center;gap:6px;color:#cbddca;font-size:10px;font-weight:850;letter-spacing:.11em}
+.geostudio-brand h1{font-size:clamp(31px,3.65vw,51px);line-height:1.06;letter-spacing:-.05em;margin:7px 0 10px;max-width:730px}
+.geostudio-brand em{font-style:normal;color:#ffc5a4}.luna .geostudio-brand em{color:#d2e1f5}
+.geostudio-brand p{max-width:660px;font-size:13px;color:#c4d6e5;line-height:1.65}
+.geostudio-planet-orbs{position:absolute;right:24px;top:58px;display:flex;align-items:center;gap:20px;opacity:.72;font-size:64px;z-index:1}
+.orb-trail{font-size:24px;color:#b8cadd}
+.geostudio-journey{border:1px solid #385b73;background:#0e2439;border-radius:16px;padding:17px 19px 19px}
+.geostudio-journey-title{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:13px}
+.geostudio-journey-title>div{display:flex;gap:8px;align-items:center;color:#f0f7ff;font-size:15px}
+.geostudio-journey-title>div svg{color:#c5f194}
+.geostudio-journey-title p{color:#a8c2d4;font-size:11px}
+.geostudio-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.geostudio-step{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:6px;min-height:56px;padding:8px 10px;border:1px solid #44617a;border-radius:11px;background:#21364d;color:#c4d9eb;font-size:11px;font-weight:800;text-align:left}
+.geostudio-step:hover,.geostudio-step.is-current{background:#d0edba;color:#17343b;border-color:#eaffdd}
+.geostudio-step .step-number{font-size:10px;opacity:.72}
+.geostudio-step svg{width:17px}
+.geostudio-explainer{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(220px,.75fr);gap:14px}
+.geostudio-explainer-main{background:#edf7ff;color:#173047;border-radius:17px;padding:23px 25px;border:1px solid #e1f0ff}
+.geostudio-stage{display:flex;align-items:center;gap:8px;color:#527088;font-size:10px;font-weight:850;letter-spacing:.07em}
+.geostudio-stage svg{color:#a15245}
+.geostudio-explainer-main h2{font-size:clamp(22px,2.35vw,31px);letter-spacing:-.05em;line-height:1.13;margin:11px 0 8px}
+.geostudio-explainer-main h3{font-size:15px;color:#a25044;margin:5px 0}
+.geostudio-explainer-main p{font-size:13px;line-height:1.72;color:#38516b;max-width:790px}
+.geostudio-fact{display:flex;align-items:start;gap:8px;margin:16px 0 15px;padding:12px 13px;border-radius:9px;border-left:3px solid #84aa56;background:#ddecce;color:#244637;font-size:12px;line-height:1.5}
+.geostudio-fact svg{flex:none;margin-top:1px}
+.geostudio-focus,.geostudio-footer button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;background:#173a58;color:#f7fbff;padding:10px 15px;font-weight:800;border-radius:9px;font-size:12px}
+.geostudio-focus:hover,.geostudio-footer button:hover{background:#315a7c}
+.geostudio-explainer-side{border:1px solid #68778a;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(140deg,#24374d,#14283c);min-width:0}
+.geostudio-mini-label{font-size:10px;letter-spacing:.13em;font-weight:850;color:#c5eda7}
+.geostudio-explainer-side>strong{font-size:22px;line-height:1.1;letter-spacing:-.035em}
+.geostudio-explainer-side>span{font-size:11px;color:#a5c2d8}
+.geostudio-link-line{display:flex;align-items:center;gap:8px;margin:10px 0;color:#c5efab}
+.geostudio-link-line i{width:36px;height:1px;border-top:2px dashed #8faec4}
+.geostudio-link-line span{font-size:12px;color:#d4e6f3}
+.geostudio-explainer-side p{font-size:12px;line-height:1.5;color:#b9cee1}
+.geostudio-explainer-side button{border:1px solid #9fc19f;color:#e8ffd9;background:#334f50;border-radius:9px;font-size:12px;padding:9px 10px;display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.geostudio-reading-guide{border:1px solid #698a7d;border-radius:13px;background:#183639;padding:15px 19px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.geostudio-reading-guide strong{font-size:13px;color:#d0f2bf}
+.geostudio-reading-guide p{font-size:12px;color:#d4e4dd;line-height:1.55;margin-top:4px}
+.geostudio-reading-guide button{flex:none;display:flex;align-items:center;gap:7px;color:#caffb6;border:1px solid #a2cc9c;background:#285249;border-radius:8px;padding:10px 13px;font-size:11px;font-weight:800}
+.geostudio-tool-title{display:flex;justify-content:space-between;align-items:end;gap:14px;padding:8px 4px 0}
+.geostudio-tool-title h2{font-size:clamp(25px,2.5vw,34px);letter-spacing:-.047em;margin:5px 0 6px}
+.geostudio-tool-title p{font-size:12px;line-height:1.55;color:#bad0e2;max-width:850px}
+.geostudio-live{display:flex;align-items:center;gap:7px;flex:none;color:#b9d1d9;font-size:11px;font-weight:750}
+.geostudio-live span{height:8px;width:8px;background:#d6a357;border-radius:50%;box-shadow:0 0 0 3px #d6a35725}
+.geostudio-live span.ready{background:#a9e4ab;box-shadow:0 0 0 3px #a9e4ab22}
+.geostudio-frame-shell{border:1px solid #5c7486;min-width:0;background:#f9f2ec;border-radius:18px;overflow:hidden;box-shadow:0 20px 50px #0005}
+.geostudio-frame{width:100%;display:block;border:0;background:#f9f2ec}
+.geostudio-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid #3f637b;border-radius:14px;background:#182f45;padding:19px 22px}
+.geostudio-footer strong{font-size:15px}.geostudio-footer p{color:#b8cfdf;font-size:12px;line-height:1.5;margin-top:5px}
+.geostudio-footer button{flex:none}
+@media(max-width:1280px){.geostudio-steps{grid-template-columns:repeat(3,minmax(0,1fr))}.geostudio-planet-orbs{opacity:.3}}
+@media(max-width:850px){.geostudio-explainer{grid-template-columns:1fr}.geostudio-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.geostudio-journey-title{align-items:flex-start;flex-direction:column;gap:5px}.geostudio-reading-guide,.geostudio-footer{flex-direction:column;align-items:flex-start}.geostudio-reading-guide button,.geostudio-footer button{width:100%;justify-content:center}.geostudio-head{padding:20px}.geostudio-planet-orbs{top:20px;right:4px;font-size:42px;opacity:.18}}
+@media(max-width:520px){.geostudio-steps{grid-template-columns:1fr 1fr;gap:6px}.geostudio-step{grid-template-columns:auto 1fr;padding:9px;font-size:10px}.geostudio-step svg{display:none}.geostudio-explainer-main,.geostudio-explainer-side{padding:16px}.geostudio-tool-title{flex-direction:column;align-items:flex-start}.geostudio-journey{padding:12px}}
+/* Accesos al explorador guiado desde el proyecto original. */
+.geostudio-open-top{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;background:#173d5e;color:#f6fff2;border:1px solid #325d7b;border-radius:24px;font-size:11px;font-weight:800;white-space:nowrap}
+.geostudio-open-top:hover{background:#315b7b}
+.topo-entry-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.topo-entry .topo-entry-secondary{background:#29445a;color:#e9f5ff;border:1px solid #6a8da3}
+.topo-entry .topo-entry-secondary:hover{background:#395c74}
+@media(max-width:670px){.geostudio-open-top{font-size:10px;padding:7px 9px}.topo-entry-actions{width:100%}.topo-entry-actions button{flex:1;white-space:normal}}

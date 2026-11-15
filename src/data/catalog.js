@@ -1,8 +1,10 @@
+import terrainMeasurements from './terrainMeasurements.json' with { type: 'json' }
+
 export const missions = {
   marte: {
     title: 'Marte', referenceLabel: 'Referencia en Marte', region: 'Sechura',
     department: 'Piura', ref: 'JEZ-01', defaultSector: 'SE-05',
-    texture: 'mars', target: [18.38, 77.58], marker: 'Cráter Jezero', referenceImage: 'jezero',
+    texture: 'mars', target: [18.4446, 77.4509], marker: 'Cráter Jezero', referenceImage: 'jezero',
     imageCredit: 'NASA / JPL-Caltech / Universidad de Arizona',
     imageAlt: 'Imagen orbital del sitio de aterrizaje de Perseverance en Jezero',
     trial: 'Evaluar la navegación de un rover al pasar de una planicie a una ladera.',
@@ -12,7 +14,7 @@ export const missions = {
   luna: {
     title: 'Luna', referenceLabel: 'Referencia en la Luna', region: 'Andagua',
     department: 'Arequipa', ref: 'SHA-01', defaultSector: 'AN-05',
-    texture: 'moon', target: [-89.67, 129.78], marker: 'Borde de Shackleton', referenceImage: 'shackleton',
+    texture: 'moon', target: [-89.766811452, -171.869897646], marker: 'Borde de Shackleton', referenceImage: 'shackleton',
     imageCredit: 'NASA / KARI / ASU',
     imageAlt: 'Vista de ShadowCam de la pared y el suelo del cráter Shackleton',
     trial: 'Evaluar el control de un rover al subir y bajar una ladera.',
@@ -22,8 +24,10 @@ export const missions = {
 }
 
 export const localSources = [
-  { id: 'nasadem', institucion: 'NASA Earthdata', producto: 'NASADEM_HGT v001', url: 'https://data.nasa.gov/dataset/nasadem-merged-dem-global-1-arc-second-v001', resolucion: '1 segundo de arco', uso: 'Modelo de elevación de las zonas peruanas', },
+  { id: 'copernicus-glo90', institucion: 'ESA / Copernicus', producto: 'Copernicus GLO-90', url: 'https://doi.org/10.5270/ESA-c5d3d65', resolucion: '≈90 m nativos', uso: 'Elevación de las ventanas peruanas, agregada a una malla de 100 m' },
+  { id: 'worldcover', institucion: 'ESA', producto: 'WorldCover 2021', url: 'https://esa-worldcover.org/en/data-access', resolucion: '10 m nativos', uso: 'Máscara de agua permanente para los sectores del Perú' },
   { id: 'ctx', institucion: 'NASA / USGS Astrogeology', producto: 'MRO CTX · Jezero', url: 'https://stac.astrogeology.usgs.gov/api/collections/mro_ctx_controlled_usgs_dtms/items/P02_001820_1984_XI_18N282W__P06_003442_1987_XI_18N282W', resolucion: '≈ 20 m/píxel', uso: 'Elevación de la referencia marciana' },
+  { id: 'ctx-trn-jezero-20m', institucion: 'NASA / USGS Astrogeology', producto: 'Mars 2020 TRN CTX DTM · Jezero', url: 'https://astrogeology.usgs.gov/search/map/Mars/Mars2020/JEZ_ctx_B_soc_008_DTM_MOLAtopography_DeltaGeoid_20m_Eqc_latTs0_lon0', resolucion: '≈20 m nativos', uso: 'Elevación de la ventana JEZ-01, agregada a 100 m' },
   { id: 'lola', institucion: 'NASA PGDA / LRO', producto: 'LOLA · Site04 Shackleton rim', url: 'https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/', resolucion: '5 m/píxel', uso: 'Elevación de la referencia lunar' },
 ]
 
@@ -36,16 +40,17 @@ export const visualSources = [
 ]
 
 export const localReferences = Object.entries(missions).map(([mision, mission]) => ({
-  id: mission.ref, mision, nombre: mission.marker,
-  fuente_id: mision === 'marte' ? 'ctx' : 'lola',
-  pendiente_mediana_deg: null, area_suave_pct: null, desnivel_m: null,
+  ...terrainMeasurements[mission.ref],
+  id: mission.ref, mision,
+  fuente_id: mision === 'marte' ? 'ctx-trn-jezero-20m' : 'lola',
 }))
 
 export function buildDemo(geojson) {
   return {
     sectores: geojson.features.map(({ properties, geometry }) => ({
-      ...properties, geometria: geometry, referencia_id: missions[properties.mision].ref,
-      fuente_id: 'nasadem', ensayo: missions[properties.mision].trial,
+      ...properties, ...terrainMeasurements[properties.id],
+      geometria: geometry, referencia_id: missions[properties.mision].ref,
+      fuente_id: 'copernicus-glo90', estado: 'medido', ensayo: missions[properties.mision].trial,
     })),
     referencias: localReferences,
     fuentes: localSources,

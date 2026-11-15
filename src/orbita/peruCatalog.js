@@ -32,7 +32,9 @@ function mapPolygon(sector) {
       ? geometry.coordinates?.[0]?.[0]
       : geometry?.coordinates?.[0]
   )?.slice(0, -1);
-  const [lat, lon] = ring?.length
+  const [lat, lon] = Number.isFinite(sector.latitud_centro_deg) && Number.isFinite(sector.longitud_centro_este_deg)
+    ? [sector.latitud_centro_deg, sector.longitud_centro_este_deg]
+    : ring?.length
     ? [1, 0].map(
         (axis) =>
           ring.reduce((total, vertex) => total + vertex[axis], 0) / ring.length,

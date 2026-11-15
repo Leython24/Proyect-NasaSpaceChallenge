@@ -28,9 +28,11 @@ export function ComparisonView({
   sectorCatalog,
   dataState,
   handleSelectRegion,
+  handleOpenTerrain,
   setViewMode,
   setIsConfigOpen,
 }) {
+  const peruCandidate = activeAnalog.isPeru ? activeAnalog : selectedRegion.isPeru ? selectedRegion : null;
   return (
     <div className="h-full overflow-y-auto px-5 sm:px-8 py-6">
       <button
@@ -49,13 +51,13 @@ export function ComparisonView({
               : "Paisajes distintos. Pistas en común."}
           </h1>
           <p className="mt-1.5 text-xs sm:text-sm text-slatex-400">
-            Índice exploratorio: geología 35 %, topografía 25 %, temperatura 20
-            % y ambiente 20 %. Consulta las fuentes y el alcance de cada
-            comparación.
+            {peruCandidate
+              ? "Compara el relieve de dos ventanas de estudio y revisa sus fuentes."
+              : "Puntaje de prueba con valores del prototipo: geología 35 %, topografía 25 %, temperatura 20 % y ambiente 20 %."}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 bg-space-850 p-1.5 rounded-xl border border-space-700">
+        {!peruCandidate && <div className="flex flex-wrap items-center gap-1.5 bg-space-850 p-1.5 rounded-xl border border-space-700">
           {[
             { id: "overall", label: "Mejores generales" },
             { id: "geological", label: "Similitud geológica" },
@@ -78,14 +80,15 @@ export function ComparisonView({
               {crit.label}
             </button>
           ))}
-        </div>
+        </div>}
       </div>
 
       <div className="mt-5">
         <div className="flex items-center justify-between mb-2">
           <span className="text-[10px] font-bold tracking-[0.14em] text-mint-400 uppercase">
-            CANDIDATOS ({rankedCandidates.length}) ·{" "}
-            {criterionLabels[analogSortCriterion]}
+            {peruCandidate
+              ? `LUGARES DE ESTUDIO (${rankedCandidates.length})`
+              : `CANDIDATOS (${rankedCandidates.length}) · ${criterionLabels[analogSortCriterion]}`}
           </span>
           <div className="flex flex-wrap items-center justify-end gap-3">
             {hasPeruCandidates && (
@@ -96,6 +99,8 @@ export function ComparisonView({
                 onChange={(event) => {
                   setCandidateScope(event.target.value);
                   setSelectedAnalogIndex(0);
+                  setAnalogSortCriterion("overall");
+                  if (event.target.value === "peru") setCandidateDisplay("map");
                 }}
               >
                 <option value="all">Catálogo mundial</option>
@@ -145,11 +150,11 @@ export function ComparisonView({
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-mint-400">
-                    Candidato #{idx + 1}
+                    {peruCandidate ? "Lugar de estudio" : `Candidato #${idx + 1}`}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-space-950 text-xs font-bold text-mint-300">
+                  {!peruCandidate && <span className="px-2 py-0.5 rounded-full bg-space-950 text-xs font-bold text-mint-300">
                     {formatScore(dimScore)}
-                  </span>
+                  </span>}
                 </div>
                 <div className="mt-1 font-semibold text-sm text-white truncate">
                   {cand.region.name}
@@ -174,19 +179,20 @@ export function ComparisonView({
         </div>
       )}
 
-      {(activeAnalog.isPeru || selectedRegion.isPeru) && (
+      {peruCandidate ? (
         <PeruEvidence
-          candidate={activeAnalog.isPeru ? activeAnalog : selectedRegion}
+          candidate={peruCandidate}
           catalog={sectorCatalog}
           dataState={dataState}
+          onAnalyze={() => handleOpenTerrain(peruCandidate)}
         />
-      )}
+      ) : (
       <div className="mt-6 grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         <div className="xl:col-span-4 flex flex-col justify-between p-5 rounded-3xl bg-space-900/60 border border-space-800 space-y-5">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold tracking-[0.15em] text-mint-400 uppercase">
-                ÍNDICE EXPLORATORIO
+                PUNTAJE DE PRUEBA
               </span>
               <span className="text-lg font-display font-bold text-mint-300">
                 {formatScore(activeCandidateObj.scores.overall)}
@@ -473,13 +479,14 @@ export function ComparisonView({
           );
         })()}
       </div>
+      )}
 
       <button
         type="button"
         className="mt-6 text-xs text-mint-300 underline"
         onClick={() => setIsConfigOpen(true)}
       >
-        Fuentes de visualización y método del índice
+        {peruCandidate ? "Fuentes y créditos del mapa" : "Fuentes de visualización y método del índice"}
       </button>
     </div>
   );

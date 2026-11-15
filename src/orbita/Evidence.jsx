@@ -34,11 +34,11 @@ const sources = [
 
 const dataMessages = {
   local:
-    "Catálogo local con ventanas exploratorias. Las métricas se incorporan cuando el equipo las publica.",
+    "Mediciones del dossier disponibles en el catálogo local.",
   published:
     "Incluye los registros publicados en Supabase y las ventanas exploratorias locales.",
   loading: "Consultando registros publicados en Supabase.",
-  offline: "Supabase no está disponible. Se muestran las ventanas locales.",
+  offline: "Supabase no está disponible. Se muestran las mediciones del catálogo local.",
 };
 const media = { jezero: "jezero", shackleton: "shackleton", gale: "site-gale" };
 
@@ -83,15 +83,18 @@ export function DataEvidence({ region }) {
   );
 }
 
-export function PeruEvidence({ candidate, catalog, dataState }) {
+export function PeruEvidence({ candidate, catalog, dataState, onAnalyze }) {
   const sector = candidate.sector;
   const reference = catalog.referencias.find(
     (row) => row.id === sector.referencia_id,
   );
   const mission = missions[sector.mision];
-  const dataSources = [sector.fuente_id, reference?.fuente_id]
+  const dataSources = [...new Set([sector.fuente_id, reference?.fuente_id,
+    sector.fuente_id === "copernicus-glo90" ? "worldcover" : undefined])]
     .map((id) => catalog.fuentes.find((source) => source.id === id))
     .filter((source) => source && webLink(source.url));
+  const sameScale = sector.resolucion_analisis_m > 0 &&
+    sector.resolucion_analisis_m === reference?.resolucion_analisis_m;
 
   return (
     <section
@@ -102,6 +105,11 @@ export function PeruEvidence({ candidate, catalog, dataState }) {
         {candidate.name} frente a {reference?.nombre}
       </h2>
       <p className="mt-1 text-xs text-slatex-400">{dataMessages[dataState]}</p>
+      {sameScale && sector.lado_m === reference.lado_m && sector.lado_m > 0 && (
+        <p className="mt-1 text-xs text-slatex-300">
+          Ventanas de {sector.lado_m} × {sector.lado_m} m · malla de {sector.resolucion_analisis_m} m · pendiente suave menor a {sector.umbral_suave_deg_estricto}°.
+        </p>
+      )}
       <div className="mt-3 overflow-x-auto">
         <table className="w-full min-w-[31rem] text-left text-xs">
           <thead className="text-slatex-300">
@@ -127,17 +135,24 @@ export function PeruEvidence({ candidate, catalog, dataState }) {
                 <td className="p-2">{formatMetric(sector[key], unit)}</td>
                 <td className="p-2">{formatMetric(reference?.[key], unit)}</td>
                 <td className="p-2">
-                  {formatDifference(
+                  {sameScale ? formatDifference(
                     sector[key],
                     reference?.[key],
                     differenceUnit ?? unit,
-                  )}
+                  ) : "—"}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {Number.isFinite(sector.cobertura_pct) && (
+        <p className="mt-3 text-xs text-slatex-300">
+          <strong>Cobertura de pendiente.</strong> {formatMetric(sector.cobertura_pct, " %")}
+          {sector.celdas_totales ? ` · ${sector.celdas_validas_pendiente} de ${sector.celdas_totales} celdas.` : "."}
+          {sector.cobertura_pct < 100 && " Los resultados describen la parte del sector con datos válidos."}
+        </p>
+      )}
       <p className="mt-3 text-xs text-slatex-300">
         <strong>Ensayo propuesto.</strong> {sector.ensayo || mission.trial}
       </p>
@@ -158,6 +173,9 @@ export function PeruEvidence({ candidate, catalog, dataState }) {
           </a>
         ))}
       </div>
+      <button type="button" onClick={onAnalyze} className="mt-4 rounded-lg bg-mint-400 px-3 py-2 text-xs font-semibold text-space-950">
+        Analizar este sector en GeoPendiente
+      </button>
     </section>
   );
 }
