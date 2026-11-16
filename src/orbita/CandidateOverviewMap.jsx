@@ -8,8 +8,10 @@ import {
   useMap,
 } from "react-leaflet";
 import { CRS } from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { Globe, layers } from "./Globe.jsx";
 import { formatScore } from "./similarity.js";
+import { accentOf, prefersReducedMotion } from "./theme.js";
 
 const worldBounds = [
   [-90, -180],
@@ -25,15 +27,16 @@ function FrameMap({ activeRegion }) {
         geometry.type === "MultiPolygon"
           ? geometry.coordinates.flat(2)
           : geometry.coordinates.flat();
+      // Encuadre breve (≈250 ms) hacia el polígono elegido; inmediato con movimiento reducido.
       map.fitBounds(
         points.map(([lon, lat]) => [lat, lon]),
-        { padding: [30, 30], maxZoom: 12, animate: false },
+        { padding: [30, 30], maxZoom: 12, animate: !prefersReducedMotion(), duration: 0.25 },
       );
     } else {
       map.setView(
         [activeRegion.lat, activeRegion.lon],
         activeRegion.body === "tierra" ? 4 : 2,
-        { animate: false },
+        { animate: !prefersReducedMotion(), duration: 0.25 },
       );
     }
   }, [map, activeRegion]);
@@ -52,7 +55,9 @@ export function CandidateOverviewMap({
   selectedIndex,
   onSelectCandidate,
   display,
+  accentBody,
 }) {
+  const accent = accentOf(accentBody).strong;
   const [zoom, setZoom] = useState(null);
   const [reset, setReset] = useState(null);
   const activeRegion = (candidates[selectedIndex] ?? candidates[0]).region;
@@ -146,13 +151,17 @@ export function CandidateOverviewMap({
           const active = region.id === activeRegion.id;
           const caption = `#${indexOf(region.id) + 1} ${region.name}${scores.overall !== null ? ` · ${formatScore(scores.overall)}` : ""}`;
           const events = { click: () => select(region.id) };
+          // El polígono activo se vuelve a crear con una pulsación breve para que
+          // se vea qué selección produjo el cambio.
           return region.sector?.geometria ? (
             <GeoJSON
-              key={region.id}
+              key={`${region.id}-${active ? "on" : "off"}`}
               data={region.sector.geometria}
               eventHandlers={events}
+              className={active ? "o-active-shape" : undefined}
               style={{
-                color: active ? "#5eead4" : "#92b1c6",
+                color: active ? accent : "#92b1c6",
+                fillColor: active ? accent : "#92b1c6",
                 fillOpacity: active ? 0.4 : 0.12,
                 weight: active ? 3 : 1,
               }}
@@ -164,7 +173,7 @@ export function CandidateOverviewMap({
               key={region.id}
               center={[region.lat, region.lon]}
               radius={active ? 9 : 6}
-              pathOptions={{ color: "#5eead4", fillOpacity: active ? 1 : 0.28 }}
+              pathOptions={{ color: accent, fillColor: accent, fillOpacity: active ? 1 : 0.28, weight: active ? 3 : 1.5 }}
               eventHandlers={events}
             >
               <Tooltip permanent={active} direction="right">

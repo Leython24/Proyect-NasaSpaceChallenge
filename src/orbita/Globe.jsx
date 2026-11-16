@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Crosshair } from "lucide-react";
 import { clamp, radians, wrapLongitude } from "./geography.js";
+import { prefersReducedMotion } from "./theme.js";
 
 export const layers = {
   luna: {
@@ -25,7 +26,8 @@ const daylight = [-0.44, 0.49, 0.75];
 const imageCache = new Map();
 const zoomLimits = [0.68, 5.2];
 
-function getImage(source) {
+/** Descarga y decodifica una textura una sola vez (también sirve para precargar). */
+export function getImage(source) {
   if (!imageCache.has(source)) {
     imageCache.set(
       source,
@@ -61,17 +63,27 @@ function hardware(canvas) {
   const material = new THREE.MeshStandardMaterial({ roughness: 1 });
   const sphere = new THREE.Mesh(surface, material);
   scene.add(sphere);
+  // Texturas ya subidas a la GPU: volver a un cuerpo o capa visitada no repite la subida.
+  const uploaded = new Map();
 
   return {
     texture(image) {
-      material.map?.dispose();
-      material.map = new THREE.Texture(image);
-      material.map.colorSpace = THREE.SRGBColorSpace;
-      material.map.anisotropy = Math.min(
-        8,
-        renderer.capabilities.getMaxAnisotropy(),
-      );
-      material.map.needsUpdate = true;
+      let map = uploaded.get(image.src);
+      if (!map) {
+        map = new THREE.Texture(image);
+        map.colorSpace = THREE.SRGBColorSpace;
+        map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+        map.needsUpdate = true;
+        uploaded.set(image.src, map);
+        if (uploaded.size > 6) {
+          const [oldest, texture] = uploaded.entries().next().value;
+          if (texture !== material.map) {
+            texture.dispose();
+            uploaded.delete(oldest);
+          }
+        }
+      }
+      material.map = map;
       material.needsUpdate = true;
     },
     resize(size) {
@@ -85,7 +97,7 @@ function hardware(canvas) {
     },
     dispose() {
       surface.dispose();
-      material.map?.dispose();
+      uploaded.forEach((texture) => texture.dispose());
       material.dispose();
       renderer.dispose();
     },
@@ -193,6 +205,25 @@ function unproject(event, view) {
   ];
 }
 
+/** Precarga la textura principal de un cuerpo (intención: hover o foco). */
+export function preloadBody(body) {
+  const optical = layers[body]?.optical?.[0];
+  if (optical) getImage("/assets/" + optical + ".webp").catch(() => {});
+}
+
+const bodyNames = { tierra: "la Tierra", marte: "Marte", luna: "la Luna" };
+
+// Antes de la primera interacción no hay clic que proteger: los globos de la
+// vista inicial crean su contexto sin esperar un cuadro.
+let userInteracted = false;
+if (typeof window !== "undefined") {
+  const mark = () => {
+    userInteracted = true;
+  };
+  window.addEventListener("pointerdown", mark, { once: true, capture: true });
+  window.addEventListener("keydown", mark, { once: true, capture: true });
+}
+
 const home = {
   tierra: { lat: -12, lon: -75 },
   marte: { lat: 12, lon: 115 },
@@ -211,6 +242,8 @@ export function Globe({
   onProbe,
   initialZoom = 1,
   interactive = true,
+  showStatus = false,
+  spin = 0,
   className = "",
 }) {
   const [view, setView] = useState(() => ({
@@ -229,13 +262,32 @@ export function Globe({
   const [asset] = layers[body][layer];
   const source = "/assets/" + asset + ".webp";
 
+  // Al cambiar el foco (región, planeta o inclinación) el globo gira hacia él
+  // en ~240 ms; con «movimiento reducido» el cambio es inmediato.
   useEffect(() => {
-    setView((previous) => ({
+    const target = {
       lat: clamp((targetLat ?? home[body].lat) + (tilted ? -23 : 0), -90, 90),
       lon: targetLon ?? home[body].lon,
-      zoom: previous.zoom,
-    }));
-  }, [targetLat, targetLon, body, tilted]);
+    };
+    const from = frame.current;
+    if (!interactive || prefersReducedMotion() || !from) {
+      setView((previous) => ({ ...previous, ...target }));
+      return undefined;
+    }
+    const deltaLon = ((target.lon - from.lon + 540) % 360) - 180;
+    const start = performance.now();
+    let raf = requestAnimationFrame(function step(now) {
+      const t = Math.min(1, (now - start) / 240);
+      const eased = 1 - (1 - t) ** 3;
+      setView((previous) => ({
+        ...previous,
+        lat: from.lat + (target.lat - from.lat) * eased,
+        lon: wrapLongitude(from.lon + deltaLon * eased),
+      }));
+      if (t < 1) raf = requestAnimationFrame(step);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [targetLat, targetLon, body, tilted, interactive]);
   useEffect(() => {
     if (zoomTrigger)
       setView((previous) => ({
@@ -254,9 +306,18 @@ export function Globe({
       });
   }, [resetTrigger]);
 
+  // El contexto WebGL se crea en el cuadro siguiente: crear un contexto puede
+  // tardar cientos de ms y, si ocurre en el mismo ciclo del clic, retrasa el
+  // primer dibujo del panel nuevo. Mientras tanto se ve el estado de carga.
+  const [engineTick, setEngineTick] = useState(0);
   useEffect(() => {
     const canvas = canvasRef.current;
-    let engine;
+    let engine, observer;
+    const loseContext = (event) => {
+      event.preventDefault();
+      setMode("software");
+    };
+    const create = () => {
     try {
       engine = mode === "hardware" ? hardware(canvas) : software(canvas);
     } catch {
@@ -264,21 +325,24 @@ export function Globe({
       return;
     }
     scene.current = engine;
-    const loseContext = (event) => {
-      event.preventDefault();
-      setMode("software");
-    };
-    const observer = new ResizeObserver(([entry]) => {
+    observer = new ResizeObserver(([entry]) => {
+      // Un globo oculto (panel con display:none) mide 0: conserva su lienzo en vez
+      // de reducirlo y volver a ampliarlo al mostrarse.
+      if (entry.contentRect.width === 0) return;
       const maximum = mode === "hardware" ? 1400 : 580;
       engine.resize(clamp(Math.round(entry.contentRect.width), 90, maximum));
       if (frame.current) engine.draw(frame.current);
     });
     canvas.addEventListener("webglcontextlost", loseContext);
     observer.observe(canvas);
+    setEngineTick((tick) => tick + 1);
+    };
+    const raf = userInteracted ? requestAnimationFrame(create) : (create(), 0);
     return () => {
-      observer.disconnect();
+      cancelAnimationFrame(raf);
+      observer?.disconnect();
       canvas.removeEventListener("webglcontextlost", loseContext);
-      engine.dispose();
+      engine?.dispose();
       scene.current = null;
     };
   }, [mode]);
@@ -286,6 +350,7 @@ export function Globe({
   useEffect(() => {
     let mounted = true;
     setReady(false);
+    if (!scene.current) return undefined;
     const primary = "/assets/" + layers[body].optical[0] + ".webp";
     getImage(source)
       .catch(() => getImage(primary))
@@ -299,12 +364,38 @@ export function Globe({
     return () => {
       mounted = false;
     };
-  }, [source, body, mode]);
+  }, [source, body, mode, engineTick]);
 
   useEffect(() => {
     frame.current = view;
     scene.current?.draw(view);
   }, [view]);
+
+  // Rotación propia (solo decorativa, en globos sin interacción ni marcadores):
+  // gira hacia el este a `spin` grados por segundo, a ~30 cuadros por segundo y
+  // dibujando directo en el lienzo, sin pasar por el estado de React. Se detiene
+  // con la pestaña oculta, con «movimiento reducido» y en el modo por software.
+  useEffect(() => {
+    if (!spin || !ready || interactive || mode !== "hardware") return undefined;
+    if (prefersReducedMotion()) return undefined;
+    let raf;
+    let last = performance.now();
+    const step = (now) => {
+      raf = requestAnimationFrame(step);
+      const elapsed = now - last;
+      if (elapsed < 33 || document.hidden) return;
+      last = now;
+      const current = frame.current;
+      if (!current || !scene.current) return;
+      frame.current = {
+        ...current,
+        lon: wrapLongitude(current.lon - (spin * Math.min(elapsed, 100)) / 1000),
+      };
+      scene.current.draw(frame.current);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [spin, ready, interactive, mode]);
 
   function rotate(pitch, yaw) {
     setView((previous) => ({
@@ -315,8 +406,17 @@ export function Globe({
   }
 
   return (
-    <div className={`orbita-sphere ${className}`}>
+    <div
+      className={`orbita-sphere ${ready ? "" : "is-loading"} ${className}`}
+      aria-busy={!ready || undefined}
+    >
       <div className={ready ? "hidden" : "orbita-sphere-loading"} />
+      {showStatus && !ready && (
+        <div className="orbita-sphere-status" role="status">
+          <span className="o-spinner" aria-hidden="true" />
+          Cargando la superficie de {bodyNames[body]}…
+        </div>
+      )}
       <canvas
         key={mode}
         ref={canvasRef}

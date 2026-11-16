@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Mountain } from "lucide-react";
+import { Minus, Mountain, Move3d, Plus, RotateCcw, RotateCw, ChevronUp, ChevronDown, Crosshair } from "lucide-react";
 import { clamp } from "./geography.js";
 
 const terrainNames = new Set(["shackleton", "jezero"]);
@@ -99,10 +99,15 @@ function renderTerrain(canvas, grid, view) {
     });
 }
 
+const initialView = { angle: -0.43, pitch: 0.61, zoom: 1 };
+// Las mallas ya descargadas se reutilizan al volver a abrir el relieve.
+const gridCache = new Map();
+
 function TerrainCanvas({ grid, name }) {
   const canvas = useRef();
   const drag = useRef();
-  const [view, setView] = useState({ angle: -0.43, pitch: 0.61, zoom: 1 });
+  const [view, setView] = useState(initialView);
+  const [moved, setMoved] = useState(false);
 
   useEffect(() => {
     const draw = () => {
@@ -118,6 +123,7 @@ function TerrainCanvas({ grid, name }) {
   }, [grid, view]);
 
   function rotate(horizontal, vertical) {
+    setMoved(true);
     setView((previous) => ({
       ...previous,
       angle: previous.angle + horizontal,
@@ -125,8 +131,43 @@ function TerrainCanvas({ grid, name }) {
     }));
   }
 
+  const zoomBy = (factor) =>
+    setView((previous) => ({
+      ...previous,
+      zoom: clamp(previous.zoom * factor, 0.55, 2.2),
+    }));
+  const tools = [
+    [RotateCcw, "Girar a la izquierda", () => rotate(-0.3, 0)],
+    [RotateCw, "Girar a la derecha", () => rotate(0.3, 0)],
+    [ChevronUp, "Inclinar hacia arriba", () => rotate(0, -0.15)],
+    [ChevronDown, "Inclinar hacia abajo", () => rotate(0, 0.15)],
+    [Minus, "Alejar relieve", () => zoomBy(0.85)],
+    [Plus, "Acercar relieve", () => zoomBy(1.18)],
+    [Crosshair, "Restablecer la vista", () => { setView(initialView); setMoved(false); }],
+  ];
+
   return (
     <>
+      <div className="mt-2 flex flex-wrap items-center gap-1" role="toolbar" aria-label={`Controles del relieve de ${name}`}>
+        {tools.map(([Icon, label, action]) => (
+          <button
+            key={label}
+            type="button"
+            title={label}
+            aria-label={label}
+            onClick={action}
+            className="grid h-9 w-9 place-items-center rounded-lg border border-space-700 bg-space-850 text-slatex-300 transition-colors duration-180 hover:border-mint-400/60 hover:text-white"
+          >
+            <Icon size={16} aria-hidden="true" />
+          </button>
+        ))}
+      </div>
+      <div className="relative">
+      {!moved && (
+        <span className="orbita-gesture-hint pointer-events-none absolute left-2 top-2 z-10 o-swap">
+          <Move3d size={13} aria-hidden="true" /> Arrastra para girar
+        </span>
+      )}
       <canvas
         ref={canvas}
         className="orbita-terrain orbita-grab"
@@ -161,47 +202,31 @@ function TerrainCanvas({ grid, name }) {
           }
         }}
       />
-      <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slatex-300">
-        <span>
-          {grid.credit} · {grid.extentKm.join(" × ")} km · exageración vertical
-          ×4
-        </span>
-        <div className="flex gap-1">
-          {[
-            [0.85, "Alejar relieve", "−"],
-            [1.18, "Acercar relieve", "+"],
-          ].map(([factor, title, label]) => (
-            <button
-              type="button"
-              aria-label={title}
-              key={title}
-              className="rounded bg-space-700 px-2 text-base"
-              onClick={() =>
-                setView((previous) => ({
-                  ...previous,
-                  zoom: clamp(previous.zoom * factor, 0.55, 2.2),
-                }))
-              }
-            >
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
+      <p className="o-legend">
+        {grid.credit} · {grid.extentKm.join(" × ")} km · exageración vertical ×4
+      </p>
     </>
   );
 }
 
 function TerrainFigure({ id, name }) {
-  const [grid, setGrid] = useState(undefined);
+  const [grid, setGrid] = useState(() => gridCache.get(id));
   useEffect(() => {
+    if (gridCache.has(id)) {
+      setGrid(gridCache.get(id));
+      return undefined;
+    }
     const request = new AbortController();
     fetch(`/assets/terrain-${id}.json`, { signal: request.signal })
       .then((response) => {
         if (!response.ok) throw new Error("Relieve no disponible");
         return response.json();
       })
-      .then(setGrid)
+      .then((data) => {
+        gridCache.set(id, data);
+        setGrid(data);
+      })
       .catch(() => {
         if (!request.signal.aborted) setGrid(null);
       });
@@ -210,8 +235,8 @@ function TerrainFigure({ id, name }) {
 
   if (grid === undefined)
     return (
-      <p className="py-5 text-xs text-slatex-300">
-        Cargando el modelo de elevación…
+      <p className="flex items-center gap-2 py-5 text-xs text-slatex-300" role="status">
+        <span className="o-spinner" aria-hidden="true" /> Cargando el modelo de elevación…
       </p>
     );
   if (!grid)
@@ -232,7 +257,7 @@ export function RegionTerrain({ region }) {
       <button
         type="button"
         aria-expanded={open}
-        className="flex w-full items-center gap-2 rounded-xl border border-mint-400/30 bg-mint-400/10 px-3 py-2 text-xs font-semibold text-mint-300"
+        className="o-btn-ghost w-full justify-start"
         onClick={() => setOpenId(open ? null : region.id)}
       >
         <Mountain size={16} />{" "}

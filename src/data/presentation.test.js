@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { buildDemo } from './catalog.js'
-import { findSelection, formatDifference, formatMetric, sectorsForMission, webLink } from './presentation.js'
+import { findSelection, formatDifference, formatMetric, relativeDifference, sectorsForMission, webLink } from './presentation.js'
 
 const geojson = JSON.parse(readFileSync(new URL('./sectores.geojson', import.meta.url)))
 const demo = buildDemo(geojson)
@@ -41,4 +41,13 @@ test('local comparisons preserve the measured window, coverage and provenance', 
 test('source links are restricted to web URLs', () => {
   assert.equal(webLink('javascript:alert(1)'), null)
   assert.equal(webLink('https://www.nasa.gov/'), 'https://www.nasa.gov/')
+})
+
+test('relative difference only orders the record and never invents values', () => {
+  assert.equal(relativeDifference(100, 100), 0)
+  assert.equal(relativeDifference(0, 0), 0)
+  assert.equal(relativeDifference(0.16, 1.97).toFixed(3), '0.919')
+  assert.equal(relativeDifference(-2, 2), 2)
+  assert.equal(relativeDifference(null, 3), null)
+  assert.equal(relativeDifference(3, undefined), null)
 })

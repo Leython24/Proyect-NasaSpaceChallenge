@@ -5,27 +5,62 @@ import TopographyLab from "../TopographyLab.jsx";
 import { missions } from "../data/catalog.js";
 import "./terrain-tools.css";
 
-export default function TerrainWorkspace({ target, references, onClose }) {
+/**
+ * «Conoce tu terreno» dentro del marco de Órbita. GeoPendiente (iframe) y el
+ * laboratorio técnico permanecen montados: alternar entre ellos no reinicia
+ * el analizador ni pierde sus resultados.
+ */
+export default function TerrainWorkspace({
+  target,
+  references,
+  isVisible = true,
+  returnLabel,
+  onClose,
+  onChangeMission,
+}) {
   const { missionKey, sector, coordinates } = target;
   const [technical, setTechnical] = useState(false);
+  const [labMounted, setLabMounted] = useState(false);
   const workspace = useRef(null);
   const reference = references.find((item) => item.mision === missionKey);
   const mission = {
     ...missions[missionKey],
-    target: [reference?.latitud_centro_deg ?? missions[missionKey].target[0],
-      reference?.longitud_centro_este_deg ?? missions[missionKey].target[1]],
+    target: [
+      reference?.latitud_centro_deg ?? missions[missionKey].target[0],
+      reference?.longitud_centro_este_deg ?? missions[missionKey].target[1],
+    ],
   };
 
   useEffect(() => {
     workspace.current?.scrollTo(0, 0);
-  }, [technical]);
+  }, [technical, target.openedAt]);
+
+  function openTechnical() {
+    setLabMounted(true);
+    setTechnical(true);
+  }
 
   return (
-    <main ref={workspace} className={`orbita-terrain-workspace ${missionKey}`}>
-      {technical ? (
-        <>
-          <button className="geostudio-back" onClick={onClose} type="button">
-            <ArrowLeft size={16} /> Volver a Órbita
+    <div
+      ref={workspace}
+      className={`orbita-terrain-workspace ${missionKey}`}
+      data-body={missionKey}
+    >
+      <div hidden={technical} className="o-panel">
+        <GeoPendienteExperience
+          target={target}
+          scrollContainer={workspace}
+          isVisible={isVisible && !technical}
+          returnLabel={returnLabel}
+          onClose={onClose}
+          onOpenPrecision={openTechnical}
+          onChangeMission={onChangeMission}
+        />
+      </div>
+      {labMounted && (
+        <div hidden={!technical} className="o-panel">
+          <button className="gp-back" onClick={() => setTechnical(false)} type="button">
+            <ArrowLeft size={16} aria-hidden="true" /> Volver a GeoPendiente
           </button>
           <TopographyLab
             missionKey={missionKey}
@@ -35,17 +70,8 @@ export default function TerrainWorkspace({ target, references, onClose }) {
             reference={reference}
             onClose={() => setTechnical(false)}
           />
-        </>
-      ) : (
-        <GeoPendienteExperience
-          missionKey={missionKey}
-          sector={sector}
-          coordinates={coordinates}
-          scrollContainer={workspace}
-          onClose={onClose}
-          onOpenPrecision={() => setTechnical(true)}
-        />
+        </div>
       )}
-    </main>
+    </div>
   );
 }

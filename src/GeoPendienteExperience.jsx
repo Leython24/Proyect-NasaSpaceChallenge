@@ -1,64 +1,198 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, BookOpen, Compass, Download, Globe2, Layers3, MapPinned, Mountain, Orbit, Save, ScanLine, Sparkles } from 'lucide-react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ArrowLeft, Compass, ExternalLink, FlaskConical, Layers3, MapPinned, Orbit, Save } from 'lucide-react'
+import { prefersReducedMotion } from './orbita/theme.js'
 
-const STEPS = [
+/** Cinco pestañas funcionales: cada una muestra en el analizador las secciones de su etapa. */
+export const TABS = [
   {
-    id: 'ubicacion', number: '01', icon: MapPinned, label: 'Elige tu lugar', title: 'Empieza con un punto en el mapa',
-    question: '¿Dónde queremos explorar?',
-    explanation: 'Selecciona un sector del Perú, escribe sus coordenadas o utiliza el GPS. Las coordenadas responden dónde está el lugar; el modelo digital de elevación nos ayuda a descubrir qué altura tiene y cómo cambia el terreno.',
-    observation: 'En la Tierra también verás sus coordenadas UTM, útiles para organizar los puntos en Civil 3D.',
+    id: 'ubicacion', number: '01', icon: MapPinned, label: 'Ubicación',
+    lead: 'Elige un sector o escribe coordenadas WGS84 y pulsa «Calcular elevación y pendiente». El resumen aparece debajo.',
   },
   {
-    id: 'superficie', number: '02', icon: Layers3, label: 'Mira el relieve', title: 'De números a montañas y valles',
-    question: '¿Qué nos cuenta una curva de nivel?',
-    explanation: 'Imagina cortar una montaña en capas horizontales. Cada línea une puntos de igual altura. Cuando las curvas están juntas, el suelo cambia de altura rápidamente; cuando se separan, el terreno suele ser más suave. Alterna entre planta 2D y superficie 3D para verlo.',
-    observation: 'La cuadrícula muestra dónde se conocen alturas y dónde el visor interpola entre ellas; no es un levantamiento de campo.',
+    id: 'relieve', number: '02', icon: Layers3, label: 'Relieve',
+    lead: 'Mapa, curvas de nivel y visor 3D. Arrastra para girar, usa la rueda o el control de escala y vuelve con «Restablecer».',
   },
   {
-    id: 'interpretacion', number: '03', icon: Compass, label: 'Entiende la zona', title: 'Descubre si el terreno es suave o inclinado',
-    question: '¿Sería fácil cruzar esta zona?',
-    explanation: 'La pendiente mide cuánto subimos o bajamos respecto a una distancia horizontal. Aquí verás el desnivel, la orientación aproximada de descenso y una lectura inicial del tipo de relieve, con criterios útiles para comprender rutas y movilidad.',
-    observation: 'El azimut automático es una orientación topográfica de referencia; no define el eje de una carretera.',
+    id: 'pendientes', number: '03', icon: Compass, label: 'Pendientes',
+    lead: 'Indicadores de pendiente, clasificación descriptiva, orografía MTC DG-2018 y cobertura de la cuadrícula.',
   },
   {
-    id: 'comparar', number: '04', icon: Orbit, label: 'Compara planetas', title: '¿Qué lugar de la Tierra se parece a Marte o a la Luna?',
-    question: 'Dos mundos, una misma pregunta',
-    explanation: 'Observa las cuadrículas una junto a otra, compara pendientes, área suave, desnivel y perfiles. Selecciona Jezero, Gale, Shackleton u otra referencia del catálogo para pensar dónde sería útil practicar una misión de exploración.',
-    observation: 'Las superficies planetarias sin DEM se muestran como aproximaciones visuales, claramente etiquetadas; las curvas reales necesitan alturas por celda.',
+    id: 'comparacion', number: '04', icon: Orbit, label: 'Comparación',
+    lead: 'Curvas, perfil e indicadores frente a la referencia planetaria elegida, con sus fuentes. Comparar no implica que los terrenos sean idénticos.',
   },
   {
-    id: 'biblioteca', number: '05', icon: Save, label: 'Guarda y comparte', title: 'Construye tu propia colección de análogos',
-    question: '¿Qué investigaremos después?',
-    explanation: 'Guarda nuevas zonas, recupera tus análisis, importa cuadrículas DEM y conserva las comparaciones. Exporta copias JSON, reportes, imágenes y puntos PNEZD para continuar tu trabajo con el equipo.',
-    observation: 'Los lugares se guardan en este navegador; exporta un respaldo JSON para moverlos a otra computadora.',
+    id: 'biblioteca', number: '05', icon: Save, label: 'Biblioteca y exportación',
+    lead: 'Lugares guardados en este navegador, importación de DEM y descargas existentes: PNEZD, CSV, JSON y reportes.',
   },
 ]
 
-const sectionTargets = { ubicacion: 'ubicacion', superficie: 'superficie', interpretacion: 'interpretacion', comparar: 'comparar', biblioteca: 'biblioteca' }
+export const REFERENCES = {
+  marte: { label: 'Marte', site: 'Jezero', short: 'Marte · Jezero' },
+  luna: { label: 'Luna', site: 'Shackleton', short: 'Luna · Shackleton' },
+}
 
-export default function GeoPendienteExperience({ missionKey, sector, coordinates, scrollContainer, onClose, onOpenPrecision }) {
-  const [activeId, setActiveId] = useState('ubicacion')
+const nf = (value, digits = 1) =>
+  Number.isFinite(value) ? value.toLocaleString('es-PE', { minimumFractionDigits: digits, maximumFractionDigits: digits }) : '—'
+
+/** Barra de pestañas con indicador deslizante, flechas del teclado y desplazamiento propio. */
+function TabBar({ active, onChange }) {
+  const bar = useRef(null)
+  const indicator = useRef(null)
+  const place = useCallback(() => {
+    const button = bar.current?.querySelector(`[data-tab="${active}"]`)
+    if (!button || !indicator.current) return
+    indicator.current.style.width = `${button.offsetWidth}px`
+    indicator.current.style.transform = `translateX(${button.offsetLeft}px)`
+    // Solo se desplaza la barra (nunca la página) para mostrar la pestaña activa.
+    const left = button.offsetLeft - bar.current.clientWidth / 2 + button.offsetWidth / 2
+    bar.current.scrollTo({ left, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+  }, [active])
+  useLayoutEffect(() => {
+    place()
+    const observer = new ResizeObserver(place)
+    observer.observe(bar.current)
+    return () => observer.disconnect()
+  }, [place])
+
+  function onKeyDown(event) {
+    const index = TABS.findIndex((tab) => tab.id === active)
+    const next = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: TABS.length - 1 }[event.key]
+    if (next === undefined) return
+    event.preventDefault()
+    const tab = TABS[(next + TABS.length) % TABS.length]
+    onChange(tab.id)
+    bar.current.querySelector(`[data-tab="${tab.id}"]`)?.focus()
+  }
+
+  return (
+    <div ref={bar} className="o-tabs gp-tabs" role="tablist" aria-label="Etapas de GeoPendiente" onKeyDown={onKeyDown}>
+      <span ref={indicator} className="o-tab-indicator" aria-hidden="true" />
+      {TABS.map(({ id, number, icon: Icon, label }) => (
+        <button
+          key={id}
+          type="button"
+          role="tab"
+          id={`gp-tab-${id}`}
+          data-tab={id}
+          aria-selected={id === active}
+          aria-controls="gp-panel"
+          tabIndex={id === active ? 0 : -1}
+          className="o-tab"
+          onClick={() => onChange(id)}
+        >
+          <span className="o-tab-num">{number}</span>
+          <Icon size={16} aria-hidden="true" />
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+/** Resumen del cálculo vigente: elevación, pendientes, orografía, fuente y cobertura. */
+export function ResultSummary({ state, compact = false, onGoTo, flashKey }) {
+  const { status, summary, message, kind } = state
+  const ref = useRef(null)
+  useEffect(() => {
+    if (!flashKey || !ref.current) return
+    ref.current.classList.remove('o-flash')
+    void ref.current.offsetWidth
+    ref.current.classList.add('o-flash')
+  }, [flashKey])
+
+  if (status !== 'ready' || !summary) {
+    return (
+      <section ref={ref} className={`gp-summary is-empty ${compact ? 'is-compact' : ''}`} aria-live="polite" aria-busy={status === 'busy'}>
+        <div className="gp-summary-head">
+          <span className="o-kicker">Resumen del cálculo</span>
+          {status === 'busy' && <span className="gp-badge"><span className="o-spinner" aria-hidden="true" /> Consultando elevaciones…</span>}
+        </div>
+        <p className="o-body mt-1">
+          {status === 'busy'
+            ? 'Se consultan 49 elevaciones del modelo digital (7 × 7 puntos) alrededor de la coordenada.'
+            : kind === 'error' && message
+              ? message
+              : 'Aún no hay resultados para esta selección. Pulsa «Calcular elevación y pendiente» junto a las coordenadas.'}
+        </p>
+      </section>
+    )
+  }
+  const s = summary
+  const stats = [
+    ['Elevación central', `${nf(s.elevation, 0)} m`, 'Cota DEM estimada en el punto'],
+    ['Pendiente local', `${nf(s.slopeLocalPct)} %`, `${nf(s.slopeLocalDeg)}° · Horn 3 × 3 en el centro`],
+    ['Pendiente media', `${nf(s.slopeMeanPct)} %`, `≈ ${nf(s.slopeMeanDeg)}° · ${s.windows} ventanas internas`],
+    ['Pendiente mediana', `${nf(s.slopeMedianPct)} %`, `≈ ${nf(s.slopeMedianDeg)}° · mismas ${s.windows} ventanas`],
+    ['Orografía (MTC DG-2018)', s.orography || '—', s.terrainClass || 'Clasificación orientativa'],
+    ['Fuente DEM', s.source, `${s.provider ? `${s.provider} · ` : ''}resolución ${s.resolution}`],
+  ]
+  return (
+    <section ref={ref} className={`gp-summary ${compact ? 'is-compact' : ''}`} aria-live="polite">
+      <div className="gp-summary-head">
+        <span className="o-kicker">Resumen del cálculo</span>
+        <span className="gp-badge is-ok">{s.site || `${nf(s.lat, 5)}°, ${nf(s.lon, 5)}°`}</span>
+      </div>
+      <div className="gp-stats">
+        {stats.map(([label, value, note]) => (
+          <div key={label} className="o-stat">
+            <div className="o-stat-label">{label}</div>
+            <div className="o-stat-value">{value}</div>
+            <div className="o-legend mt-0.5">{note}</div>
+          </div>
+        ))}
+      </div>
+      <p className="o-legend mt-3">
+        Cuadrícula de {s.gridN} × {s.gridN} puntos cada {s.spacing} m · cobertura {s.extent} × {s.extent} m ({nf(s.areaHa, 2)} ha) ·
+        {' '}{s.valid} de {s.total} puntos con cota · desnivel {nf(s.relief, 0)} m. Estimaciones a escala del modelo digital; no sustituyen un levantamiento topográfico.
+      </p>
+      {!compact && onGoTo && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button type="button" className="o-btn-secondary" onClick={() => onGoTo('relieve')}><Layers3 size={16} aria-hidden="true" /> Ver relieve 3D</button>
+          <button type="button" className="o-btn-secondary" onClick={() => onGoTo('pendientes')}><Compass size={16} aria-hidden="true" /> Ver pendientes</button>
+          <button type="button" className="o-btn-ghost" onClick={() => onGoTo('comparacion')}><Orbit size={16} aria-hidden="true" /> Comparar</button>
+        </div>
+      )}
+    </section>
+  )
+}
+
+export default function GeoPendienteExperience({ target, scrollContainer, isVisible = true, onClose, returnLabel = 'Volver a Órbita', onOpenPrecision, onChangeMission }) {
+  const { missionKey, sector, coordinates } = target
+  const [tab, setTab] = useState('ubicacion')
   const [ready, setReady] = useState(false)
-  const [frameHeight, setFrameHeight] = useState(900)
+  const [frameHeight, setFrameHeight] = useState(640)
   const [siteName, setSiteName] = useState('')
+  const [result, setResult] = useState({ status: 'idle', summary: null, message: '', kind: '' })
+  const [flashKey, setFlashKey] = useState(0)
   const iframeRef = useRef(null)
-  const containerRef = useRef(null)
-  const current = STEPS.find((x) => x.id === activeId) ?? STEPS[0]
-  const Icon = current.icon
-  const bodyName = missionKey === 'luna' ? 'la Luna' : 'Marte'
-  const missionEmoji = missionKey === 'luna' ? '🌙' : '🔴'
+  const tabsRef = useRef(null)
   const standalone = `${import.meta.env.BASE_URL}laboratorio-geopendiente.html`
   const { lat, lon } = coordinates ?? {}
+  const current = TABS.find((x) => x.id === tab) ?? TABS[0]
 
   const send = useCallback((message) => {
     if (!iframeRef.current?.contentWindow) return
     iframeRef.current.contentWindow.postMessage({ source: 'geoanalogos-react', ...message }, window.location.origin)
   }, [])
 
+  // Un lugar nuevo (otro sector o coordenada) reemplaza la selección del analizador.
   useEffect(() => {
     if (!ready) return
     send({ type: 'select', mission: missionKey, sectorId: sector?.id, lat, lon })
-  }, [ready, missionKey, sector?.id, lat, lon, send])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, sector?.id, lat, lon, target.openedAt, send])
+  // Cambiar la referencia planetaria no borra los resultados terrestres.
+  useEffect(() => {
+    if (ready) send({ type: 'reference', mission: missionKey })
+  }, [ready, missionKey, send])
+  useEffect(() => {
+    if (ready) send({ type: 'tab', tab })
+  }, [ready, tab, send])
+  // Al volver a mostrar el panel se reajustan mapa y visor dentro del iframe.
+  useEffect(() => {
+    if (ready && isVisible) send({ type: 'tab', tab })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible])
 
   useEffect(() => {
     function receive(event) {
@@ -66,58 +200,107 @@ export default function GeoPendienteExperience({ missionKey, sector, coordinates
       const data = event.data
       if (data?.source !== 'geo-pendiente-lab') return
       if (data.type === 'ready') setReady(true)
-      if (data.type === 'height' && Number.isFinite(data.height)) setFrameHeight(Math.max(480, Math.min(25000, data.height)))
+      if (data.type === 'height' && Number.isFinite(data.height)) setFrameHeight(Math.max(320, Math.min(20000, data.height)))
       if (data.type === 'selected' && typeof data.site === 'string') setSiteName(data.site)
-      if (data.type === 'scroll' && Number.isFinite(data.top)) {
-        const container = scrollContainer.current
-        const frame = iframeRef.current
-        if (!container || !frame) return
-        const frameOffset = frame.getBoundingClientRect().top - container.getBoundingClientRect().top
-        container.scrollTo({ top: Math.max(0, container.scrollTop + frameOffset + data.top - 12), behavior: 'smooth' })
+      if (data.type === 'busy') setResult((previous) => data.busy ? { ...previous, status: 'busy', summary: null } : previous.status === 'busy' ? { ...previous, status: previous.summary ? 'ready' : 'idle' } : previous)
+      if (data.type === 'status') setResult((previous) => ({ ...previous, message: data.message, kind: data.kind }))
+      if (data.type === 'results') {
+        if (data.cleared) setResult({ status: 'idle', summary: null, message: '', kind: '' })
+        else if (data.summary) {
+          setResult((previous) => ({ ...previous, status: 'ready', summary: data.summary }))
+          setFlashKey((value) => value + 1)
+        }
       }
     }
     window.addEventListener('message', receive)
     return () => window.removeEventListener('message', receive)
-  }, [scrollContainer])
+  }, [])
 
   function goTo(id) {
-    setActiveId(id)
-    if (ready) send({ type: 'navigate', section: sectionTargets[id] })
-    else containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    setTab(id)
+    const container = scrollContainer?.current
+    const bar = tabsRef.current
+    if (container && bar && container.scrollTop > bar.offsetTop) {
+      container.scrollTo({ top: bar.offsetTop - 8, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+    }
   }
 
-  return <section className="geostudio" ref={containerRef} aria-label="Explorador de análogos topográficos">
-    <header className="geostudio-head">
-      <button type="button" className="geostudio-back" onClick={onClose}><ArrowLeft size={16} /> Volver a Órbita</button>
-      <div className="geostudio-brand"><span><Sparkles size={16} /> EXPERIENCIA INTERACTIVA · NASA SPACE APPS</span><h1>Viaja de tu terreno a <em>{bodyName}</em></h1><p>Convierte coordenadas en relieve, descubre por qué importa cada pendiente y busca parecidos entre lugares de la Tierra, Marte y la Luna. Todo con el analizador original de GeoPendiente.</p></div>
-      <div className="geostudio-planet-orbs" aria-hidden="true"><span className="orb-earth">🌎</span><span className="orb-trail">∙ ∙ ∙</span><span className="orb-other">{missionEmoji}</span></div>
-    </header>
+  const reference = REFERENCES[missionKey] ?? REFERENCES.marte
+  const coordinateText = Number.isFinite(lat) && Number.isFinite(lon) ? `${nf(lat, 4)}°, ${nf(lon, 4)}°` : null
 
-    <div className="geostudio-journey">
-      <div className="geostudio-journey-title"><div><BookOpen size={18} /><strong>Tu recorrido de exploración</strong></div><p>Elige una etapa. Cada botón te lleva a sus herramientas dentro de la aplicación.</p></div>
-      <nav className="geostudio-steps" aria-label="Etapas del explorador">
-        {STEPS.map(({ id, number, icon: StepIcon, label }) => <button key={id} type="button" className={'geostudio-step ' + (id === activeId ? 'is-current' : '')} aria-current={id === activeId ? 'step' : undefined} onClick={() => goTo(id)}><span className="step-number">{number}</span><StepIcon size={19}/><span>{label}</span></button>)}
-      </nav>
-    </div>
+  return (
+    <section className="gp" aria-label="Conoce tu terreno · GeoPendiente">
+      <header className="gp-head">
+        <button type="button" className="gp-back" onClick={onClose}><ArrowLeft size={16} aria-hidden="true" /> {returnLabel}</button>
+        <div className="gp-head-grid">
+          <div className="min-w-0">
+            <div className="o-kicker">Conoce tu terreno · GeoPendiente</div>
+            <h1 className="o-title mt-1">{target.name}</h1>
+            <p className="gp-place">
+              <span>{target.place}</span>
+              {target.code && <span>· {target.code}</span>}
+              {coordinateText && !String(target.code).includes('°') && <span>· {coordinateText}</span>}
+              {siteName && siteName !== target.name && <span className="gp-badge">Ficha activa: {siteName}</span>}
+            </p>
+          </div>
+          <div className="gp-head-actions">
+            <div className="gp-ref" role="radiogroup" aria-label="Referencia planetaria">
+              <span className="o-eyebrow">Comparar con</span>
+              <div className="gp-ref-options">
+                {Object.entries(REFERENCES).map(([key, ref]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="radio"
+                    data-body={key}
+                    aria-checked={missionKey === key}
+                    className="o-chip"
+                    onClick={() => onChangeMission?.(key)}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-mint-400" aria-hidden="true" /> {ref.short}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button type="button" className="o-btn-secondary" onClick={onOpenPrecision}>
+              <FlaskConical size={16} aria-hidden="true" /> Laboratorio técnico
+            </button>
+          </div>
+        </div>
+      </header>
 
-    <section className="geostudio-explainer" aria-live="polite">
-      <div className="geostudio-explainer-main"><div className="geostudio-stage"><Icon size={17}/><span>ETAPA {current.number} · {current.label.toUpperCase()}</span></div><h2>{current.title}</h2><h3>{current.question}</h3><p>{current.explanation}</p><div className="geostudio-fact"><ScanLine size={18}/><span>{current.observation}</span></div><button type="button" className="geostudio-focus" onClick={() => goTo(activeId)}>Ir a la herramienta <ArrowRight size={17}/></button></div>
-      <div className="geostudio-explainer-side"><div className="geostudio-mini-label">TU EXPEDICIÓN ACTUAL</div><strong>{sector?.nombre ?? 'Lugar de estudio'}</strong><span>{sector?.id ?? 'Coordenadas personalizadas'} · Perú</span><div className="geostudio-link-line"><Globe2 size={18}/><i/> <Mountain size={18}/><span>{bodyName}</span></div><p>{siteName ? `Ficha activa en el analizador: ${siteName}.` : `Se conectará el sector seleccionado con las referencias de ${bodyName}.`}</p><button type="button" onClick={() => goTo('comparar')}>Ver comparación <ArrowRight size={15}/></button></div>
+      <div ref={tabsRef} className="gp-tabs-wrap">
+        <TabBar active={tab} onChange={goTo} />
+      </div>
+
+      <div id="gp-panel" role="tabpanel" aria-labelledby={`gp-tab-${tab}`} className="gp-panel">
+        <p key={tab} className="gp-lead o-swap">
+          <current.icon size={16} aria-hidden="true" /> <span>{current.lead}</span>
+        </p>
+        {tab === 'pendientes' && <ResultSummary state={result} compact flashKey={flashKey} />}
+        <div className={`gp-frame-shell ${ready ? '' : 'is-loading'}`}>
+          {!ready && (
+            <div className="gp-frame-loading" role="status"><span className="o-spinner" aria-hidden="true" /> Iniciando las herramientas de GeoPendiente…</div>
+          )}
+          <iframe
+            ref={iframeRef}
+            title={`GeoPendiente · ${current.label}`}
+            src={`${standalone}?embed=1`}
+            className="gp-frame"
+            style={{ height: `${frameHeight}px` }}
+          />
+        </div>
+        {tab === 'ubicacion' && <ResultSummary state={result} onGoTo={goTo} flashKey={flashKey} />}
+      </div>
+
+      <footer className="gp-foot">
+        <p className="o-legend">
+          Las elevaciones terrestres se consultan en modelos digitales (SRTM 30 m o Copernicus GLO-90). Los valores de {reference.label} provienen de referencias del catálogo; las superficies sin DEM numérico se muestran como aproximaciones visuales etiquetadas.
+        </p>
+        <a className="gp-ext" href={standalone} target="_blank" rel="noreferrer">
+          Abrir GeoPendiente en otra pestaña <ExternalLink size={14} aria-hidden="true" />
+        </a>
+      </footer>
     </section>
-
-    <div className="geostudio-reading-guide" role="note"><div><strong>Lo que necesitas saber</strong><p>Las elevaciones terrestres se consultan en modelos digitales. Los valores de Marte y Luna provienen de referencias científicas del catálogo; cuando falte un DEM numérico, las superficies visuales estimadas se diferencian de las curvas reales. Comparar no significa que ambos terrenos sean idénticos.</p></div><button type="button" onClick={onOpenPrecision}>Abrir también el laboratorio técnico <ArrowRight size={16}/></button></div>
-
-    <div className="geostudio-tool-title"><div><span className="geostudio-kicker"><Layers3 size={16}/> ANALIZADOR COMPLETO</span><h2>Laboratorio GeoPendiente</h2><p>Se mantienen sus herramientas originales: GPS, coordenadas UTM, DEM, relieve 2D/3D, curvas, azimut, clasificación, biblioteca, comparaciones y exportaciones.</p></div><span className="geostudio-live"><span className={ready ? 'ready' : ''}/>{ready ? 'Herramientas conectadas' : 'Iniciando herramientas'}</span></div>
-    <div className="geostudio-frame-shell">
-      <iframe
-        ref={iframeRef}
-        title="Analizador GeoPendiente completo integrado en GeoAnálogos Perú"
-        src={`${standalone}?embed=1`}
-        className="geostudio-frame"
-        style={{ height: `${frameHeight}px` }}
-      />
-    </div>
-    <a className="text-sm text-mint-300 underline" href={standalone} target="_blank" rel="noreferrer">Abrir GeoPendiente en otra pestaña</a>
-    <footer className="geostudio-footer"><div><strong>¿Vas a presentar tus resultados?</strong><p>Explica primero dónde está la zona, luego qué muestran sus curvas, después la pendiente y por último qué se parece —o no— al planeta elegido.</p></div><button type="button" onClick={() => goTo('biblioteca')}><Download size={17}/> Guardar o exportar datos</button></footer>
-  </section>
+  )
 }

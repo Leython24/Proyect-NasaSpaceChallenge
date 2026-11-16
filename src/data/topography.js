@@ -76,7 +76,22 @@ async function fetchJson(url, signal) {
   return response.json()
 }
 
+// Resultados completos por entrada (coordenadas + ventana). Solo se guardan
+// consultas terminadas: una cancelada o fallida no contamina la caché.
+const earthTerrainCache = new Map()
+const EARTH_CACHE_LIMIT = 24
+export function clearEarthTerrainCache() { earthTerrainCache.clear() }
+
 export async function getEarthTerrain(lat, lon, width = 2000, signal) {
+  const key = `${Number(lat).toFixed(7)},${Number(lon).toFixed(7)},${width}`
+  if (earthTerrainCache.has(key)) return earthTerrainCache.get(key)
+  const result = await queryEarthTerrain(lat, lon, width, signal)
+  if (earthTerrainCache.size >= EARTH_CACHE_LIMIT) earthTerrainCache.delete(earthTerrainCache.keys().next().value)
+  earthTerrainCache.set(key, result)
+  return result
+}
+
+async function queryEarthTerrain(lat, lon, width, signal) {
   const grid = createEmptyGrid('tierra', lat, lon, width, 9)
   const locations = grid.points.map((p) => `${p.lat.toFixed(7)},${p.lon.toFixed(7)}`).join('|')
   let elevation, source, resolution

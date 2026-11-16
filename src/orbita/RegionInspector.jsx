@@ -2,6 +2,7 @@ import { CELESTIAL_BODIES } from "./catalog.js";
 import { formatScore } from "./similarity.js";
 import { AtlasImage, DataEvidence } from "./Evidence.jsx";
 import { RegionTerrain } from "./RegionTerrain.jsx";
+import { ORIGIN_LABELS } from "./theme.js";
 
 export function RegionInspector({
   viewMode,
@@ -10,6 +11,7 @@ export function RegionInspector({
   setFocusedSystemBodyId,
   regions,
   selectedRegion,
+  selectionOrigin,
   activeBodyId,
   activeBody,
   activeCandidateObj,
@@ -22,15 +24,13 @@ export function RegionInspector({
 }) {
   return (
     <aside className="w-full lg:w-[375px] lg:absolute lg:top-6 lg:right-6 lg:bottom-6 z-20 p-4 lg:p-0 flex-shrink-0 pointer-events-none">
-      <div className="glass-panel rounded-3xl p-5 sm:p-6 h-full flex flex-col justify-between overflow-y-auto pointer-events-auto">
+      <div className="glass-panel rounded-3xl p-5 sm:p-6 h-full flex flex-col justify-between overflow-y-auto overscroll-contain pointer-events-auto">
         {viewMode === "system" ? (
-          <>
+          <div key={focusedSystemBodyId} className="o-swap flex min-h-full flex-col justify-between">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold tracking-[0.16em] text-mint-400 uppercase">
-                  CUERPO EN FOCO
-                </span>
-                <span className="text-[10px] text-slatex-400">
+                <span className="o-kicker">Cuerpo en foco</span>
+                <span className="text-[11px] text-slatex-400">
                   Globo interactivo
                 </span>
               </div>
@@ -40,7 +40,9 @@ export function RegionInspector({
                   <button
                     key={bId}
                     onClick={() => setFocusedSystemBodyId(bId)}
-                    className={`py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    data-body={bId}
+                    aria-pressed={focusedSystemBodyId === bId}
+                    className={`min-h-[36px] rounded-lg text-xs font-semibold transition-colors duration-180 ${
                       focusedSystemBodyId === bId
                         ? "bg-mint-400/20 text-mint-300 border border-mint-400/30"
                         : "text-slatex-400 hover:text-white"
@@ -51,7 +53,7 @@ export function RegionInspector({
                 ))}
               </div>
 
-              <h2 className="mt-4 font-display font-bold text-2xl sm:text-3xl text-white">
+              <h2 className="o-title mt-4 text-2xl sm:text-3xl">
                 {focusedSystemBody.name}
               </h2>
               <p className="mt-1.5 text-xs text-slatex-400 leading-relaxed">
@@ -84,7 +86,7 @@ export function RegionInspector({
                 );
                 return suggested ? (
                   <div className="mb-4">
-                    <div className="text-[10px] font-semibold tracking-[0.14em] text-slatex-400 uppercase">
+                    <div className="text-[11px] font-semibold tracking-[0.14em] text-slatex-400 uppercase">
                       REGIÓN SUGERIDA
                     </div>
                     <div className="mt-1 font-semibold text-sm text-white">
@@ -99,29 +101,35 @@ export function RegionInspector({
 
               <button
                 onClick={() => handleNavigateBody(focusedSystemBody.id)}
-                className="w-full py-3.5 px-4 rounded-xl bg-mint-400 hover:bg-mint-300 text-space-950 font-semibold text-sm flex items-center justify-between transition-all shadow-[0_8px_25px_rgba(94,234,212,0.28)]"
+                className="o-btn-primary w-full justify-between"
               >
                 <span>{focusedSystemBody.ctaText}</span>
-                <span>→</span>
+                <span aria-hidden="true">→</span>
               </button>
             </div>
-          </>
+          </div>
         ) : (
           selectedRegion && (
-            <>
+            <div key={selectedRegion.id} className="o-swap flex min-h-full flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] font-bold tracking-[0.15em] text-mint-400 uppercase truncate">
+                  <span className="o-kicker truncate">
                     {selectedRegion.isCustomProbe
                       ? `COORDENADA ORBITAL / ${activeBody.shortName.toUpperCase()}`
                       : `REGIÓN DESTACADA / ${activeBody.shortName.toUpperCase()}`}
                   </span>
-                  <span className="text-[10px] text-slatex-400 flex-shrink-0">
+                  <span className="text-[11px] text-slatex-400 flex-shrink-0">
                     {selectedRegion.coordsText}
                   </span>
                 </div>
+                {selectionOrigin && ORIGIN_LABELS[selectionOrigin.source] && (
+                  <span className="o-origin mt-2" role="status">
+                    <span aria-hidden="true">●</span> Seleccionada desde:{" "}
+                    {ORIGIN_LABELS[selectionOrigin.source]}
+                  </span>
+                )}
 
-                <h2 className="mt-2 font-display font-bold text-2xl text-white leading-snug">
+                <h2 className="o-title mt-2 text-2xl sm:text-[1.7rem]">
                   {selectedRegion.name}
                 </h2>
                 <div className="text-xs text-slatex-400 mt-0.5">
@@ -133,7 +141,7 @@ export function RegionInspector({
                     item={selectedRegion}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-2 left-2 right-2 px-2.5 py-1 rounded-lg bg-space-950/80 backdrop-blur-sm text-[10px] text-slatex-300 truncate">
+                  <div className="absolute bottom-2 left-2 right-2 px-2.5 py-1 rounded-lg bg-space-950/80 backdrop-blur-sm text-[11px] text-slatex-300 truncate">
                     {selectedRegion.dataSource}
                   </div>
                 </div>
@@ -141,7 +149,7 @@ export function RegionInspector({
                 <RegionTerrain region={selectedRegion} />
                 <div className="mt-4 space-y-2 text-xs">
                   <div className="p-2.5 rounded-xl glass-card-subtle">
-                    <div className="text-[10px] uppercase tracking-wider text-slatex-400">
+                    <div className="text-[11px] uppercase tracking-wider text-slatex-400">
                       Tipo de terreno y relieve
                     </div>
                     <div className="mt-0.5 font-medium text-white">
@@ -151,7 +159,7 @@ export function RegionInspector({
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-xl glass-card-subtle">
-                      <div className="text-[10px] uppercase tracking-wider text-slatex-400">
+                      <div className="text-[11px] uppercase tracking-wider text-slatex-400">
                         Elevación
                       </div>
                       <div className="mt-0.5 font-medium text-white">
@@ -159,7 +167,7 @@ export function RegionInspector({
                       </div>
                     </div>
                     <div className="p-2.5 rounded-xl glass-card-subtle">
-                      <div className="text-[10px] uppercase tracking-wider text-slatex-400">
+                      <div className="text-[11px] uppercase tracking-wider text-slatex-400">
                         Temperatura
                       </div>
                       <div className="mt-0.5 font-medium text-white">
@@ -170,7 +178,7 @@ export function RegionInspector({
 
                   <div className="grid grid-cols-2 gap-2">
                     <div className="p-2.5 rounded-xl glass-card-subtle">
-                      <div className="text-[10px] uppercase tracking-wider text-slatex-400">
+                      <div className="text-[11px] uppercase tracking-wider text-slatex-400">
                         Pendiente
                       </div>
                       <div className="mt-0.5 font-medium text-white">
@@ -178,7 +186,7 @@ export function RegionInspector({
                       </div>
                     </div>
                     <div className="p-2.5 rounded-xl glass-card-subtle">
-                      <div className="text-[10px] uppercase tracking-wider text-slatex-400">
+                      <div className="text-[11px] uppercase tracking-wider text-slatex-400">
                         Agua / Hielo
                       </div>
                       <div className="mt-0.5 font-medium text-mint-300">
@@ -188,7 +196,7 @@ export function RegionInspector({
                   </div>
 
                   <div className="p-2.5 rounded-xl glass-card-subtle">
-                    <div className="text-[10px] uppercase tracking-wider text-slatex-400">
+                    <div className="text-[11px] uppercase tracking-wider text-slatex-400">
                       Composición mineralógica
                     </div>
                     <div className="mt-0.5 font-medium text-slate-200">
@@ -207,7 +215,7 @@ export function RegionInspector({
                 <button
                   type="button"
                   className="mt-3 text-xs text-mint-300 underline"
-                  onClick={() => handleSelectRegion(selectedRegion.nearest)}
+                  onClick={() => handleSelectRegion(selectedRegion.nearest, "nearest")}
                 >
                   Ver región cercana: {selectedRegion.nearest.name}
                 </button>
@@ -216,8 +224,13 @@ export function RegionInspector({
                 {selectedRegion.body === "tierra" && (
                   <button
                     type="button"
-                    className="mb-3 w-full rounded-xl border border-mint-400/40 p-2.5 text-sm text-mint-300"
-                    onClick={() => handleOpenTerrain(selectedRegion)}
+                    className="o-btn-ghost mb-3 w-full"
+                    onClick={() =>
+                      handleOpenTerrain(
+                        selectedRegion,
+                        selectedRegion.isPeru ? "sector" : "coordinate",
+                      )
+                    }
                   >
                     Analizar este terreno en GeoPendiente
                   </button>
@@ -226,7 +239,7 @@ export function RegionInspector({
                   <button
                     type="button"
                     onClick={onComparePeru}
-                    className="mb-3 w-full rounded-xl bg-mint-400 p-2.5 text-sm font-semibold text-space-950"
+                    className="o-btn-primary mb-3 w-full"
                   >
                     Ver sectores en Perú
                   </button>
@@ -234,13 +247,13 @@ export function RegionInspector({
                 {rankedCandidates.length > 0 && (
                   <>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold tracking-[0.14em] text-slatex-400 uppercase">
+                  <span className="text-[11px] font-semibold tracking-[0.14em] text-slatex-400 uppercase">
                     {activeBodyId === "tierra"
                       ? `TOP CANDIDATOS LUNA / MARTE (${rankedCandidates.length})`
                       : `TOP CANDIDATOS TERRESTRES (${rankedCandidates.length})`}
                   </span>
                   {activeCandidateObj && (
-                    <span className="text-[10px] font-bold text-mint-400">
+                    <span className="text-[11px] font-bold text-mint-400">
                       Puntaje de prueba {formatScore(activeCandidateObj.scores.overall)}
                     </span>
                   )}
@@ -251,13 +264,13 @@ export function RegionInspector({
                     <button
                       key={cand.region.id}
                       onClick={() => handleOpenComparison(idx)}
-                      className="px-2.5 py-1 rounded-lg bg-space-800 hover:bg-mint-400/20 border border-space-600/80 hover:border-mint-400/50 text-[11px] font-medium text-white transition-all flex items-center gap-1.5"
+                      className="o-chip text-white"
                     >
-                      <span className="text-[10px] font-bold text-mint-400">
+                      <span className="text-[11px] font-bold text-mint-400">
                         #{idx + 1}
                       </span>
                       <span>{cand.region.name}</span>
-                      <span className="text-[10px] text-slatex-400">
+                      <span className="text-[11px] text-slatex-400">
                         ({formatScore(cand.scores.overall)})
                       </span>
                     </button>
@@ -266,7 +279,7 @@ export function RegionInspector({
 
                 <button
                   onClick={() => handleOpenComparison()}
-                  className="mt-3 w-full py-3 px-4 rounded-xl bg-mint-400 hover:bg-mint-300 text-space-950 font-semibold text-sm flex items-center justify-between transition-all shadow-[0_8px_25px_rgba(94,234,212,0.28)]"
+                  className="o-btn-primary mt-3 w-full justify-between"
                 >
                   <span>
                     {activeBodyId === "tierra"
@@ -278,12 +291,12 @@ export function RegionInspector({
 
                   </>
                 )}
-                <div className="mt-2 text-[10px] text-slatex-500 text-center truncate">
+                <div className="mt-2 text-[11px] text-slatex-500 text-center truncate">
                   {selectedRegion.instrument || "NASA PDS"} ·{" "}
                   {selectedRegion.spatialResolution || "Orbital"}
                 </div>
               </div>
-            </>
+            </div>
           )
         )}
       </div>

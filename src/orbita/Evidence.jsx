@@ -4,6 +4,7 @@ import {
   formatDifference,
   formatMetric,
   metrics,
+  relativeDifference,
   webLink,
 } from "../data/presentation.js";
 import { layers } from "./Globe.jsx";
@@ -95,13 +96,23 @@ export function PeruEvidence({ candidate, catalog, dataState, onAnalyze }) {
     .filter((source) => source && webLink(source.url));
   const sameScale = sector.resolucion_analisis_m > 0 &&
     sector.resolucion_analisis_m === reference?.resolucion_analisis_m;
+  const rows = metrics.map((metric) => ({
+    ...metric,
+    a: sector[metric.key],
+    b: reference?.[metric.key],
+    relative: sameScale ? relativeDifference(sector[metric.key], reference?.[metric.key]) : null,
+  }));
+  const ranked = rows.filter((row) => row.relative !== null);
+  const closest = ranked.length > 1 ? ranked.reduce((x, y) => (y.relative < x.relative ? y : x)) : null;
+  const farthest = ranked.length > 1 ? ranked.reduce((x, y) => (y.relative > x.relative ? y : x)) : null;
 
   return (
     <section
       className="glass-panel mt-6 rounded-2xl p-4 sm:p-5"
       aria-label="Mediciones del sector peruano"
     >
-      <h2 className="font-display text-lg font-bold text-white">
+      <div className="o-kicker">Ficha de la comparación</div>
+      <h2 className="o-subtitle mt-1">
         {candidate.name} frente a {reference?.nombre}
       </h2>
       <p className="mt-1 text-xs text-slatex-400">{dataMessages[dataState]}</p>
@@ -110,42 +121,68 @@ export function PeruEvidence({ candidate, catalog, dataState, onAnalyze }) {
           Ventanas de {sector.lado_m} × {sector.lado_m} m · malla de {sector.resolucion_analisis_m} m · pendiente suave menor a {sector.umbral_suave_deg_estricto}°.
         </p>
       )}
-      <div className="mt-3 overflow-x-auto">
-        <table className="w-full min-w-[31rem] text-left text-xs">
-          <thead className="text-slatex-300">
+      <div className="mt-3 overflow-x-auto overscroll-x-contain rounded-xl border border-space-700/70">
+        <table className="w-full min-w-[34rem] text-left text-xs">
+          <thead className="bg-space-900/70 text-slatex-300">
             <tr>
               {[
                 "Métrica",
                 candidate.name,
                 reference?.nombre ?? "Referencia",
                 "Diferencia",
+                "Lectura",
               ].map((label) => (
-                <th key={label} className="p-2">
+                <th key={label} className="p-2.5 font-semibold">
                   {label}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {metrics.map(({ key, label, unit, differenceUnit }) => (
-              <tr key={key} className="border-t border-space-700">
-                <th scope="row" className="p-2 font-medium">
-                  {label}
-                </th>
-                <td className="p-2">{formatMetric(sector[key], unit)}</td>
-                <td className="p-2">{formatMetric(reference?.[key], unit)}</td>
-                <td className="p-2">
-                  {sameScale ? formatDifference(
-                    sector[key],
-                    reference?.[key],
-                    differenceUnit ?? unit,
-                  ) : "—"}
-                </td>
-              </tr>
-            ))}
+            {rows.map(({ key, label, unit, differenceUnit, a, b, relative }) => {
+              const top = Math.max(Math.abs(a ?? 0), Math.abs(b ?? 0)) || 1;
+              const tag = key === closest?.key ? "Se parece más" : key === farthest?.key ? "Mayor diferencia" : null;
+              return (
+                <tr key={key} className="border-t border-space-700 align-top">
+                  <th scope="row" className="p-2.5 font-medium text-slate-200">
+                    {label}
+                  </th>
+                  <td className="p-2.5">
+                    {formatMetric(a, unit)}
+                    <span className="mt-1 block h-1.5 rounded-full bg-sky-400/70" style={{ width: `${Math.max(4, (Math.abs(a ?? 0) / top) * 100)}%` }} aria-hidden="true" />
+                  </td>
+                  <td className="p-2.5">
+                    {formatMetric(b, unit)}
+                    <span className="mt-1 block h-1.5 rounded-full bg-mint-400" style={{ width: `${Math.max(4, (Math.abs(b ?? 0) / top) * 100)}%` }} aria-hidden="true" />
+                  </td>
+                  <td className="p-2.5">
+                    {sameScale ? formatDifference(
+                      a,
+                      b,
+                      differenceUnit ?? unit,
+                    ) : "—"}
+                  </td>
+                  <td className="p-2.5 whitespace-nowrap">
+                    {relative === null ? (
+                      <span className="text-slatex-400">Sin escala común</span>
+                    ) : (
+                      <>
+                        <span className={tag === "Se parece más" ? "text-mint-300 font-semibold" : tag ? "text-amber-300 font-semibold" : "text-slatex-300"}>
+                          {tag ?? "Intermedia"}
+                        </span>
+                        <span className="block o-legend">diferencia relativa {Math.round(relative * 100)} %</span>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+      <p className="mt-2 o-legend">
+        La lectura ordena las métricas por diferencia relativa (|A − B| dividido entre el mayor valor). No es un puntaje ni sustituye la metodología del dossier.
+      </p>
       {Number.isFinite(sector.cobertura_pct) && (
         <p className="mt-3 text-xs text-slatex-300">
           <strong>Cobertura de pendiente.</strong> {formatMetric(sector.cobertura_pct, " %")}
@@ -153,14 +190,18 @@ export function PeruEvidence({ candidate, catalog, dataState, onAnalyze }) {
           {sector.cobertura_pct < 100 && " Los resultados describen la parte del sector con datos válidos."}
         </p>
       )}
-      <p className="mt-3 text-xs text-slatex-300">
-        <strong>Ensayo propuesto.</strong> {sector.ensayo || mission.trial}
-      </p>
-      <p className="mt-2 text-xs text-slatex-300">
-        <strong>Límite de la analogía.</strong>{" "}
-        {sector.limites || mission.limit}
-      </p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="o-stat border-mint-400/30">
+          <div className="o-kicker">Ensayo propuesto</div>
+          <p className="mt-1 text-xs leading-relaxed text-slate-200">{sector.ensayo || mission.trial}</p>
+        </div>
+        <div className="o-stat">
+          <div className="text-[11px] font-bold uppercase tracking-[0.16em] text-amber-400">Límite de la analogía</div>
+          <p className="mt-1 text-xs leading-relaxed text-slatex-300">{sector.limites || mission.limit}</p>
+        </div>
+      </div>
       <div className="mt-3 flex flex-wrap gap-3 text-xs">
+        <span className="text-slatex-400">Fuentes:</span>
         {dataSources.map((source) => (
           <a
             key={source.id}
@@ -173,7 +214,7 @@ export function PeruEvidence({ candidate, catalog, dataState, onAnalyze }) {
           </a>
         ))}
       </div>
-      <button type="button" onClick={onAnalyze} className="mt-4 rounded-lg bg-mint-400 px-3 py-2 text-xs font-semibold text-space-950">
+      <button type="button" onClick={onAnalyze} className="o-btn-primary mt-4">
         Analizar este sector en GeoPendiente
       </button>
     </section>

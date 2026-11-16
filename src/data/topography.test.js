@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {
-  centerOfGeometry, createEmptyGrid, exportGridCSV, getEarthTerrain, localCoordinate,
+  centerOfGeometry, clearEarthTerrainCache, createEmptyGrid, exportGridCSV, getEarthTerrain, localCoordinate,
   offsetCoordinate, parseTerrainCSV, planetaryXYZ, terrainStats, toUTM,
 } from './topography.js'
 
@@ -70,4 +70,31 @@ test('the network client accepts only real numeric DEM response values', async (
     assert.equal(result.points[0].z, 0)
     assert.equal(result.points.at(-1).z, 80)
   } finally { globalThis.fetch = previous }
+})
+
+test('the same DEM inputs are queried only once', async () => {
+  const previous = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = async () => { calls++; return { ok: true, json: async () => ({ status: 'OK', results: Array.from({ length: 81 }, () => ({ elevation: 100 })) }) } }
+  try {
+    clearEarthTerrainCache()
+    const first = await getEarthTerrain(-15.4, -72.3, 2000)
+    const second = await getEarthTerrain(-15.4, -72.3, 2000)
+    assert.equal(calls, 1)
+    assert.equal(second, first)
+    await getEarthTerrain(-15.4, -72.3, 1000)
+    assert.equal(calls, 2)
+  } finally { globalThis.fetch = previous; clearEarthTerrainCache() }
+})
+
+test('a failed DEM query is not cached', async () => {
+  const previous = globalThis.fetch
+  let calls = 0
+  globalThis.fetch = async () => { calls++; return { ok: false, status: 503 } }
+  try {
+    clearEarthTerrainCache()
+    await assert.rejects(getEarthTerrain(-12, -77, 2000))
+    await assert.rejects(getEarthTerrain(-12, -77, 2000))
+    assert.equal(calls, 4)
+  } finally { globalThis.fetch = previous; clearEarthTerrainCache() }
 })

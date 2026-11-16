@@ -15,6 +15,13 @@ export function formatDifference(a, b, unit) {
   return formatMetric(Math.abs(a - b), unit)
 }
 
+/** Diferencia relativa |A − B| / max(|A|, |B|). Solo ordena la lectura de la ficha; no es un puntaje. */
+export function relativeDifference(a, b) {
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return null
+  const scale = Math.max(Math.abs(a), Math.abs(b))
+  return scale === 0 ? 0 : Math.abs(a - b) / scale
+}
+
 function normalized(value) {
   return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim()
 }
