@@ -55,6 +55,25 @@ Para los sectores peruanos, QGIS o Python calculan las métricas antes de public
 
 La app usa los registros publicados para actualizar el catálogo local por identificador. Si Supabase está sin configurar o la consulta falla, el catálogo local sigue disponible.
 
+### Guardar análisis para el equipo
+
+`supabase/migrations/202611150001_equipos_analisis.sql` agrega, sin tocar el catálogo, equipos y miembros, análisis topográficos, sus muestras DEM y las comparaciones guardadas (3FN). Cada análisis guarda autor, equipo, coordenadas, fuente DEM, método, cuadrícula y pendientes; los valores derivables (zona UTM, cotas mínima y máxima, desnivel, cobertura y grados) se calculan en `v_analisis_topograficos`. `NULL` significa «sin dato» y `0` es una medición.
+
+1. En SQL Editor, ejecuta la migración completa después de `202611140001_catalogo.sql`.
+2. En Authentication → Users, crea las cuentas del equipo (Add user, con contraseña). La app no ofrece registro público.
+3. Crea el equipo y su primer administrador en SQL Editor:
+
+   ```sql
+   insert into public.equipos (nombre) values ('Órbita Perú');
+   insert into public.miembros_equipo (equipo_id, usuario_id, rol)
+   select e.id, u.id, 'admin' from public.equipos e, auth.users u
+   where e.nombre = 'Órbita Perú' and u.email = 'correo-del-admin@ejemplo.com';
+   ```
+
+4. Los demás miembros los agrega un administrador con `select public.agregar_miembro('<id del equipo>', 'correo@ejemplo.com');`, con su sesión desde la app o con este SQL en el editor.
+
+Explorar y calcular no requiere cuenta. «Guardar para el equipo» (pestañas Ubicación y Biblioteca de «Conoce tu terreno») exige iniciar sesión y pertenecer al equipo. La RLS permite leer los análisis del propio equipo, editar solo los propios y dar de alta miembros solo a administradores. El análisis se guarda primero en la biblioteca local y conserva un identificador de nube, así que reintentar actualiza el mismo registro. Si Supabase falla, la copia local y la exportación JSON siguen disponibles. Un análisis del equipo se abre con sus 49 cotas guardadas, sin otra consulta DEM, y permite repetir la exportación PNEZD.
+
 ## Fuentes y créditos
 
 - Mosaicos planetarios y altimetría en color del LRO WAC, LOLA, Viking MDIM 2.1 y MOLA. Capas globales ensambladas y convertidas a WebP a partir de teselas del nivel 2. [NASA Solar System Treks](https://trek.nasa.gov/)

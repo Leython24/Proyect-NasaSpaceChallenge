@@ -1148,6 +1148,13 @@ const libNullable=v=>v===''||v===null||v===undefined?null:Number(v);
 const libNum=(v)=>Number.isFinite(Number(v))&&v!==null&&v!==''?Number(v):null;
 const libId=()=>('usr-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9));
 const libText=(s,n=200)=>String(s??'').slice(0,n).trim();
+const LIB_UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+function libUuid(){
+ if(crypto.randomUUID)return crypto.randomUUID();
+ const b=crypto.getRandomValues(new Uint8Array(16));b[6]=b[6]&15|64;b[8]=b[8]&63|128;
+ const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
+ return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+}
 function libAll(){return [...libSaved,...LIB_CATALOG];}
 function libGet(id){return libAll().find(s=>s.id===id)||null;}
 function libAlert(s){$('libStatus').textContent=s;}
@@ -1169,7 +1176,9 @@ function libNormalize(raw){
  if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat< -90||lat>90||lon< -180||lon>180||!libText(raw.name,100))return null;
  const v={id:libText(raw.id,90)||libId(),body:raw.body,name:libText(raw.name,100),lat,lon,
   windowKm:libNum(raw.windowKm),resolutionM:libNum(raw.resolutionM),minM:libNum(raw.minM),maxM:libNum(raw.maxM),medianM:libNum(raw.medianM),slopeDeg:libNum(raw.slopeDeg),smoothPct:libNum(raw.smoothPct),reliefM:libNum(raw.reliefM),coveragePct:libNum(raw.coveragePct),
-  datum:libText(raw.datum,130)||libDatumDefaults[raw.body],crs:libText(raw.crs,120)||'Coordenadas decimales',source:libText(raw.source,180),notes:libText(raw.notes,1200),kind:libText(raw.kind,90)||'Registro del usuario',metricsSource:raw.metricsSource==='dossier'?'dossier':'dem',originId:libText(raw.originId,90),updatedAt:libText(raw.updatedAt,40)||new Date().toISOString()};
+  datum:libText(raw.datum,130)||libDatumDefaults[raw.body],crs:libText(raw.crs,120)||'Coordenadas decimales',source:libText(raw.source,180),notes:libText(raw.notes,1200),kind:libText(raw.kind,90)||'Registro del usuario',metricsSource:raw.metricsSource==='dossier'?'dossier':'dem',originId:libText(raw.originId,90),updatedAt:libText(raw.updatedAt,40)||new Date().toISOString(),
+  // Identificador del mismo análisis en la nube del equipo: reintentar el guardado lo actualiza, no lo duplica.
+  cloudId:typeof raw.cloudId==='string'&&LIB_UUID.test(raw.cloudId)?raw.cloudId.toLowerCase():null,cloudSavedAt:raw.cloudId&&libText(raw.cloudSavedAt,40)||null};
  for(const k of ['slopeDeg','smoothPct','reliefM','coveragePct','windowKm','resolutionM'])if(v[k]!==null&&v[k]<0)return null;
  if(v.slopeDeg!==null&&v.slopeDeg>90||v.smoothPct!==null&&v.smoothPct>100||v.coveragePct!==null&&v.coveragePct>100)return null;
  if(v.minM!==null&&v.maxM!==null&&v.minM>v.maxM)return null;
@@ -1196,7 +1205,7 @@ function libRenderList(){
  for(const s of filtered){
   const item=document.createElement('div');item.className='lib-item';
   const text=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=s.name;
-  small.textContent=libBodyNames[s.body]+' · '+(s.windowKm===null?'escala sin dato':libN(s.windowKm,2)+' km')+' · '+(s.dem?'DEM '+s.dem.n+'×'+s.dem.n+' guardado':(libSaved.includes(s)?'Ficha propia':'Dossier · pág. '+s.page));text.append(strong,small);
+  small.textContent=libBodyNames[s.body]+' · '+(s.windowKm===null?'escala sin dato':libN(s.windowKm,2)+' km')+' · '+(s.dem?'DEM '+s.dem.n+'×'+s.dem.n+' guardado':(libSaved.includes(s)?'Ficha propia':'Dossier · pág. '+s.page))+(s.cloudSavedAt?' · ☁ guardado para el equipo':'');text.append(strong,small);
   const actions=document.createElement('div');actions.className='lib-actions';actions.append(libMakeButton('A','compareA',s.id),libMakeButton('B','compareB',s.id));
   if(libSaved.includes(s))actions.append(libMakeButton('Buscar parecidos','match',s.id),libMakeButton('Editar','edit',s.id),libMakeButton('Eliminar','delete',s.id));
   else actions.append(libMakeButton('Guardar copia','copy',s.id));
@@ -1308,6 +1317,7 @@ function libSaveEarth(opts={}){
   crs:'WGS84 · UTM '+c.zone+(c.lat<0?'S':'N'),source,
   notes:dossier?dossier.notes:'Elevaciones reales consultadas en línea. Pendientes derivadas de la cuadrícula; resultados preliminares para exploración de terrenos.',
   kind:dossier?dossier.kind:'Derivado de DEM terrestre',metricsSource:dossier?'dossier':'dem',originId:previous?.originId||published?.id||'',
+  cloudId:previous?.cloudId||null,
   updatedAt:new Date().toISOString(),dem:{values:vals,n:7,spacing:c.spacing,source:c.source,importedAt:new Date().toISOString()}});
  if(!site)return null;
  if(previous)libSaved[libSaved.indexOf(previous)]=site;else libSaved.unshift(site);
@@ -1669,7 +1679,7 @@ function libShowCachedEarth(site){
  const {dem}=site,zone=autoZone(site.lon),spacing=(dem.n-1)*dem.spacing/6;
  const points=buildPoints(site.lat,site.lon,zone,spacing);
  points.forEach(p=>{p.z=libSample(dem.values,p.c/6,p.r/6,dem.n);});
- const s=stats(points,spacing);current={lat:site.lat,lon:site.lon,zone,points,spacing,source:'Copernicus',s};
+ const s=stats(points,spacing);current={lat:site.lat,lon:site.lon,zone,points,spacing,source:/SRTM/.test(dem.source||'')?'SRTM':'Copernicus',s};
  updateUI(current);setStatus('Superficie recuperada de la biblioteca local, sin nueva consulta. La comparación con Marte ya está disponible.','success');
  return true;
 }
@@ -2021,6 +2031,7 @@ $('quickState').textContent='Selecciona un lugar: se guardará y se comparará c
  }
  const baseUpdateUI=updateUI;
  updateUI=function(result){
+   if(result&&!result.calculatedAt)result.calculatedAt=new Date().toISOString();
    baseUpdateUI(result);
    tell('results',{summary:summary()});
    const card=document.querySelector('.results-card');
@@ -2105,9 +2116,88 @@ $('quickState').textContent='Selecciona un lugar: se guardará y se comparará c
    }
    notifyHeight();
  }
+ /* ---- «Guardar para el equipo»: Órbita pide el análisis actual; la ficha se
+    guarda primero en la biblioteca local y conserva su identificador de nube. ---- */
+ const localSiteFor=c=>libSaved.find(x=>x.body==='earth'&&Math.abs(x.lat-c.lat)<1e-6&&Math.abs(x.lon-c.lon)<1e-6);
+ function exportAnalysis(requestId){
+   const reply=(type,fields)=>tell(type,{requestId,...fields});
+   if(!current)return reply('analysis-error',{message:'Primero calcula un terreno con «Calcular elevación y pendiente».'});
+   let site=localSiteFor(current);
+   if(!site)site=libSaveEarth({automatic:true,quickId:libQuickSelectedId});
+   if(!site)return reply('analysis-error',{message:'No se pudo guardar el análisis en la biblioteca local.'});
+   if(!site.cloudId){site.cloudId=libUuid();site.cloudSavedAt=null;libPersist();}
+   const {s,points,spacing}=current;
+   const grades=[];for(let r=1;r<gridSize-1;r++)for(let c=1;c<gridSize-1;c++)grades.push(grad(points,r,c,spacing).grade);
+   const sorted=[...grades].sort((x,y)=>x-y),mid=Math.floor(sorted.length/2);
+   const median=sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
+   const finite=v=>Number.isFinite(v)?v:null;
+   const sector=/^peru-(se|an)-(0[1-9])$/.exec(site.originId||'');
+   reply('analysis',{record:{
+     id:site.cloudId,localId:site.id,name:site.name,lat:current.lat,lon:current.lon,
+     sectorId:sector?sector[1].toUpperCase()+'-'+sector[2]:null,
+     source:current.source==='SRTM'?'SRTM':'Copernicus',method:'horn-3x3',
+     rows:gridSize,cols:gridSize,spacing,
+     samples:points.map(p=>finite(p.z)),
+     metrics:{slopeLocalPct:finite(s.grade),slopeMeanPct:finite(s.avg),slopeMedianPct:finite(median),
+       slopeMinPct:finite(s.gradeMin),slopeMaxPct:finite(s.gradeMax),
+       // Sin dirección en terreno plano: se guarda como «sin dato», no como 0°.
+       aspectDeg:s.grade<0.01?null:finite(s.aspect),windows:grades.length},
+     calculatedAt:current.calculatedAt||new Date().toISOString()
+   }});
+ }
+ function markCloudSaved({localId,cloudId,savedAt}){
+   const site=libSaved.find(x=>x.id===localId&&x.cloudId===cloudId);
+   if(!site||typeof savedAt!=='string')return;
+   site.cloudSavedAt=savedAt.slice(0,40);libPersist();libRenderList();
+   libAlert('☁ «'+site.name+'» guardado para el equipo. La copia local se conserva en este navegador.');
+ }
+ /* Abre un análisis del equipo con sus muestras: mismo relieve y mismas
+    exportaciones, sin volver a consultar el DEM. */
+ function openAnalysis(rec,editable){
+   const n=gridSize*gridSize;
+   const ok=rec&&typeof rec==='object'&&rec.rows===gridSize&&rec.cols===gridSize&&Array.isArray(rec.samples)&&rec.samples.length===n
+     &&Number.isFinite(rec.lat)&&Number.isFinite(rec.lon)&&Math.abs(rec.lat)<=90&&Math.abs(rec.lon)<=180&&Number.isFinite(rec.spacing)&&rec.spacing>0
+     &&typeof rec.id==='string'&&LIB_UUID.test(rec.id)&&typeof rec.name==='string';
+   if(!ok){setStatus('El análisis recibido no tiene una cuadrícula de '+gridSize+' × '+gridSize+' compatible con este visor.','error');return;}
+   if(rec.samples.some(v=>typeof v!=='number'||!Number.isFinite(v))){
+     setStatus('Este análisis tiene celdas sin dato: sus métricas están guardadas, pero el visor necesita las '+n+' cotas para dibujar el relieve.','error');return;
+   }
+   invalidateEarthResults();
+   const zone=autoZone(rec.lon),spacing=rec.spacing,points=buildPoints(rec.lat,rec.lon,zone,spacing);
+   points.forEach((p,i)=>{p.z=rec.samples[i];});
+   const source=rec.source==='SRTM'?'SRTM':'Copernicus';
+   current={lat:rec.lat,lon:rec.lon,zone,points,spacing,source,s:stats(points,spacing),calculatedAt:rec.calculatedAt||null};
+   $('lat').value=String(rec.lat);$('lon').value=String(rec.lon);$('zone').value='auto';
+   $('libCurrentName').value=libText(rec.name,100);
+   const values=rec.samples.slice(),derived=libDemStats(values,spacing,gridSize);
+   const previous=libSaved.find(x=>x.cloudId===rec.id)||localSiteFor(current);
+   const sector=/^(SE|AN)-(0[1-9])$/.exec(rec.sectorId||'');
+   const site=libNormalize({id:previous?.id||libId(),name:libText(rec.name,100),body:'earth',lat:rec.lat,lon:rec.lon,
+     windowKm:(gridSize-1)*spacing/1000,resolutionM:spacing,minM:derived.minM,maxM:derived.maxM,medianM:derived.medianM,
+     slopeDeg:derived.slopeDeg,smoothPct:derived.smoothPct,reliefM:derived.reliefM,coveragePct:100,
+     datum:'Elevación del DEM terrestre; datum según proveedor',crs:'WGS84 · UTM '+zone+(rec.lat<0?'S':'N'),
+     source:(source==='SRTM'?'SRTM v3':'Copernicus GLO-90')+' · análisis del equipo',
+     notes:'Análisis del equipo abierto desde la nube; mismas cotas guardadas, sin nueva consulta DEM.',
+     kind:'Análisis del equipo',metricsSource:'dem',originId:sector?'peru-'+sector[1].toLowerCase()+'-'+sector[2]:(previous?.originId||''),
+     // Solo el autor puede actualizar el registro de la nube; para los demás, guardar crea uno propio.
+     cloudId:editable?rec.id:(previous&&previous.cloudId!==rec.id?previous.cloudId:null),
+     cloudSavedAt:editable?new Date().toISOString():null,updatedAt:new Date().toISOString(),
+     dem:{values,n:gridSize,spacing,source,importedAt:new Date().toISOString()}});
+   if(!site){setStatus('No se pudo preparar la ficha local del análisis.','error');return;}
+   if(previous)libSaved[libSaved.indexOf(previous)]=site;else libSaved.unshift(site);
+   libQuickSelectedId=site.id;libPersist();
+   updateUI(current);
+   libRefresh();$('quickPlace').value=site.id;libSelectAndMatch(site.id,true);
+   setStatus('Análisis del equipo «'+site.name+'» abierto con sus '+n+' cotas guardadas, sin nueva consulta DEM.','success');
+   tell('selected',{site:site.name,reference:$('endBody')?.value==='moon'?'moon':'mars'});
+ }
+
  window.addEventListener('message',event=>{
    if(event.origin!==location.origin || event.source!==window.parent || event.data?.source!=='geoanalogos-react')return;
    const d=event.data;
+   if(d.type==='export-analysis' && typeof d.requestId==='string') exportAnalysis(d.requestId.slice(0,80));
+   if(d.type==='cloud-saved') markCloudSaved(d);
+   if(d.type==='open-analysis') openAnalysis(d.record,d.editable===true);
    if(d.type==='tab') setTab(d.tab);
    if(d.type==='navigate') setTab(legacy[d.section]||d.section);
    if(d.type==='select') selectCurrent(d);

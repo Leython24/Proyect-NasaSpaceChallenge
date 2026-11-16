@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowLeft, Compass, ExternalLink, FlaskConical, Layers3, MapPinned, Orbit, Save } from 'lucide-react'
 import { prefersReducedMotion } from './orbita/theme.js'
+import { TeamCloudPanel, useTeamCloud } from './orbita/TeamCloud.jsx'
+import { REACT_SOURCE, isTrustedLabMessage, parseLabAnalysis } from './data/teamAnalyses.js'
 
 /** Cinco pestañas funcionales: cada una muestra en el analizador las secciones de su etapa. */
 export const TABS = [
@@ -22,7 +24,7 @@ export const TABS = [
   },
   {
     id: 'biblioteca', number: '05', icon: Save, label: 'Biblioteca y exportación',
-    lead: 'Lugares guardados en este navegador, importación de DEM y descargas existentes: PNEZD, CSV, JSON y reportes.',
+    lead: 'Análisis guardados para tu equipo, lugares guardados en este navegador, importación de DEM y descargas: PNEZD, CSV, JSON y reportes.',
   },
 ]
 
@@ -172,8 +174,31 @@ export default function GeoPendienteExperience({ target, scrollContainer, isVisi
 
   const send = useCallback((message) => {
     if (!iframeRef.current?.contentWindow) return
-    iframeRef.current.contentWindow.postMessage({ source: 'geoanalogos-react', ...message }, window.location.origin)
+    iframeRef.current.contentWindow.postMessage({ source: REACT_SOURCE, ...message }, window.location.origin)
   }, [])
+
+  // Pedidos de análisis al iframe: cada uno espera su respuesta por requestId.
+  const pending = useRef(new Map())
+  const requestAnalysis = useCallback(() => new Promise((resolve, reject) => {
+    if (!iframeRef.current?.contentWindow) {
+      reject(new Error('El analizador aún no está listo.'))
+      return
+    }
+    const requestId = crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random())
+    const timer = setTimeout(() => {
+      pending.current.delete(requestId)
+      reject(new Error('El analizador no respondió. Vuelve a intentarlo.'))
+    }, 8000)
+    pending.current.set(requestId, { resolve, reject, timer })
+    send({ type: 'export-analysis', requestId })
+  }), [send])
+  const notifySaved = useCallback((record, savedAt) => {
+    send({ type: 'cloud-saved', localId: record.localId, cloudId: record.id, savedAt })
+  }, [send])
+  const openInLab = useCallback((record, editable) => {
+    send({ type: 'open-analysis', record, editable })
+  }, [send])
+  const cloud = useTeamCloud({ requestAnalysis, notifySaved, openInLab, missionKey, resultKey: flashKey })
 
   // Un lugar nuevo (otro sector o coordenada) reemplaza la selección del analizador.
   useEffect(() => {
@@ -196,9 +221,23 @@ export default function GeoPendienteExperience({ target, scrollContainer, isVisi
 
   useEffect(() => {
     function receive(event) {
-      if (event.origin !== window.location.origin || event.source !== iframeRef.current?.contentWindow) return
+      if (!isTrustedLabMessage(event, iframeRef.current?.contentWindow, window.location.origin)) return
       const data = event.data
-      if (data?.source !== 'geo-pendiente-lab') return
+      if (data.type === 'analysis' || data.type === 'analysis-error') {
+        const waiting = typeof data.requestId === 'string' && pending.current.get(data.requestId)
+        if (!waiting) return
+        pending.current.delete(data.requestId)
+        clearTimeout(waiting.timer)
+        if (data.type === 'analysis-error') waiting.reject(new Error(typeof data.message === 'string' ? data.message.slice(0, 300) : 'El analizador no pudo preparar el análisis.'))
+        else {
+          try {
+            waiting.resolve(parseLabAnalysis(data.record))
+          } catch (error) {
+            waiting.reject(error)
+          }
+        }
+        return
+      }
       if (data.type === 'ready') setReady(true)
       if (data.type === 'height' && Number.isFinite(data.height)) setFrameHeight(Math.max(320, Math.min(20000, data.height)))
       if (data.type === 'selected' && typeof data.site === 'string') setSiteName(data.site)
@@ -278,6 +317,9 @@ export default function GeoPendienteExperience({ target, scrollContainer, isVisi
           <current.icon size={16} aria-hidden="true" /> <span>{current.lead}</span>
         </p>
         {tab === 'pendientes' && <ResultSummary state={result} compact flashKey={flashKey} />}
+        {tab === 'biblioteca' && (
+          <TeamCloudPanel cloud={cloud} hasResult={result.status === 'ready'} showLibrary onOpened={() => goTo('relieve')} />
+        )}
         <div className={`gp-frame-shell ${ready ? '' : 'is-loading'}`}>
           {!ready && (
             <div className="gp-frame-loading" role="status"><span className="o-spinner" aria-hidden="true" /> Iniciando las herramientas de GeoPendiente…</div>
@@ -291,6 +333,7 @@ export default function GeoPendienteExperience({ target, scrollContainer, isVisi
           />
         </div>
         {tab === 'ubicacion' && <ResultSummary state={result} onGoTo={goTo} flashKey={flashKey} />}
+        {tab === 'ubicacion' && <TeamCloudPanel cloud={cloud} hasResult={result.status === 'ready'} />}
       </div>
 
       <footer className="gp-foot">
